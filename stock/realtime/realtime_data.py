@@ -17,5 +17,19 @@ def dump_today_all():
     df.to_sql('today_data', engine, if_exists='append')
 
 
+def get_real_time_quote_by_code(code):
+    df = ts.get_realtime_quotes(code)
+    for index, data in df.iterrows():
+        return data
+
+
+def get_real_time_quote_by_codes(codes):
+    df = ts.get_realtime_quotes(codes)
+    ret = {}
+    for index, data in df.iterrows():
+        ret[data.code] = data
+    return ret
+
+
 if __name__ == '__main__':
-    dump_today_all()
+    get_real_time_quote_by_code('000576')

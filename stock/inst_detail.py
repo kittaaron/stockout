@@ -16,7 +16,7 @@ session = Session()
 
 def get_inst_detail():
     df = ts.inst_detail()
-    df.to_sql('inst_detail', engine, if_exists='append', index=False, index_label='code')
+    df.to_sql('inst_detail', engine, if_exists='replace', index=False, index_label='code')
 
 
 if __name__ == '__main__':

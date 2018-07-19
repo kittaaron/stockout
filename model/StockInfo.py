@@ -56,6 +56,8 @@ class StockInfo(Base):
     gpr = Column(DECIMAL)
     # 净利润率(%)
     npr = Column(DECIMAL)
+    # 总市值
+    mktcap = Column(DECIMAL)
     # 股东数量
     holders = Column(Integer)
     issz50 = Column(Integer)

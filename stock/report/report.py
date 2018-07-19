@@ -1,13 +1,15 @@
 __author__ = 'kittaaron'
 
 import tushare as ts
-import config.logginconfig
 import logging
-from model.ReportData import ReportData
+import config.logginconfig
+from model.report.ReportData import ReportData
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import dbconfig
 import math
+import datetime
+from dateutil.relativedelta import relativedelta
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -226,4 +228,14 @@ def add(report_data, autocommit=True):
 
 
 if __name__ == '__main__':
-    dump_report_data(2017, 4)
+    today = datetime.date.today()
+    endtime = today + relativedelta(months=-36)
+    endyear = endtime.year
+    starttime = today + relativedelta(months=-36)
+    startyear = starttime.year
+    while startyear <= endyear:
+        seasons = [4]
+        for season in seasons:
+            logging.info("时间: %s %s", startyear, season)
+            dump_report_data(startyear, season)
+        startyear += 1

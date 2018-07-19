@@ -22,6 +22,10 @@ class DaDanSts(Base):
     lhh_s_volume = Column(BigInteger)
     lhh_net = Column(BigInteger)
 
+    fhh_b_volume = Column(BigInteger)
+    fhh_s_volume = Column(BigInteger)
+    fhh_net = Column(BigInteger)
+
     ratio = Column(DECIMAL)
     lhh_ratio = Column(DECIMAL)
 

@@ -118,6 +118,8 @@ def dump_hist_data(start_date, end_date):
 
 
 if __name__ == '__main__':
+    #dump_hist_data('2018-07-13', '2018-07-13')
+    #exit(0)
     delta = datetime.timedelta(days=0)
     end_date = datetime.date.today()
     start_date = end_date - delta

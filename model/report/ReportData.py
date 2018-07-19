@@ -92,6 +92,6 @@ class ReportData(Base):
 
     def __str__(self):
         msg = "code:" + self.code + ",name: " + self.name + ",year season: " + str(self.year) + "," + str(self.season) + ",esp: " + str(self.eps)\
-             + ",eps_yoy: " + str(self.eps_yoy)+ ",roe: " + str(self.roe)+ ",profits_yoy: " + str(self.profits_yoy)\
-            + ",distrib: " + str(self.distrib)
+             + ",eps_yoy: " + str(self.eps_yoy)+ ",roe: " + str(self.roe)+ ",profits_yoy: " + ",distrib: " + str(self.distrib) \
+              + str(self.profits_yoy) + ",mbrg:" + str(self.mbrg) + ",nprg:" + str(self.nprg)
         return msg

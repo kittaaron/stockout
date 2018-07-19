@@ -1,5 +1,5 @@
 __author__ = 'kittaaron'
-# 默认dump当天所有股票的大单数据列表，并给出统计结果
+# 查询前一天跌停股票，第二天的表现
 
 import tushare as ts
 import logging
@@ -14,6 +14,7 @@ from model.DaDan import DaDan
 from model.DaDanSts import DaDanSts
 from model.HistData import HistData
 from utils.SMSUtil import sendMsg
+from stock.realtime.realtime_data import get_real_time_quote_by_code
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -27,12 +28,11 @@ def realtime_dd_analysis(code, name, date_str):
     df = ts.get_sina_dd(code, date_str)
     # logging.info(df)
     if df is None:
+        logging.info("%s %s 当前无大单", code, name)
         return
 
     bvolume = 0
     svolume = 0
-    #lhhbvolume = 0
-    #lhhsvolume = 0
     da_dan_list = []
     for index, serie in df.iterrows():
         da_dan = DaDan(code=code, name=name, date=date_str)
@@ -45,23 +45,20 @@ def realtime_dd_analysis(code, name, date_str):
 
         if serie.type == '买盘':
             bvolume += serie.volume
-            #if '14:30:00' < serie.time <= '14:59:59':
-                #lhhbvolume += serie.volume
         if serie.type == '卖盘':
             svolume += serie.volume
-            #if '14:30:00' <= serie.time <= '14:59:59':
-                #lhhsvolume += serie.volume
 
     net = bvolume - svolume
-    #lhh_net = lhhbvolume - lhhsvolume
     dd_sts = DaDanSts(code=code, name=name, date=date_str)
     dd_sts.b_volume = bvolume
     dd_sts.s_volume = svolume
     dd_sts.net = net
-    #dd_sts.lhh_b_volume = lhhbvolume
-    #dd_sts.lhh_s_volume = lhhsvolume
-    #dd_sts.lhh_net = lhh_net
-    logging.info("%s %s 买盘：%d, 卖盘：%d, 总计：%d", code, name, bvolume, svolume, net)
+
+    serie = get_real_time_quote_by_code(code)
+    current_price = float(serie.price)
+    pre_close = float(serie.pre_close)
+    p_change = round((current_price - pre_close) / pre_close * 100, 2)
+    logging.info("%s %s 实时大单 买盘：%d, 卖盘：%d, 总计：%d 当前股价 %s 涨跌 %s", code, name, bvolume, svolume, net, current_price, p_change)
     if net > 1000000:
         logging.info("OOOOOOOOOOOOOOOOOOOOO  %s %s 大单净流入 %d 请关注实时大单数据，可能在撬盘 OOOOOOOOOOOOOOOOOOOOO", code, name, net)
         sms_msg = code + " may be qiaopan"
@@ -91,11 +88,11 @@ def analyze_dieting_stocks(hist_data, date_str):
         # 当日大单数据分析.
         dd_sts = session.query(DaDanSts).filter(and_(DaDanSts.code == code, DaDanSts.date == date_str)).first()
         if dd_sts is None:
-            logging.info("%s %s 跌停天数 %d, 日期: %s 无大单统计数据",
-                         code, name, i, str(dieting_dates))
+            logging.info("%s %s 跌停天数 %d 昨日无大单",
+                         code, name, i)
         else:
-            logging.info("%s %s 跌停天数 %d, 日期: %s 全天买入:%d, 卖出:%d, 净值:%d, 最后半小时净值:%d, 大单占市值比:%d",
-                         code, name, i, str(dieting_dates),
+            logging.info("%s %s 跌停天数 %d, 昨日买入:%d, 卖出:%d, 净值:%d, 最后半小时净值:%d, 大单占市值比:%s",
+                         code, name, i,
                          dd_sts.b_volume, dd_sts.s_volume, dd_sts.net, dd_sts.lhh_net, dd_sts.ratio)
             if dd_sts.ratio >= 3 or dd_sts.net >= 5000000 or dd_sts.lhh_net >= 5000000:
                 logging.info("****************** 撬板的真来了 %s %s *********************", code, name)
@@ -107,10 +104,11 @@ def analyze_dieting_stocks(hist_data, date_str):
 
 
 def get_dieting_stocks(date_str):
-    '''
-    实时获取当天大单数据，不存到DB，直接内存统计并打印
+    """
+    获取某天跌停数据，看今天的大单数据
+    :param date_str:
     :return:
-    '''
+    """
 
     # 取出某日期跌幅 >= 9%的股票
     hist_data = session.query(HistData).filter(
@@ -126,7 +124,7 @@ def get_dieting_stocks(date_str):
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
-    delta = datetime.timedelta(days=0)
+    delta = datetime.timedelta(days=1)
     today = datetime.date.today()
     ndays_before = today - delta
     date_str = ndays_before.strftime('%Y-%m-%d')

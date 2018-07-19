@@ -2,6 +2,8 @@ __author__ = 'kittaaron'
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
+from sqlalchemy import desc
 import tushare as ts
 from model.StockInfo import StockInfo
 import logging
@@ -38,6 +40,14 @@ def get_concept_classified_dict():
     return ret
 
 
+def get_today_all():
+    df = ts.get_today_all()
+    ret = {}
+    for idx, serie in df.iterrows():
+        ret[serie['code']] = serie['mktcap']
+    return ret
+
+
 def update_stock_basics():
     # get dataframe
     df = ts.get_stock_basics()
@@ -46,6 +56,8 @@ def update_stock_basics():
 
     industry_classified_dict = get_industry_classified_dict()
     concept_classified_dict = get_concept_classified_dict()
+    today_all = get_today_all()
+
     sz50s = idx.get_sz50s()
     zz500s = idx.get_zz500s()
     cnt = 0
@@ -68,6 +80,9 @@ def update_stock_basics():
             stock.industry_classified = industry_classified_dict[code]
         if code in concept_classified_dict:
             stock.concept_classified = concept_classified_dict[code]
+        if code in today_all:
+            stock.mktcap = today_all[code]
+
         if code in sz50s:
             stock.issz50 = 1
         if code in zz500s:
