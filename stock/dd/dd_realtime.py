@@ -52,8 +52,7 @@ def stock_dd_sts_by_date(code, name, totals, date_str):
     if net <= 1000000:
         return None
     lhh_net = lhhbvolume - lhhsvolume
-    ratio = net / totals / 1000000
-    lhh_ratio = lhh_net / totals / 1000000
+    ratio = round(net / totals / 1000000, 2)
     dd_sts = DaDanSts(code=code, name=name, date=date_str)
     dd_sts.b_volume = bvolume
     dd_sts.s_volume = svolume
@@ -62,9 +61,9 @@ def stock_dd_sts_by_date(code, name, totals, date_str):
     dd_sts.lhh_s_volume = lhhsvolume
     dd_sts.lhh_net = lhh_net
     dd_sts.ratio = ratio
-    dd_sts.lhh_ratio = lhh_ratio
+    #dd_sts.lhh_ratio = lhh_ratio
     logging.info("%s %s 买盘：%d, 卖盘：%d, 总计：%d", code, name, bvolume, svolume, net)
-    logging.info("%s %s 最后半小时- 买盘：%d, 卖盘：%d, 总计：%d", code, name, lhhbvolume, lhhsvolume, lhh_net)
+    #logging.info("%s %s 最后半小时- 买盘：%d, 卖盘：%d, 总计：%d", code, name, lhhbvolume, lhhsvolume, lhh_net)
     return dd_sts
 
 
@@ -86,37 +85,38 @@ def realtime_dd(date_str):
         name = row.name
         # 总股本
         totals = row.totals
-        logging.info("%s %s 开始处理 - %d", code, name, i)
+        if i % 50 == 0:
+            logging.info("%s %s 开始处理 - %d", code, name, i)
         i += 1
         sts = stock_dd_sts_by_date(code, name, totals, date_str)
         if sts is None:
             continue
         sts_list.append(sts)
-    logging.info("大于100万手的股票数量: %d", len(sts_list))
+    #logging.info("大于100万手的股票数量: %d", len(sts_list))
     sorted_list = sorted(sts_list, key=lambda r: r.net, reverse=True)
     lhh_sorted_result = sorted(sts_list, key=lambda r: r.net, reverse=True)
 
-    logging.info("大单数据总排名前100的数据: ")
-    top100 = sorted_list[0:100]
-    logging.info("最后半小时总排名前100的数据: ")
-    lhhtop100 = lhh_sorted_result[0:300]
+    logging.info("大单数据总排名前20的数据: ")
+    top20 = sorted_list[0:20]
+    logging.info("最后半小时总排名前20的数据: ")
+    lhhtop50 = lhh_sorted_result[0:50]
 
-    lhhtop100_codes = []
-    for lhhdata in lhhtop100:
-        lhhtop100_codes.append(lhhdata.code)
+    lhhtop50_codes = []
+    for lhhdata in lhhtop50:
+        lhhtop50_codes.append(lhhdata.code)
     index = 0
-    for data in top100:
+    for data in top20:
         index += 1
         llh_index = -1
         try:
-            llh_index = lhhtop100_codes.index(data.code)
+            llh_index = lhhtop50_codes.index(data.code)
         except ValueError as err:
             pass
 
         if llh_index >= 0:
             logging.info("%s %s 总数据排名: %d, 最后半小时排名: %d, %s", data.code, data.name, index, llh_index + 1, data)
         else:
-            logging.info("%s %s 总数据排名: %d, 最后半小时未排进前300", data.code, data.name, index)
+            logging.info("%s %s 总数据排名: %d, 最后半小时未排进前50", data.code, data.name, index)
 
 
 if __name__ == '__main__':

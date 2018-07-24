@@ -15,9 +15,11 @@ class GoodStock(Base):
     name = Column(String)
     # desc
     industry_top = Column(String)
+    industry_classified_top = Column(String)
     blue_chip = Column(String)
     # 1.推荐 2.关注 3.重点关注
     industry = Column(String)
+    industry_classified = Column(String)
     notice = Column(String)
 
     def __int__(self, code, name):

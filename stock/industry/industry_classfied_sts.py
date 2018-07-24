@@ -16,6 +16,7 @@ import config.logginconfig
 from stock import idx
 import datetime
 import string
+from stock.industry import industry_sts
 
 engine = create_engine(getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -37,48 +38,6 @@ def get_industry_classified_list():
     return ret
 
 
-def get_concept_classified_dict():
-    ccdf = ts.get_concept_classified()
-    concept_classified_dict = ccdf.to_dict(orient='records')
-    ret = {}
-    for data in concept_classified_dict:
-        ret[data['code']] = data['c_name']
-    return ret
-
-
-def get_codes(stocks):
-    codes = []
-    for stock in stocks:
-        codes.append(stock.code)
-    return codes
-
-
-def get_codes_reports(codes, years):
-    """
-    获取年报(第4季度报表)
-    :param codes:
-    :param years:
-    :return:
-    """
-    if len(codes) <= 0 or len(years) <= 0:
-        return None
-
-    ret = {}
-    for code in codes:
-        ret[code] = {}
-        for year in years:
-            ret[code][year] = ReportData()
-    reports = session.query(ReportData).filter(and_(ReportData.code.in_(codes),
-                                                    ReportData.year.in_(years), ReportData.season == 4)).all()
-    for report in reports:
-        code = report.code
-        year = report.year
-        if code not in ret:
-            ret[code] = {}
-        ret[code][year] = report
-    return ret
-
-
 def get_avg_pe_by_industry_classified():
     ret = {}
     list = session.query(StockInfo.industry_classified, func.avg(StockInfo.pe)).filter(and_(StockInfo.industry_classified != '',
@@ -88,13 +47,13 @@ def get_avg_pe_by_industry_classified():
     return ret
 
 
-def save_industry_top(stockinfo, rank):
+def save_industry_classified_top(stockinfo, rank):
     old = session.query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
     if old is None:
         old = GoodStock(code=stockinfo.code, name=stockinfo.name)
     # 重点关注
-    old.industry_top = "龙头排名" + str(rank)
-    old.industry = stockinfo.industry
+    old.industry_classified_top = "龙头排名" + str(rank)
+    old.industry_classified = stockinfo.industry_classified
     add(old)
 
 
@@ -116,51 +75,8 @@ def save_blue_chip(stockinfo, blue_chip_flag):
             old.notice = ''
         if old.notice.find('财报信息不全') < 0:
             old.notice += '财报信息不全'
-    old.industry = stockinfo.industry
+    old.industry_classified = stockinfo.industry_classified
     add(old)
-
-
-def is_blue_chip(stockinfo, last_five_years_reports):
-    """
-    如果股票最近几年收入一直增长、利润一直为正：则股票不会太差；
-    如果股票的利润率也一直增长，则股票
-    :param stockinfo:
-    :param last_five_years_reports:
-    :return:  -1 信息缺少没法准确判断 1 是蓝筹 0不是
-    """
-    current_ok = True
-    if stockinfo.pe > 0 and stockinfo.rev > 0 and stockinfo.profit > 0:
-        pass
-    else:
-        current_ok = False
-    report_ok = True
-    info_lack = False
-    reports = sorted(last_five_years_reports.items(), key=lambda r: r[0], reverse=True)
-    lack_i = 0
-    current_year = datetime.date.today().year
-    for data in reports:
-        if data is None:
-            continue
-        year = data[0]
-        report = data[1]
-        if report is None:
-            logging.warning("%s %s %s财报信息不全", stockinfo.code, stockinfo.name, year)
-            info_lack = True
-            continue
-        if (report.mbrg is not None and report.mbrg < 0) or \
-                report.nprg is not None and report.nprg < 0 or \
-                report.profits_yoy is not None and report.profits_yoy < 0:
-            logging.warning("%s %s %s 数据不好", stockinfo.code, stockinfo.name, year)
-            report_ok = False
-            break
-        else:
-            report_ok = True
-    if info_lack:
-        return -1
-
-    if current_ok and report_ok:
-        logging.info("%s %s 是蓝筹", stockinfo.code, stockinfo.name)
-    return 1 if current_ok and report_ok else 0
 
 
 def sts_pe_by_industry_classified(industry_classified_list):
@@ -181,13 +97,13 @@ def sts_pe_by_industry_classified(industry_classified_list):
         last_four_year = last_three_year - 1
         last_five_year = last_four_year - 1
 
-        top10reports = get_codes_reports(get_codes(top10), [last_year, last_two_year, last_three_year, last_four_year, last_five_year])
-        mktcaptop10reports = get_codes_reports(get_codes(mktcaptop10), [last_year, last_two_year, last_three_year, last_four_year, last_five_year])
+        top10reports = industry_sts.get_codes_reports(industry_sts.get_codes(top10), [last_year, last_two_year, last_three_year, last_four_year, last_five_year])
+        mktcaptop10reports = industry_sts.get_codes_reports(industry_sts.get_codes(mktcaptop10), [last_year, last_two_year, last_three_year, last_four_year, last_five_year])
         for stockinfo in top10:
             i += 1
             code = stockinfo.code
             code_reports = top10reports[code]
-            blue_chip_flag = is_blue_chip(stockinfo, code_reports)
+            blue_chip_flag = industry_sts.is_blue_chip(stockinfo, code_reports)
             if blue_chip_flag:
                 save_blue_chip(stockinfo, blue_chip_flag)
             logging.info("排名: %s %s %s %s 收入同比 %s 利润同比 %s", i, stockinfo.code, stockinfo.name, stockinfo.pe,
@@ -211,10 +127,10 @@ def sts_pe_by_industry_classified(industry_classified_list):
         for stockinfo in mktcaptop10:
             j += 1
             if j <= 3:
-                save_industry_top(stockinfo, j)
+                save_industry_classified_top(stockinfo, j)
             code = stockinfo.code
             code_reports = mktcaptop10reports[code]
-            blue_chip_flag = is_blue_chip(stockinfo, code_reports)
+            blue_chip_flag = industry_sts.is_blue_chip(stockinfo, code_reports)
             if blue_chip_flag:
                 save_blue_chip(stockinfo, blue_chip_flag)
             logging.info("市值: %s %s %s %s pe: %s 收入同比 %s 利润同比 %s", j, stockinfo.code, stockinfo.name, stockinfo.mktcap,

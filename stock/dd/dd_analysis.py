@@ -202,10 +202,14 @@ def update_fhh():
 if __name__ == '__main__':
     argv = len(sys.argv)
     starttime = datetime.datetime.now()
+    hour = starttime.hour
     delta = datetime.timedelta(days=1)
     today = datetime.date.today()
     ndays_before = today - delta
-    date_str = ndays_before.strftime('%Y-%m-%d')
+    date_str = today.strftime('%Y-%m-%d')
+    if hour < 9:
+        date_str = get_pre_transact_date(today.strftime('%Y-%m-%d'))
+    #date_str = ndays_before.strftime('%Y-%m-%d')
     if argv > 1:
         date_str = sys.argv[1]
     logging.info("分析日期: %s", date_str)

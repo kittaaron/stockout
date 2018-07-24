@@ -10,13 +10,14 @@ from model.HistData import HistData
 from stock.report import risk
 from stock.realtime.realtime_data import get_real_time_quote_by_codes
 import datetime
+from utils.SMSUtil import sendMsg
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def analyze_codes_dd(codes, date_str):
+def analyze_codes_dd(codes, date_str, need_alert = False):
     """
     按股票代码和日期分析股票大单
     :param codes:
@@ -62,6 +63,8 @@ def analyze_codes_dd(codes, date_str):
         ratio = round(net / (stock.totals*1000000) , 5)
         if net <= -1000000:
             logging.info("%s %s %d 点比:%s 当前价 %s 实时涨跌 %s. 大单流出请注意 ------------ \n", code, name, net, ratio, price, p_change)
+            if need_alert:
+                sendMsg(code + " dadan out, please attention.")
         else:
             logging.info("%s %s %d 点比:%s 当前价 %s 实时涨跌 %s\n", code, name, net, ratio, price, p_change)
     logging.info("股票数量: %s 平均涨跌: %s", len(codes), avg_p_change / len(codes))

@@ -27,7 +27,7 @@ def get_select_codes():
 
 def analyse_selected_dd(date_str):
     codes = get_select_codes()
-    analyzer.analyze_codes_dd(codes, date_str)
+    analyzer.analyze_codes_dd(codes, date_str, False)
 
 
 if __name__ == '__main__':

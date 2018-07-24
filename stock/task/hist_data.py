@@ -11,6 +11,7 @@ from config import dbconfig
 import datetime
 from model.StockInfo import StockInfo
 from model.HistData import HistData
+from utils.holiday_util import get_pre_transact_date
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -121,9 +122,14 @@ if __name__ == '__main__':
     #dump_hist_data('2018-07-13', '2018-07-13')
     #exit(0)
     delta = datetime.timedelta(days=0)
+    current_hour = datetime.datetime.now().hour
     end_date = datetime.date.today()
-    start_date = end_date - delta
+    if current_hour < 15:
+        end_date -= datetime.timedelta(days=1)
 
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
-    dump_hist_data(start_date, end_date)
+    #start_date = end_date - delta
+
+    #start_date = start_date.strftime('%Y-%m-%d')
+    end_date_str = end_date.strftime('%Y-%m-%d')
+    #start_date_str = get_pre_transact_date(end_date_str)
+    dump_hist_data(end_date_str, end_date_str)
