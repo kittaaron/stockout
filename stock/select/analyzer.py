@@ -26,14 +26,12 @@ def analyze_codes_dd(codes, date_str, need_alert = False):
     """
     real_time_datas = get_real_time_quote_by_codes(codes)
     avg_p_change = 0
+    exclude_i = 0
     for code in codes:
         risk.risk_warning(code)
         stock = session.query(StockInfo).filter(StockInfo.code == code).first()
         name = stock.name
         df = ts.get_sina_dd(code, date_str)
-        if df is None:
-            logging.info("%s %s no dd", code, name)
-            continue
 
         p_change = None
         price = None
@@ -42,7 +40,14 @@ def analyze_codes_dd(codes, date_str, need_alert = False):
             price = float(serie.price)
             pre_close = float(serie.pre_close)
             p_change = round((price - pre_close) / pre_close * 100, 2)
-            avg_p_change += p_change
+            if p_change != -100:
+                avg_p_change += p_change
+            else:
+                exclude_i += 1
+
+        if df is None:
+            logging.info("%s %s no dd, 涨跌 %s", code, name, p_change)
+            continue
 
         bvolume = 0
         svolume = 0
@@ -67,7 +72,7 @@ def analyze_codes_dd(codes, date_str, need_alert = False):
                 sendMsg(code + " dadan out, please attention.")
         else:
             logging.info("%s %s %d 点比:%s 当前价 %s 实时涨跌 %s\n", code, name, net, ratio, price, p_change)
-    logging.info("股票数量: %s 平均涨跌: %s", len(codes), avg_p_change / len(codes))
+    logging.info("股票数量: %s 平均涨跌: %s", len(codes), avg_p_change / (len(codes) - exclude_i))
 
 
 def analyze_hist(codes, start_date_str, end_date_str):

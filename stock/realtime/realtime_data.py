@@ -53,6 +53,7 @@ def get_real_time_quote_by_code(code):
         b_sum = (b1_v + b2_v + b3_v + b4_v + b5_v)
         # 卖盘合计(手数)
         a_sum = (a1_v + a2_v + a3_v + a4_v + a5_v)
+
         logging.info("%6s 涨跌 %5s   买1 %14s   买2 %14s   买3 %14s   买4 %14s   买5 %14s 总计 %s",
                      name, p_change, str(b1_v) + "(" + b1_p + ")", str(b2_v) + "(" + b2_p + ")",
                      str(b3_v) + "(" + b3_p + ")", str(b4_v) + "(" + b4_p + ")", str(b5_v) + "(" + b5_p + ")", b_sum)

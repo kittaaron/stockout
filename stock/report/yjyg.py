@@ -14,7 +14,7 @@ session = Session()
 
 
 def get_yjyg():
-    df = ts.forecast_data(2018, 3)
+    df = ts.forecast_data(2018, 2)
     df.to_sql('yjyg', engine, if_exists='replace', index=False, index_label='code')
 
 

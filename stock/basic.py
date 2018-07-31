@@ -1,10 +1,10 @@
 __author__ = 'kittaaron'
 
+import tushare as ts
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_
 from sqlalchemy import desc
-import tushare as ts
 from model.StockInfo import StockInfo
 import logging
 from config.dbconfig import getConfig
@@ -20,6 +20,26 @@ def add(stock, autocommit=True):
     session.add(stock)
     if autocommit:
         session.commit()
+
+
+def get_by_code(code):
+    return session.query(StockInfo).filter(StockInfo.code == code).first()
+
+
+def get_by_codes(codes):
+    return session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
+
+
+def get_by_names(names):
+    return session.query(StockInfo).filter(StockInfo.name.in_(names)).all()
+
+
+def get_codes_by_names(names):
+    stocks = session.query(StockInfo).filter(StockInfo.name.in_(names)).all()
+    codes = []
+    for stock in stocks:
+        codes.append(stock.code)
+    return codes
 
 
 def get_industry_classified_dict():

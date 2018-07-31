@@ -9,8 +9,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import desc
 from config import dbconfig
 import datetime
-from model.Select import Select
+from model.SelectCandidate import SelectCandidate
 from stock.select import analyzer
+from stock.basic import get_codes_by_names
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -18,11 +19,12 @@ session = Session()
 
 
 def get_select_codes():
-    codes = []
-    selected_stocks = session.query(Select).filter().all()
-    for selected in selected_stocks:
-        codes.append(selected.code)
-    return codes
+    candidates = session.query(SelectCandidate).filter().all()
+    names = []
+
+    for candidate in candidates:
+        names.append(candidate.name)
+    return get_codes_by_names(names)
 
 
 def analyse_selected_dd(date_str):
