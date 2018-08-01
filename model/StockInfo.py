@@ -1,6 +1,7 @@
 __author__ = 'kittaaron'
 from sqlalchemy import Column, Integer, BigInteger, String, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base
+import json
 
 Base = declarative_base()
 
@@ -56,9 +57,9 @@ class StockInfo(Base):
     gpr = Column(DECIMAL)
     # 净利润率(%)
     npr = Column(DECIMAL)
-    # 总市值
+    #
     mktcap = Column(DECIMAL)
-    # 股东数量
+    #
     holders = Column(Integer)
     issz50 = Column(Integer)
     iszz500 = Column(Integer)
@@ -66,3 +67,17 @@ class StockInfo(Base):
     def __str__(self):
         msg = "code:" + self.code + ",name: " + self.name + ",pe: " + str(self.pe);
         return msg
+
+    class StockInfoEncoder(json.JSONEncoder):
+        def default(self, o):
+            return o.__dict__
+
+    def reprJSON(self):
+        return dict(code=self.code, name=self.name, industry=self.industry, industry_classified=self.industry_classified,
+                    pe=self.pe, totals=self.totals, area=self.area,
+                    bvps=self.bvps, concept_classified=self.concept_classified, esp=self.esp, fixedAssets=self.fixedAssets,
+                    gpr=self.gpr, holders=self.holders,
+                    liquidAssets=self.liquidAssets, mktcap=self.mktcap, npr=self.npr, outstanding=self.outstanding,
+                    pb=self.pb, perundp=self.perundp, profit=self.profit,
+                    reserved=self.reserved, reservedPerShare=self.reservedPerShare, rev=self.rev,
+                    timeToMarket=self.timeToMarket, totalAssets=self.totalAssets, undp=self.undp)

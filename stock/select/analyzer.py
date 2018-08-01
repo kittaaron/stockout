@@ -46,7 +46,7 @@ def analyze_codes_dd(codes, date_str, need_alert = False):
                 exclude_i += 1
 
         if df is None:
-            logging.info("%s %s no dd, 涨跌 %s", code, name, p_change)
+            logging.info("%s %s no dd, 当前价: %s 涨跌 %s", code, name, price, p_change)
             continue
 
         bvolume = 0

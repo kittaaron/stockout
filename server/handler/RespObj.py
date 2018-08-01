@@ -1,5 +1,6 @@
 __author__ = 'kittaaron'
 import json
+import decimal
 
 
 class RespObj(json.JSONEncoder):
@@ -16,9 +17,16 @@ class RespObj(json.JSONEncoder):
     def return_ok(obj):
         return RespObj(0, '', obj)
 
+    def reprJSON(self):
+        return dict(obj=self.obj, code=self.code, msg=self.msg)
+
 
 class RespObjEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, RespObj):
-            return float(o)
-        super(RespObjEncoder, self).default(o)
+    def default(self, obj):
+        if hasattr(obj, 'reprJSON'):
+            return obj.reprJSON()
+        elif isinstance(obj, decimal.Decimal):
+            return float(obj)
+
+        else:
+            return json.JSONEncoder.default(self, obj)

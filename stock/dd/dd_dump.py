@@ -130,9 +130,9 @@ if __name__ == '__main__':
         # 9点前dump前一天的，否则默认dump今天的
         endday -= datetime.timedelta(days=1)
 
-    #delta = datetime.timedelta(days=3)
+    delta = datetime.timedelta(days=4)
     #endday = datetime.datetime.strptime('2018-06-29', '%Y-%m-%d')
-    startday = endday
+    startday = endday - delta
     while startday <= endday:
         date_str = startday.strftime('%Y-%m-%d')
         logging.info("date: %s", date_str)
