@@ -40,3 +40,7 @@ class DaDanSts(Base):
               ",lhh_s_volume: " + str(self.lhh_s_volume) + ",lhh_net: " + str(self.lhh_net) + \
               ",ratio: " + str(self.ratio) + ",lhh_ratio: " + str(self.lhh_ratio)
         return msg
+
+    def reprJSON(self):
+        return dict(code=self.code, name=self.name, date=self.date, b_volume=self.b_volume,
+                    s_volume=self.s_volume, net=self.net, ratio=self.ratio)

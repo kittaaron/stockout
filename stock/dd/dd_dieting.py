@@ -82,6 +82,8 @@ def analyze_dieting_stocks(hist_data, date_str):
         if hist_data is None or len(latest_10_days_data) <= 0:
             logging.info("%s %s 获取最近10天数据出错", code, name)
         for date_data in latest_10_days_data:
+            if date_data.p_change is None:
+                continue
             if date_data.p_change <= RANGE:
                 i += 1
                 dieting_dates.append(date_data.date)
@@ -100,7 +102,6 @@ def analyze_dieting_stocks(hist_data, date_str):
                 logging.info("******************注意：可能撬板的来了 %s %s ***************", code, name)
 
         realtime_dd_analysis(code, name, date_str)
-
 
 
 def get_dieting_stocks(date_str):

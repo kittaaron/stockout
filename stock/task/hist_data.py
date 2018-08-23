@@ -126,16 +126,16 @@ if __name__ == '__main__':
     current_hour = datetime.datetime.now().hour
     end_date = datetime.date.today()
     if current_hour < 15:
-        end_date -= datetime.timedelta(days=1)
+        end_date = get_pre_transact_date(end_date.strftime('%Y-%m-%d'))
 
-    start_date = end_date - delta
+    start_date = end_date
 
-    start_date_str = start_date.strftime('%Y-%m-%d')
-    end_date_str = end_date.strftime('%Y-%m-%d')
+    #start_date_str = start_date.strftime('%Y-%m-%d')
+    #end_date_str = end_date.strftime('%Y-%m-%d')
 
     argv = len(sys.argv)
     if argv > 2:
-        start_date_str = sys.argv[1]
-        end_date_str = sys.argv[2]
+        start_date = sys.argv[1]
+        end_date = sys.argv[2]
     #start_date_str = get_pre_transact_date(end_date_str)
-    dump_hist_data(start_date_str, end_date_str)
+    dump_hist_data(start_date, end_date)

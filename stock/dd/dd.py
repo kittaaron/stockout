@@ -4,9 +4,8 @@ __author__ = 'kittaaron'
 import tushare as ts
 import config.logginconfig
 import logging
-from sqlalchemy import create_engine
+from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import desc
 from config import dbconfig
 import datetime
 from model.StockInfo import StockInfo
@@ -16,6 +15,31 @@ from model.DaDanSts import DaDanSts
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
+def get_ddsts_by_code_date(code, start_date_str, end_date_str):
+    """
+     取出某支股票，开始到截止日期的大单统计数据
+    :param date_str:
+    :return:
+    """
+    ddstss = session.query(DaDanSts).filter(and_(DaDanSts.code == code,
+                                                 DaDanSts.date >= start_date_str,
+                                                 DaDanSts.date <= end_date_str)).order_by(desc(DaDanSts.date)).all()
+    return ddstss
+
+
+def get_ddsts_by_date(date_str, order_by = None, limit = 20):
+    """
+     取出某日大单排名
+    :param date_str:
+    :return:
+    """
+    if limit > 100:
+        limit = 100
+    ddstss = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(
+        desc(DaDanSts.ratio if order_by == 'ratio' else DaDanSts.net)).limit(limit).all()
+    return ddstss
 
 
 def stock_dd_sts(code, name, date_str, sts_result, last_half_hour_sts_result):
@@ -47,7 +71,7 @@ def stock_dd_sts(code, name, date_str, sts_result, last_half_hour_sts_result):
 
 
 def get_dd():
-    #stocks = session.query(StockInfo).all()
+    stocks = session.query(StockInfo).all()
     # df = ts.get_stock_basics()
 
     end_date = datetime.date.today()
