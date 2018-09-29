@@ -58,8 +58,6 @@ def update_stock_basics():
     # get dataframe
     df = ts.get_stock_basics()
 
-    stockDict = {}
-
     industry_classified_dict = get_industry_classified_dict()
     concept_classified_dict = get_concept_classified_dict()
     today_all = get_today_all()
@@ -67,19 +65,21 @@ def update_stock_basics():
     sz50s = idx.get_sz50s()
     zz500s = idx.get_zz500s()
     cnt = 0
+    stocks_to_save = []
     for index, row in df.iterrows():
-        if row is None:
-            logging.error("index: %s is null", index)
-            continue
-        stockDict[index] = row
-        stock = session.query(StockInfo).filter_by(code=index).first()
-        if stock is None:
-            logging.info("code: %s not exist, new stock?", code)
+        if index is None or row is None:
+            logging.error("wrong data. index: %s, row: %s", index, row)
             continue
         # 股票代码
         code = index
         # 股票名称
         name = row['name']
+        stock = session.query(StockInfo).filter_by(code=index).first()
+        if stock is None:
+            logging.info("%s %s not exist, new stock?", code, name)
+            stock = StockInfo()
+        stock.code = code
+        stock.name = name
         # 股票行业
         stock.industry = str(row['industry'])
         if code in industry_classified_dict:
@@ -136,23 +136,21 @@ def update_stock_basics():
         stock.holders = row['holders']
         cnt += 1
         # print(index)
-        logging.info("start to save code: %s, idx: %d", stock.code, cnt)
+        logging.info("start to save  %s %s, idx: %d", code, name, cnt)
 
-        if stock.id == 1265:
-            logging.info("1265: %s", str(stock))
         if stock.industry == 'nan' or stock.area == 'nan':
             stock.industry = ''
             stock.area = ''
-            logging.info("outMarket? code: %s", stock.code)
+            logging.info("已退市? %s %s", code, name)
             continue
 
-        add(stock)
+        save(stock)
 
 
 def query_stock_order_by_pe():
     records = session.query(StockInfo).filter(StockInfo.pe != 0.00).order_by(StockInfo.pe).all()
     for stock in records:
-        logging.info("stock: %s", str(stock))
+        logging.info("stock: %s %s", stock.code, stock.name)
 
 
 if __name__ == '__main__':
