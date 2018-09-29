@@ -4,18 +4,11 @@ __author__ = 'kittaaron'
 import tushare as ts
 import config.logginconfig
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import and_
-from config import dbconfig
+from utils.db_utils import *
 import datetime
 from model.report.xsjj_model import xsjj_model
 from decimal import *
 from dateutil.relativedelta import relativedelta
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 def save_list(datas, autocommit=True):

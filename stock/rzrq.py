@@ -4,14 +4,8 @@ __author__ = 'kittaaron'
 import tushare as ts
 import config.logginconfig
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from config import dbconfig
+from utils.db_utils import *
 import datetime
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 def dump_rzrq():

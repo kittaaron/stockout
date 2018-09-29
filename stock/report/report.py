@@ -4,16 +4,10 @@ import tushare as ts
 import logging
 import config.logginconfig
 from model.report.ReportData import ReportData
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from config import dbconfig
 import math
 import datetime
 from dateutil.relativedelta import relativedelta
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+from utils.db_utils import *
 
 
 def isfloat(value):

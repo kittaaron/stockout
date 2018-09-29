@@ -129,8 +129,8 @@ def calc_pe_eps(code, name, stock):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '600230').all()
+    #stocks = session.query(StockInfo).all()
+    stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
     for row in stocks:
         if row is None:
             continue

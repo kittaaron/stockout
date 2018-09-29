@@ -1,26 +1,12 @@
 __author__ = 'kittaaron'
 
 import tushare as ts
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import and_
-from sqlalchemy import desc
 from model.StockInfo import StockInfo
 import logging
 from config.dbconfig import getConfig
 import config.logginconfig
 from stock import idx
-
-engine = create_engine(getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def add(stock, autocommit=True):
-    session.add(stock)
-    if autocommit:
-        session.commit()
-
+from utils.db_utils import *
 
 def get_by_code(code):
     return session.query(StockInfo).filter(StockInfo.code == code).first()

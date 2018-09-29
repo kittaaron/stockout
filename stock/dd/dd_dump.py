@@ -14,6 +14,7 @@ from model.DaDan import DaDan
 from model.DaDanSts import DaDanSts
 from utils.holiday_util import get_pre_transact_date
 from utils.holiday_util import is_holiday
+import sys
 
 engine = create_engine(dbconfig.getConfig('database', 'connURL'))
 Session = sessionmaker(bind=engine)
@@ -131,12 +132,20 @@ if __name__ == '__main__':
         # 9点前dump前一天的，否则默认dump今天的
         endday = datetime.datetime.strptime(get_pre_transact_date(endday.strftime('%Y-%m-%d')), '%Y-%m-%d')
 
-    delta = datetime.timedelta(days=4)
+    delta = datetime.timedelta(days=6)
     #endday = datetime.datetime.strptime('2018-06-29', '%Y-%m-%d')
     startday = endday - delta
+
+    argv = len(sys.argv)
+    if argv > 2:
+        startday = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
+        endday = datetime.datetime.strptime(sys.argv[2], '%Y-%m-%d')
+
+    logging.info("startday: %s, endday: %s", startday, endday)
     while startday <= endday:
         date_str = startday.strftime('%Y-%m-%d')
         if is_holiday(date_str):
+            startday += datetime.timedelta(days=1)
             continue
         logging.info("date: %s", date_str)
         dump_dd(date_str)

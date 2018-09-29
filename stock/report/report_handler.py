@@ -1,5 +1,6 @@
 # encoding:utf-8
 
+import config.logginconfig
 import logging
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
@@ -334,14 +335,15 @@ def handle_xjllb(code, name):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).all()
+    stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
     for row in stocks:
         if row is None:
             continue
         code = row.code
         name = row.name
         handle_zycwzb(code, name)
-        # handle_zcfzb(code, name)
-        #handle_cwbbzy(code, name)
-        #handle_lrb(code, name)
-        #handle_xjllb(code, name)
+        handle_zcfzb(code, name)
+        handle_cwbbzy(code, name)
+        handle_lrb(code, name)
+        handle_xjllb(code, name)
