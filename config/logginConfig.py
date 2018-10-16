@@ -3,7 +3,7 @@ import logging.config
 
 __author__ = 'kittaaron'
 
-log_filename = "logging.log"
+log_filename = "/Users/kittaaron/git/stockout/logging.log"
 logging.basicConfig(level=logging.DEBUG,
             format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S',

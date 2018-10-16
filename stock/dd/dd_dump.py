@@ -6,6 +6,7 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_
+from sqlalchemy import func
 import config.dbconfig as dbconfig
 import config.logginconfig
 import datetime
@@ -123,6 +124,12 @@ def dump_dd(date_str):
         dump_stock_dd_by_date(code, name, totals, date_str)
 
 
+def get_start_date():
+    max_date_indb = session.query(func.max(DaDanSts.date)).first()
+    max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
+    return datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)
+
+
 if __name__ == '__main__':
     starttime = datetime.datetime.now()
     hour = starttime.hour
@@ -132,9 +139,7 @@ if __name__ == '__main__':
         # 9点前dump前一天的，否则默认dump今天的
         endday = datetime.datetime.strptime(get_pre_transact_date(endday.strftime('%Y-%m-%d')), '%Y-%m-%d')
 
-    delta = datetime.timedelta(days=6)
-    #endday = datetime.datetime.strptime('2018-06-29', '%Y-%m-%d')
-    startday = endday - delta
+    startday = get_start_date()
 
     argv = len(sys.argv)
     if argv > 2:

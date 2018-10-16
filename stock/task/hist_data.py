@@ -7,6 +7,7 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_
+from sqlalchemy import func
 from config import dbconfig
 import datetime
 from model.StockInfo import StockInfo
@@ -32,21 +33,21 @@ def save_list(datas, autocommit=True):
 
 
 def build_by_hist_data(hist_data, serie):
-    hist_data.volume = serie.volume
-    hist_data.open = serie.open
-    hist_data.close = serie.close
-    hist_data.high = serie.high
-    hist_data.low = serie.low
-    hist_data.p_change = serie.p_change
-    hist_data.price_change = serie.price_change
-    hist_data.ma5 = serie.ma5
-    hist_data.ma10 = serie.ma10
-    hist_data.ma20 = serie.ma20
-    hist_data.v_ma5 = serie.v_ma5
-    hist_data.v_ma10 = serie.v_ma10
-    hist_data.v_ma20 = serie.v_ma20
+    hist_data.volume = float(serie.volume)
+    hist_data.open = float(serie.open)
+    hist_data.close = float(serie.close)
+    hist_data.high = float(serie.high)
+    hist_data.low = float(serie.low)
+    hist_data.p_change = float(serie.p_change)
+    hist_data.price_change = float(serie.price_change)
+    hist_data.ma5 = float(serie.ma5)
+    hist_data.ma10 = float(serie.ma10)
+    hist_data.ma20 = float(serie.ma20)
+    hist_data.v_ma5 = float(serie.v_ma5)
+    hist_data.v_ma10 = float(serie.v_ma10)
+    hist_data.v_ma20 = float(serie.v_ma20)
     if 'turnover' in serie:
-        hist_data.turnover = serie.turnover
+        hist_data.turnover = float(serie.turnover)
 
 
 def get_pre_day_data(code, data_str, candidate_datas):
@@ -60,14 +61,14 @@ def build_by_k_data(hist_data, serie, pre_day_data):
     :param pre_day_data:  用来计算涨跌幅<当天价减前一天收盘价>
     :return:
     '''
-    hist_data.volume = serie.volume
-    hist_data.open = serie.open
-    hist_data.close = serie.close
-    hist_data.high = serie.high
-    hist_data.low = serie.low
+    hist_data.volume = float(serie.volume)
+    hist_data.open = float(serie.open)
+    hist_data.close = float(serie.close)
+    hist_data.high = float(serie.high)
+    hist_data.low = float(serie.low)
     if pre_day_data is not None:
         price_change = round(hist_data.close - pre_day_data.close, 2)
-        hist_data.price_change = price_change
+        hist_data.price_change = float(price_change)
         hist_data.p_change = round((price_change / pre_day_data.close) * 100, 2)
 
 
@@ -118,24 +119,23 @@ def dump_hist_data(start_date, end_date):
         save_list(stock_hist_data)
         logging.info("%s %s %s~%s hist data save ok", code, name, start_date, end_date)
 
+def get_start_date():
+    max_date_indb = session.query(func.max(HistData.date)).first()
+    max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
+    return (datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
 
 if __name__ == '__main__':
-    #dump_hist_data('2018-07-13', '2018-07-13')
-    #exit(0)
+    start_date = get_start_date()
     delta = datetime.timedelta(days=0)
     current_hour = datetime.datetime.now().hour
     end_date = datetime.date.today()
     if current_hour < 15:
         end_date = get_pre_transact_date(end_date.strftime('%Y-%m-%d'))
 
-    start_date = end_date
-
-    #start_date_str = start_date.strftime('%Y-%m-%d')
-    #end_date_str = end_date.strftime('%Y-%m-%d')
-
     argv = len(sys.argv)
     if argv > 2:
         start_date = sys.argv[1]
         end_date = sys.argv[2]
-    #start_date_str = get_pre_transact_date(end_date_str)
+    logging.info("%s %s", start_date, end_date)
     dump_hist_data(start_date, end_date)
