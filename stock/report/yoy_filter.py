@@ -16,56 +16,46 @@ from model.RealTimePEEPS import RealTimePEEPS
 import math
 from model.StockInfo import StockInfo
 from model.report.Zycwzb import Zycwzb
+from model.PorYoySts import PorYoySts
 from model.report.Zcfzb import Zcfzb
 from model.report.Cwbbzy import Cwbbzy
 from model.report.Lrb import Lrb
 from model.report.Xjllb import Xjllb
+from utils.db_utils import *
 
 
 """
-找出近几年主营业务收入、利润连续增长的股票
+找出近几年主营业务收入连续增长的股票
 """
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
-
 
 def yoy_filter(code, name, stock):
     logging.info("handle %s %s", code, name)
     zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
 
-    if zycwzbs is None:
-        logging.info("%s no zycwzb")
-        return
-
-    today = datetime.date.today()
-    total_delta = datetime.timedelta(days=500)
-    three_years_ago = today - total_delta
-    three_years_ago = three_years_ago.strftime('%Y-%m-%d')
-
-    zycwzb_dict = {}
+    pre_por = 0
+    por_grow_cnt = 0
+    por_grow_10_cnt = 0
+    por_grow_20_cnt = 0
     for zycwzb in zycwzbs:
-        zycwzb_dict[zycwzb.date] = zycwzb
-
-    all_por_yoy_ok = True
-    for zycwzb in zycwzbs:
-        if zycwzb.por_yoy is None:
+        current_por = float(zycwzb.por)
+        if pre_por == 0:
+            pre_por = current_por
             continue
-        report_date = zycwzb.date
-        if report_date <= three_years_ago:
-            continue
-        if zycwzb.por_yoy <= 1.00:
-            all_por_yoy_ok = False
-            break
-    if all_por_yoy_ok is True:
-        logging.info("%s %s por_yoy ok.", code, name)
+        grow = current_por - pre_por
+        if grow > 0:
+            por_grow_cnt += 1
+        if current_por > pre_por * 1.1:
+            por_grow_10_cnt += 1
+        if current_por > pre_por * 1.2:
+            por_grow_20_cnt += 1
+    porYoySts = session.query(PorYoySts).filter(and_(PorYoySts.code == code)).first()
+    if porYoySts is None:
+        porYoySts = PorYoySts(code = code, name = name)
+    porYoySts.por_grow_cnt = por_grow_cnt
+    porYoySts.por_grow_10_cnt = por_grow_10_cnt
+    porYoySts.por_grow_20_cnt = por_grow_20_cnt
+    save(porYoySts)
+    logging.info("%s %s %s %s", name, por_grow_cnt, por_grow_10_cnt, por_grow_20_cnt)
 
 
 if __name__ == '__main__':

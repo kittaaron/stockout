@@ -73,7 +73,8 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 
 def dump_hist_data(start_date, end_date):
-    stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).all()
+    stocks = session.query(StockInfo).filter(StockInfo.code=="600682").all()
 
     i = 1
     for row in stocks:
