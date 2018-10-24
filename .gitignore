@@ -1,5 +1,8 @@
 .idea
 logging
 **.log
+*.sql.data
+*.zip
+*.dump.sql
 venv
 __pycache__

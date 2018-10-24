@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.22)
 # Database: stockout
-# Generation Time: 2018-09-29 03:49:32 +0000
+# Generation Time: 2018-10-23 07:20:11 +0000
 # ************************************************************
 
 
@@ -363,6 +363,24 @@ CREATE TABLE `new_stocks` (
   `limit` double DEFAULT NULL,
   `funds` double DEFAULT NULL,
   `ballot` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table por_yoy_sts
+# ------------------------------------------------------------
+
+CREATE TABLE `por_yoy_sts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) DEFAULT NULL,
+  `name` varchar(16) DEFAULT NULL,
+  `por_grow_cnt` int(11) DEFAULT NULL,
+  `por_grow_10_cnt` int(11) DEFAULT NULL,
+  `por_grow_20_cnt` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_grow_cnt` (`por_grow_cnt`),
+  KEY `idx_grow_10_cnt` (`por_grow_10_cnt`),
+  KEY `idx_grow_20_cnt` (`por_grow_20_cnt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

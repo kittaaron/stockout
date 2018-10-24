@@ -86,7 +86,7 @@ def update_stock_basics():
             stock.industry_classified = industry_classified_dict[code]
         if code in concept_classified_dict:
             stock.concept_classified = concept_classified_dict[code]
-        if code in today_all:
+        if code in today_all and today_all[code] is not None:
             stock.mktcap = today_all[code]
 
         if code in sz50s:
