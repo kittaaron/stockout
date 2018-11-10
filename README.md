@@ -5,7 +5,7 @@
 + 最好是 python3.5+, 在笔者mac+python3.7的环境上运行正常
 
 #### 依赖
-+ tushare, sqlalchemy, libxml, tornado等python library
++ tushare, sqlalchemy, libxml, tornado,scrapy等python library
 
 #### 各目录包含功能简要说明
 + utils 通用函数、工具类等
@@ -25,7 +25,7 @@
 ![实时交易](./docs/images/1.jpeg)
 ![实时大单](./docs/images/2.jpeg)
 ![按最近4次报表算的实时pe\eps](./docs/images/3.jpeg)
-    
+​    
 #### 后续规划
 + 增加港股、美股的数据
 + http接口完善
