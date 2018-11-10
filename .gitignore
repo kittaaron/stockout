@@ -6,3 +6,4 @@ logging
 *.dump.sql
 venv
 __pycache__
+.DS_Store
