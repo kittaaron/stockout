@@ -6,27 +6,26 @@ import decimal
 class RespObj(json.JSONEncoder):
     code = 0
     msg = ''
-    obj = None
+    data = None
 
-    def __init__(self, code, msg, obj):
+    def __init__(self, code, msg, data):
         self.code = code
         self.msg = msg
-        self.obj = obj
+        self.data = data
 
     @staticmethod
-    def return_ok(obj):
-        return RespObj(0, '', obj)
+    def return_ok(data):
+        return RespObj(0, '', data)
 
     def reprJSON(self):
-        return dict(obj=self.obj, code=self.code, msg=self.msg)
+        return dict(data=self.data, code=self.code, msg=self.msg)
 
 
 class RespObjEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if hasattr(obj, 'reprJSON'):
-            return obj.reprJSON()
-        elif isinstance(obj, decimal.Decimal):
-            return float(obj)
-
+    def default(self, data):
+        if hasattr(data, 'reprJSON'):
+            return data.reprJSON()
+        elif isinstance(data, decimal.Decimal):
+            return float(data)
         else:
-            return json.JSONEncoder.default(self, obj)
+            return json.JSONEncoder.default(self, data)

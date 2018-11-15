@@ -22,10 +22,7 @@ from model.report.Lrb import Lrb
 from model.report.Xjllb import Xjllb
 from model.ExtraZB import ExtraZB
 from decimal import Decimal
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+from utils.db_utils import *
 
 
 def save(data, autocommit=True):

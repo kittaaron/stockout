@@ -20,16 +20,7 @@ from model.report.Zcfzb import Zcfzb
 from model.report.Cwbbzy import Cwbbzy
 from model.report.Lrb import Lrb
 from model.report.Xjllb import Xjllb
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
+from utils.db_utils import *
 
 
 def get_latest_record_date():

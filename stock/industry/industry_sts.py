@@ -16,16 +16,7 @@ import config.logginconfig
 from stock import idx
 import datetime
 import string
-
-engine = create_engine(getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def add(stock, autocommit=True):
-    session.add(stock)
-    if autocommit:
-        session.commit()
+from utils.db_utils import *
 
 
 def get_industry_list():
@@ -95,7 +86,7 @@ def save_industry_top(stockinfo, rank):
     # 重点关注
     old.industry_top = "龙头排名" + str(rank)
     old.industry = stockinfo.industry
-    add(old)
+    save(old)
 
 
 def save_blue_chip(stockinfo, blue_chip_flag):

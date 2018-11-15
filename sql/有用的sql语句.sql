@@ -11,3 +11,17 @@ select ds.*,h.open,h.close,h.p_change from (select * from dd_sts where date in (
 
 # 查询某日某股票大单明细
 select * from dd where date in ('2018-07-12') and code in ('300090')
+
+
+
+select b.*,s.industry,s.industry_classified,s.mktcap,s.timeToMarket,rpe.pe1,rpe.price,rpe.eval_price,rpe.eval_price_ratio,rpe.std_devi from buffett b
+	join stockinfo s on b.code = s.code
+ join realtime_pe_eps rpe on b.code = rpe.code
+  where rpe.eval_price_ratio > 1 and rpe.std_devi <= 200 and s.industry != '银行' and s.industry not like '%地产%'
+	order by rpe.eval_price_ratio desc;
+
+select rpe.*,s.industry, s.industry_classified from realtime_pe_eps rpe join stockinfo s on rpe.code = s.code where rpe.pe1 > 0 and rpe.koufei_pe > 0 and rpe.koufei_pe <= 25  and s.industry != '银行' and s.industry not like '%地产%' order by rpe.koufei_pe asc;
+
+select count(*) from realtime_pe_eps where eval_price_ratio > 1;
+
+select * from realtime_pe_eps where eval_price_ratio > 1 and std_devi <= 100 order by eval_price_ratio desc;

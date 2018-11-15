@@ -13,16 +13,7 @@ from dateutil.relativedelta import relativedelta
 from model.HistData import HistData
 from model.RealTimePE import RealTimePE
 import math
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
+from utils.db_utils import *
 
 
 def analyze():

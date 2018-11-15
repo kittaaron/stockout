@@ -12,10 +12,7 @@ from model.report.Cwbbzy import Cwbbzy
 from model.report.Lrb import Lrb
 from model.report.Xjllb import Xjllb
 from model.StockInfo import StockInfo
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+from utils.db_utils import *
 
 
 def save(data, autocommit=True):
@@ -335,8 +332,8 @@ def handle_xjllb(code, name):
 
 
 if __name__ == '__main__':
-    #stocks = session.query(StockInfo).all()
-    stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
+    stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
     for row in stocks:
         if row is None:
             continue

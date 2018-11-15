@@ -10,10 +10,7 @@ from config import dbconfig
 import math
 import datetime
 from dateutil.relativedelta import relativedelta
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+from utils.db_utils import *
 
 
 def get_year_reports(codes, years):

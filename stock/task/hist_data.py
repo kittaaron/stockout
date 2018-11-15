@@ -4,26 +4,14 @@ __author__ = 'kittaaron'
 import tushare as ts
 import config.logginconfig
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import and_
-from sqlalchemy import func
+from sqlalchemy import *
 from config import dbconfig
 import datetime
 from model.StockInfo import StockInfo
 from model.HistData import HistData
 from utils.holiday_util import get_pre_transact_date
 import sys
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
+from utils.db_utils import *
 
 
 def save_list(datas, autocommit=True):
@@ -74,7 +62,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 def dump_hist_data(start_date, end_date):
     stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code=="600682").all()
+    # stocks = session.query(StockInfo).filter(StockInfo.code=="600682").all()
 
     i = 1
     for row in stocks:
@@ -91,9 +79,26 @@ def dump_hist_data(start_date, end_date):
         hist_data = session.query(HistData).filter(
             and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).first()
 
+        mindatedata = session.query(HistData.code, func.min(HistData.date)).filter(HistData.code == code).group_by(
+            HistData.code).first()
+        maxdatedata = session.query(HistData.code, func.max(HistData.date)).filter(HistData.code == code).group_by(
+            HistData.code).first()
+        mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
+        maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
+
+
         i += 1
         if hist_data is not None:
-            continue
+            if mindate < start_date < maxdate < end_date:
+                start_date = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
+                    '%Y-%m-%d')
+            elif start_date < mindate < end_date < maxdate:
+                end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime(
+                    '%Y-%m-%d')
+            else:
+                logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
+                continue
+        logging.info("开始dump %s %s %s~%s", code, name, start_date, end_date)
 
         df = ts.get_hist_data(code, start=start_date, end=end_date)
         stock_hist_data = []
@@ -120,19 +125,23 @@ def dump_hist_data(start_date, end_date):
         save_list(stock_hist_data)
         logging.info("%s %s %s~%s hist data save ok", code, name, start_date, end_date)
 
+
 def get_start_date():
     max_date_indb = session.query(func.max(HistData.date)).first()
     max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
-    return (datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+    return max_date_indb if max_date_indb == datetime.date.today().strftime('%Y-%m-%d') \
+        else(datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 
 if __name__ == '__main__':
     start_date = get_start_date()
     delta = datetime.timedelta(days=0)
     current_hour = datetime.datetime.now().hour
-    end_date = datetime.date.today()
+    today = datetime.date.today()
+    end_date = today.strftime('%Y-%m-%d')
     if current_hour < 15:
-        end_date = get_pre_transact_date(end_date.strftime('%Y-%m-%d'))
+        end_date = get_pre_transact_date(end_date)
 
     argv = len(sys.argv)
     if argv > 2:

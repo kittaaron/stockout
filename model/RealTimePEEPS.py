@@ -24,6 +24,9 @@ class RealTimePEEPS(Base):
     eps3 = Column(DECIMAL)
     eps4 = Column(DECIMAL)
     price = Column(DECIMAL)
+    eval_price = Column(DECIMAL)
+    eval_price_ratio = Column(DECIMAL)
+    std_devi = Column(DECIMAL)
 
     latest_report_date = Column(String)
     date = Column(String)

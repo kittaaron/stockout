@@ -7,10 +7,7 @@ from config import dbconfig
 from stock.report import xsjj
 import datetime
 from dateutil.relativedelta import relativedelta
-
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+from utils.db_utils import *
 
 
 def risk_warning(code):
