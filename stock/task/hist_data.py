@@ -147,5 +147,8 @@ if __name__ == '__main__':
     if argv > 2:
         start_date = sys.argv[1]
         end_date = sys.argv[2]
+    if start_date > end_date:
+        logging.warning("开始日期不能大于结束日期")
+        exit(0)
     logging.info("%s %s", start_date, end_date)
     dump_hist_data(start_date, end_date)
