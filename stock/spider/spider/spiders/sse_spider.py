@@ -17,6 +17,10 @@ import datetime
 from model.report.AnnouncePub import AnnouncePub
 from sqlalchemy import and_
 
+"""
+爬取上证财报
+"""
+
 save_dir = "/Users/kittaaron/Downloads/report/"
 
 
@@ -29,7 +33,7 @@ class SseSpider(scrapy.Spider):
         sse_url = "http://query.sse.com.cn/security/stock/queryCompanyStatementNew.do"
 
         stocks = session.query(StockInfo).all()
-        #stocks = session.query(StockInfo).filter(StockInfo.code=="601933").all()
+        #stocks = session.query(StockInfo).filter(StockInfo.code=="000651").all()
         end_date = datetime.date.today().strftime('%Y-%m-%d')
         start_date = str(datetime.datetime.now().year - 1) + "-01-01"
 

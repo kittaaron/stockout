@@ -6,6 +6,9 @@ import config.logginconfig
 import logging
 from utils import db_utils
 
+"""
+获取新股
+"""
 
 def new_stocks():
     df = ts.new_stocks()

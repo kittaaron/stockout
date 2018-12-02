@@ -10,6 +10,10 @@ from model.report.xsjj_model import xsjj_model
 from decimal import *
 from dateutil.relativedelta import relativedelta
 
+"""
+限售解禁数据
+"""
+
 
 def save_list(datas, autocommit=True):
     session.add_all(datas)
@@ -18,7 +22,8 @@ def save_list(datas, autocommit=True):
 
 
 def get_xsjj_by_code_time(code, start_date, end_date):
-    xsjj_datas = session.query(xsjj_model).filter(and_(xsjj_model.code == code, xsjj_model.date >= start_date, xsjj_model.date <= end_date)).all()
+    xsjj_datas = session.query(xsjj_model).filter(
+        and_(xsjj_model.code == code, xsjj_model.date >= start_date, xsjj_model.date <= end_date)).all()
     return xsjj_datas
 
 

@@ -14,7 +14,7 @@ import locale
 from sqlalchemy import *
 
 """
-爬取上交所股票财报
+爬取深证市场数据
 """
 
 save_dir = "/Users/kittaaron/Downloads/report/"

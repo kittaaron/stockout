@@ -24,6 +24,7 @@ class RealTimePEEPS(Base):
     eps3 = Column(DECIMAL)
     eps4 = Column(DECIMAL)
     price = Column(DECIMAL)
+    predict_pe = Column(Integer)
     eval_price = Column(DECIMAL)
     eval_price_ratio = Column(DECIMAL)
     std_devi = Column(DECIMAL)
@@ -38,3 +39,21 @@ class RealTimePEEPS(Base):
     def __str__(self):
         msg = self.code + " " + self.name
         return msg
+
+    def reprJSON(self):
+        ret = {}
+        for item in self.__dict__.items():
+            key = item[0]
+            val = item[1]
+            if key.startswith("_"):
+                continue
+            ret[key] = val
+        return ret
+        """
+        return dict(code=self.code, name=self.name, koufei_pe=self.koufei_pe, pe1=self.pe1,
+                    pe2=self.pe2, pe3=self.pe3, pe4=self.pe4,
+                    koufei_eps=self.koufei_eps, eps1=self.eps1,
+                    eps2=self.eps2, eps3=self.eps3, eps4=self.eps4, price=self.price,
+                    eval_price=self.eval_price, eval_price_ratio=self.eval_price_ratio, std_devi=self.std_devi,
+                    latest_report_date=self.latest_report_date, date=self.date)
+        """

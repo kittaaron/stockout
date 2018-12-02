@@ -26,7 +26,11 @@ def dd_detail(code):
     total_delta = datetime.timedelta(days=0)
     start_date = end_date - total_delta
     date_str = start_date.strftime('%Y-%m-%d')
+    logging.info("get dd %s %s", code, date_str)
     df = ts.get_sina_dd(code, date_str)
+    if df is None:
+        logging.info("%s %s get none", code, date_str)
+        return
 
     bvolume = svolume = 0
     for index, serie in df.iterrows():

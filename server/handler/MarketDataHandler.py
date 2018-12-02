@@ -29,8 +29,9 @@ class SZMarketDataHandler(BaseHandler):
     def get(self):
         start_date = "2005-01-03"
         end_date = datetime.date.today().strftime('%Y-%m-%d')
-        zbtype = zbmcs.index("股票平均市盈率") + 1
-        market_datas = get_sz_market_data(zbtype, start_date, end_date)
+        zbtypes = [zbmcs.index("股票平均市盈率") + 1, zbmcs.index("市场总成交金额") + 1,
+                   zbmcs.index("股票平均换手率") + 1, zbmcs.index("股票总市值") + 1]
+        market_datas = get_sz_market_data(zbtypes, start_date, end_date)
 
         self.write(super().return_json(market_datas))
 

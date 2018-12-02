@@ -3,6 +3,9 @@
 from stock.report.report_handler import *
 import sys
 
+"""
+    临时文件,逗号连接的入参股票代码，把已经下载好的财务报表数据，插入到数据库
+"""
 
 if __name__ == '__main__':
     codes = []

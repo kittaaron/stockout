@@ -65,6 +65,7 @@ def download_one(url, code):
 
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code =='002943').all()
     for row in stocks:
         if row is None:
             continue

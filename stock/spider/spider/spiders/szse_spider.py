@@ -25,8 +25,8 @@ class SzseSpider(scrapy.Spider):
     name = "szse"
 
     def start_requests(self):
-        #stocks = session.query(StockInfo).all()
-        stocks = session.query(StockInfo).filter(StockInfo.code=="000333").all()
+        stocks = session.query(StockInfo).all()
+        #stocks = session.query(StockInfo).filter(StockInfo.code=="000651").all()
 
         for row in stocks:
             if row is None:

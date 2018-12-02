@@ -110,7 +110,10 @@
 @import "components/lists";
 @import "components/preview";
 @import "components/tables";
+@import "components/pagination";
 
 /*-------------------------------------------------------------------*/
 /* === Landing screens === */
 @import "landing-screens/auth";
+
+[v-cloak]{ display: none; }

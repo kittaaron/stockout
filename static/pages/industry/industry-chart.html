@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Purple Admin</title>
   <!-- plugins:css -->
-  <link rel="stylesheet" href="vendors/iconfonts/mdi/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
   <!-- endinject -->
   <!-- inject:css -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../../css/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="images/favicon.png" />
+  <link rel="shortcut icon" href="../../images/favicon.png" />
 </head>
 <body>
   <div class="container-scroller">
@@ -21,15 +21,15 @@
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a class="navbar-brand brand-logo" href="index.html" style="text-align: left; margin-left: 2rem;"><span>stockout</span></a>
-        <a class="navbar-brand brand-logo"><img style="height: 66px;width: 66px" src="./images/open_qr_code.jpg" alt="logo"></a>
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="../../images/logo-mini.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo"><img style="height: 66px;width: 66px" src="../../images/open_qr_code.jpg" alt="logo"></a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-stretch">
         <ul class="navbar-nav navbar-nav-right">
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
               <div class="nav-profile-img">
-                <img src="images/faces/avatar.jpg" alt="image">
+                <img src="../../images/faces/avatar.jpg" alt="image">
                 <span class="availability-status online"></span>             
               </div>
               <div class="nav-profile-text">
@@ -64,46 +64,21 @@
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
-          <!--<li class="nav-item nav-profile">
-            <a href="#" class="nav-link">
-              <div class="nav-profile-image">
-                <img src="images/faces/face1.jpg" alt="profile">
-                <span class="login-status online"></span> &lt;!&ndash;change to offline or busy as needed&ndash;&gt;
-              </div>
-              <div class="nav-profile-text d-flex flex-column">
-                <span class="font-weight-bold mb-2">David Grey. H</span>
-                <span class="text-secondary text-small">Project Manager</span>
-              </div>
-              <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
-            </a>
-          </li>-->
           <li class="nav-item">
-            <a class="nav-link" onclick="javascript:return false;" href="index.html">
+            <a class="nav-link" href="../../index.html">
               <span class="menu-title">指标数据</span>
               <i class="mdi mdi-home menu-icon"></i>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="pages/industry/industry-chart.html">
+            <a class="nav-link" onclick="javascript:return false;" href="/static/pages/industry/industry-chart.html">
               <span class="menu-title">行业数据</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/static/pages/tables/basic-table.html">
-              <span class="menu-title">peranking</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/static/pages/tables/roeranking.html">
-              <span class="menu-title">roeranking</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/static/pages/tables/netflowranking.html">
-              <span class="menu-title">netflowranking</span>
+              <span class="menu-title">ranking</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
           </li>
@@ -118,23 +93,11 @@
               <div class="card">
                 <div class="card-body">
                   <div class="clearfix">
-                  </div>
-                  <div id="sh_market_data_chart" style="position:relative;width:96%;height:360px">加载中...</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <div class="clearfix">
                     <!--<h4 class="card-title float-left">{{name}}</h4>
                     <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>-->
                   </div>
                   <!--<canvas id="visit-sale-chart" class="mt-4"></canvas>-->
-                  <div id="sz_market_data_chart" style="position:relative;width:96%;height:360px">加载中...</div>
+                  <div id="steel_price_chart" style="position:relative;width:96%;height:360px">加载中...</div>
                 </div>
               </div>
             </div>
@@ -159,19 +122,19 @@
   <!-- container-scroller -->
 
   <!-- plugins:js -->
-  <script src="vendors/js/vendor.bundle.base.js"></script>
-  <script src="vendors/js/vendor.bundle.addons.js"></script>
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <script src="../../vendors/js/vendor.bundle.addons.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page-->
   <!-- End plugin js for this page-->
   <!-- inject:js -->
-  <script src="js/off-canvas.js"></script>
-  <script src="js/misc.js"></script>
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/misc.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
   <!--<script src="js/dashboard.js"></script>-->
-  <script src="js/echarts.min.js"></script>
-  <script src="js/index.js"></script>
+  <script src="../../js/echarts.min.js"></script>
+  <script src="../../js/industry-chart.js"></script>
   <!-- End custom js for this page-->
 </body>
 

@@ -19,17 +19,17 @@ def get_sh_market_data(market, productType, start_date, end_date):
 def get_sz_market_data(zbtype, start_date, end_date):
     records = session.query(MarketDataSZ).filter(and_(MarketDataSZ.date >= start_date,
                                                       MarketDataSZ.date <= end_date,
-                                                      MarketDataSZ.zbtype == zbtype)).order_by(MarketDataSZ.date).all()
+                                                      MarketDataSZ.zbtype.in_(zbtype))).order_by(MarketDataSZ.date).all()
     for recordI in records:
         zbtype = recordI.zbtype if recordI.zbtype else 0
         recordI.zbmc = zbmcs[int(zbtype) - 1]
     return records
 
 
-def get_steel_price_hist(type, start_date, end_date):
+def get_steel_price_hist(types, start_date, end_date):
     records = session.query(SteelPriceHist).filter(and_(SteelPriceHist.date >= start_date,
                                                         SteelPriceHist.date <= end_date,
-                                                        SteelPriceHist.type == type)).order_by(SteelPriceHist.date).all()
+                                                        SteelPriceHist.type == types)).order_by(SteelPriceHist.date).all()
     return records
 
 

@@ -15,18 +15,6 @@ from model.StockInfo import StockInfo
 from utils.db_utils import *
 
 
-def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
-
-
-def save_all(datas, autocommit=True):
-    session.add_all(datas)
-    if autocommit:
-        session.commit()
-
-
 def build_zycwzb_obj(obj, val):
     obj.eps = val[1] if val[1] != '--' else 0
     obj.bvps = val[2] if val[2] != '--' else 0
@@ -77,7 +65,7 @@ def handle_zycwzb(code, name):
             build_zycwzb_obj(obj, val)
             records.append(obj)
 
-        save_all(records)
+        save_list(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -149,7 +137,7 @@ def handle_zcfzb(code, name):
             obj = Zcfzb(code=code, name=name, date=date)
             build_zcfzb_obj(obj, val)
             records.append(obj)
-        save_all(records)
+        save_list(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -213,7 +201,7 @@ def handle_cwbbzy(code, name):
             obj = Cwbbzy(code=code, name=name, date=date)
             build_cwbbzy_obj(obj, val)
             records.append(obj)
-        save_all(records)
+        save_list(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -265,7 +253,7 @@ def handle_lrb(code, name):
             obj = Lrb(code=code, name=name, date=date)
             build_lrb_obj(obj, val)
             records.append(obj)
-        save_all(records)
+        save_list(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -325,7 +313,7 @@ def handle_xjllb(code, name):
             obj = Xjllb(code=code, name=name, date=date)
             build_xjllb_obj(obj, val)
             records.append(obj)
-        save_all(records)
+        save_list(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -333,7 +321,7 @@ def handle_xjllb(code, name):
 
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code == '002943').all()
     for row in stocks:
         if row is None:
             continue

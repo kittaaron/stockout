@@ -18,7 +18,7 @@ from model.HKStock import HKStock
 from sqlalchemy import and_
 
 """
-爬取港交所股票数据
+从网易财经，爬取港交所股票数据
 """
 
 save_dir = "/Users/kittaaron/Downloads/report/"

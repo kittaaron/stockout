@@ -14,7 +14,7 @@ from utils.db_utils import *
 from sqlalchemy import *
 
 """
-爬取上交所股票财报
+爬取上交所大盘、PE等历史数据
 """
 
 save_dir = "/Users/kittaaron/Downloads/report/"

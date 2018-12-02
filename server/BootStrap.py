@@ -1,5 +1,8 @@
 import tornado.ioloop
 from tornado.web import *
+
+from server.handler.AnalyzerHandler import *
+from server.handler.ReportHandler import *
 from server.handler.StockInfoHandler import StockInfoHandler
 from server.handler.DDHandler import DDHandler
 from server.handler.DDTopHandler import DDTopHandler
@@ -22,11 +25,15 @@ def make_app():
         (r"/get_market_data/sh", SHMarketDataHandler),
         (r"/get_market_data/sz", SZMarketDataHandler),
         (r"/get_steel_price_hist", SteelPriceHistHandler),
+        (r"/get_ranking_pe", PEEPSHandler),
+        (r"/get_ranking_wroe", RankingROEHandler),
+        (r"/get_report_list", ReportDetailHandler),
+        (r"/get_ranking_netflow", NetFlowHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),
         #template_path=os.path.join(os.path.dirname(__file__), "../static", "../static/pages"),
-        static_path=os.path.join(os.path.dirname(__file__), "../static"),
+        static_path=os.path.join(os.path.dirname(__file__), "../static/"),
         #template_path=os.path.join(os.path.dirname(__file__), "../static"),
         xsrf_cookies=True)
 

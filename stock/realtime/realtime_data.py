@@ -8,6 +8,9 @@ from config import dbconfig
 
 from utils.db_utils import *
 
+"""
+实时数据
+"""
 
 def dump_today_all():
     df = ts.get_today_all()
@@ -70,4 +73,5 @@ def get_real_time_quote_by_codes(codes):
 
 
 if __name__ == '__main__':
-    pass
+    codes = ['002677']
+    get_real_time_quote_by_codes(codes)

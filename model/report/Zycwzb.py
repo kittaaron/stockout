@@ -74,4 +74,11 @@ class Zycwzb(Base):
             return o.__dict__
 
     def reprJSON(self):
-        return dict(code=self.code, name=self.name)
+        ret = {}
+        for item in self.__dict__.items():
+            key = item[0]
+            val = item[1]
+            if key.startswith("_"):
+                continue
+            ret[key] = val
+        return ret

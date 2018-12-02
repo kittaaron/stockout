@@ -62,7 +62,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 def dump_hist_data(start_date, end_date):
     stocks = session.query(StockInfo).all()
-    # stocks = session.query(StockInfo).filter(StockInfo.code=="600682").all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code=="002597").all()
 
     i = 1
     for row in stocks:
@@ -86,18 +86,17 @@ def dump_hist_data(start_date, end_date):
         mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
         maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
 
-
         i += 1
-        if hist_data is not None:
-            if mindate < start_date < maxdate < end_date:
-                start_date = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
-                    '%Y-%m-%d')
-            elif start_date < mindate < end_date < maxdate:
-                end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime(
-                    '%Y-%m-%d')
-            else:
-                logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
-                continue
+
+        if mindate < start_date < maxdate < end_date or maxdate < start_date:
+            start_date = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
+                '%Y-%m-%d')
+        elif start_date < mindate < end_date < maxdate:
+            end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime(
+                '%Y-%m-%d')
+        else:
+            logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
+            continue
         logging.info("开始dump %s %s %s~%s", code, name, start_date, end_date)
 
         df = ts.get_hist_data(code, start=start_date, end=end_date)
@@ -106,6 +105,7 @@ def dump_hist_data(start_date, end_date):
             logging.info("%s %s get_hist_data 没有取到历史数据, 开始从get_k_data获取", code, name)
             df = ts.get_k_data(code, start=start_date, end=end_date)
             if df is None or df.empty is True:
+                logging.info("%s %s get_k_data 没有取到历史数据.", code, name)
                 continue
             pre_day_data = None
             # 因为取出来的DataFrame正好是按时间排序的，取前一天数据时可以直接用

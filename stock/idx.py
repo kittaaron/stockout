@@ -5,6 +5,9 @@ import logging
 from config import dbconfig
 from utils.db_utils import *
 
+"""
+获取指数
+"""
 
 def get_sz50s():
     df = ts.get_sz50s()

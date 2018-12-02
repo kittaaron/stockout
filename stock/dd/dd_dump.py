@@ -28,6 +28,7 @@ def save_list(datas, autocommit=True):
 def dump_stock_dd_by_date(code, name, totals, date_str):
     dds = session.query(DaDanSts).filter(and_(DaDan.code == code, DaDan.date == date_str)).first()
     if dds is not None:
+        logging.info("%s %s 已有数据", code, name)
         return
 
     # 如果查到没有大单数据，也应该往数据库写一条假数据，保证下次不再查
@@ -66,6 +67,7 @@ def dump_stock_dd_by_date(code, name, totals, date_str):
                 fhhsvolume += serie.volume
 
     save_list(da_dan_list)
+    logging.info("%s %s 大意数据保存OK", code, name)
     net = bvolume - svolume
     lhh_net = lhhbvolume - lhhsvolume
     fhh_net = fhhbvolume - fhhsvolume
@@ -94,11 +96,12 @@ def dump_dd(date_str):
     dump_dd dump当天的大单数据，如果数据库已有，则不获取
     :return:
     '''
-    codes = ['603843', '002219']
+    codes = ['002677']
     # code = '603843' # 正平股份
     # code = '002219' # 恒康医疗
 
-    stocks = session.query(StockInfo).all()
+    stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
+    #stocks = session.query(StockInfo).all()
 
     i = 1
     for row in stocks:

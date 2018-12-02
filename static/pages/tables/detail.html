@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>ranking</title>
+  <title>Purple Admin</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
@@ -66,46 +66,12 @@
     <!-- partial -->
     <div class="container-fluid page-body-wrapper" id="content">
       <!-- partial:../../partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/static/index.html">
-              <span class="menu-title">指标数据</span>
-              <i class="mdi mdi-home menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/static/pages/industry/industry-chart.html">
-              <span class="menu-title">行业数据</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" onclick="javascript:return false;" href="/static/pages/tables/basic-table.html">
-              <span class="menu-title">peranking</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/static/pages/tables/roeranking.html">
-              <span class="menu-title">roeranking</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/static/pages/tables/netflowranking.html">
-              <span class="menu-title">netflowranking</span>
-              <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-          </li>
-        </ul>
-      </nav>
       <!-- partial -->
-      <div class="main-panel">
+      <div class="main-panel" style="width: 100%">
         <div class="content-wrapper">
           <div class="page-header">
-            <h3 class="page-title">
-              按PE排名
+            <h3 class="page-title" v-cloak>
+              {{code}} - {{stockname}}
             </h3>
           </div>
           <div class="row">
@@ -115,78 +81,94 @@
                   <table class="table table-striped">
                     <thead>
                       <tr>
-                        <th>
+                        <!--<th>
                           code
                         </th>
                         <th>
                           name
-                        </th>
-                        <th>
-                          行业(备选)
-                        </th>
-                        <th>
-                          市值
-                        </th>
-                        <th>
-                          价格
-                        </th>
-                        <th>
-                          扣非PE
-                        </th>
-                        <th>
-                          PE(估算)
-                        </th>
-                        <th>
-                          扣非EPS
-                        </th>
-                        <th>
-                          EPS
-                        </th>
-                        <th>
-                          前一年PE
-                        </th>
-                        <th>
-                          前二年PE
-                        </th>
-                        <th>
-                          前三年PE
-                        </th>
-                        <!--<th>
-                          前一年eps
-                        </th>
-                        <th>
-                          前二年eps
-                        </th>
-                        <th>
-                          前三年eps
                         </th>-->
                         <th>
-                          净流动资产
+                          date
                         </th>
                         <th>
-                          流动净资产
+                          wroe
+                        </th>
+                        <th>
+                          eps
+                        </th>
+                        <th>
+                          每股经营现金净额
+                        </th>
+                        <th>
+                          主营收入
+                        </th>
+                        <th>
+                          主营利润
+                        </th>
+                        <th>
+                          营业利润
+                        </th>
+                        <th>
+                          投资收益
+                        </th>
+                        <th>
+                          净利润
+                        </th>
+                        <th>
+                          扣非净利润
+                        </th>
+                        <th>
+                          经营现金净额
+                        </th>
+                        <th>
+                          总资产
+                        </th>
+                        <th>
+                          流动资产
+                        </th>
+                        <th>
+                          总负债
+                        </th>
+                        <th>
+                          流动负债
+                        </th>
+                        <th>
+                          股东权益
+                        </th>
+                        <th>
+                          净利同比
+                        </th>
+                        <th>
+                          主营收入同比
+                        </th>
+                        <th>
+                          主营利润同比
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in ranking_pe_list" v-bind:bgcolor="val.mktcap < 100 ? '#6495ED' : ''">
-                        <td>{{val.code}}</td>
-                        <td>{{val.name}}</td>
-                        <td>{{val.industry + "(" + val.industry_classified + ")"}}</td>
-                        <td>{{val.mktcap}}</td>
-                        <td>{{val.price}}</td>
-                        <td>{{val.koufei_pe}}</td>
-                        <td>{{val.pe1}}</td>
-                        <td>{{val.koufei_eps}}</td>
-                        <td>{{val.eps1}}</td>
-                        <td>{{val.pe2}}</td>
-                        <td>{{val.pe3}}</td>
-                        <td>{{val.pe4}}</td>
-                        <!--<td>{{val.eps2}}</td>
-                        <td>{{val.eps3}}</td>
-                        <td>{{val.eps4}}</td>-->
-                        <td>{{val.flow_sub_total}}</td>
-                        <td>{{val.flow_sub_flow}}</td>
+                      <tr v-cloak v-for="val in report_list" v-bind:bgcolor="val.date.indexOf('12-31') >= 0 ? '#6495ED' : ''">
+                        <!--<td>{{val.code}}</td>
+                        <td>{{val.name}}</td>-->
+                        <td>{{val.date}}</td>
+                        <td>{{val.wroe}}</td>
+                        <td>{{val.eps}}</td>
+                        <td>{{val.epcf}}</td>
+                        <td>{{val.por}}</td>
+                        <td>{{val.pop}}</td>
+                        <td>{{val.profit}}</td>
+                        <td>{{val.invest_income}}</td>
+                        <td>{{val.net_profit}}</td>
+                        <td>{{val.npad}}</td>
+                        <td>{{val.cffoa}}</td>
+                        <td>{{val.total_assets}}</td>
+                        <td>{{val.flow_assets}}</td>
+                        <td>{{val.total_debts}}</td>
+                        <td>{{val.flow_debts}}</td>
+                        <td>{{val.sheq}}</td>
+                        <td>{{val.net_yoy}}</td>
+                        <td>{{val.por_yoy}}</td>
+                        <td>{{val.pop_yoy}}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -194,7 +176,6 @@
               </div>
             </div>
           </div>
-          <div class="row" style="margin-top:-2rem"><div class="col-sm-12 col-md-5"><div class="dataTables_info" id="order-listing_info" role="status" aria-live="polite">Showing 1 to 10 of 10 entries</div></div><div class="col-sm-12 col-md-7"><div class="dataTables_paginate paging_simple_numbers" id="order-listing_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="order-listing_previous"><a href="#" aria-controls="order-listing" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="order-listing" data-dt-idx="1" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item next disabled" id="order-listing_next"><a href="#" aria-controls="order-listing" data-dt-idx="2" tabindex="0" class="page-link">Next</a></li></ul></div></div></div>
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
@@ -224,7 +205,8 @@
   <!-- endinject -->
   <!-- Custom js for this page-->
   <script src="../../js/vue.min.js"></script>
-  <script src="../../js/basictable.js"></script>
+  <script src="../../js/vue-router.js"></script>
+  <script src="../../js/detail.js"></script>
   <!-- End custom js for this page-->
 </body>
 
