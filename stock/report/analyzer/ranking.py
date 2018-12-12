@@ -47,7 +47,7 @@ def get_pe_ranking_datas(page, pageSize):
     :return:
     """
     page = 0 if not page else page
-    pageSize = 10 if not pageSize else pageSize
+    pageSize = 200 if not pageSize else pageSize
     offset = page * pageSize
     realtime_pe_eps = session.query(RealTimePEEPS).filter(and_(RealTimePEEPS.koufei_pe > 0, RealTimePEEPS.pe1 > 0))\
         .order_by(RealTimePEEPS.koufei_pe).limit(pageSize).offset(offset).all()
@@ -65,6 +65,7 @@ def get_pe_ranking_datas(page, pageSize):
         if realtime_pe_ep.code in buffetts_map:
             realtime_pe_ep.flow_sub_total = buffetts_map[realtime_pe_ep.code].flow_sub_total
             realtime_pe_ep.flow_sub_flow = buffetts_map[realtime_pe_ep.code].flow_sub_flow
+            realtime_pe_ep.pb = buffetts_map[realtime_pe_ep.code].pb
         #if not (realtime_pe_ep.industry == '普钢' or realtime_pe_ep.industry == '银行' or realtime_pe_ep.industry == '特种钢'):
         ret.append(realtime_pe_ep)
     logging.info("ret cnt: %s", len(ret))

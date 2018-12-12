@@ -15,6 +15,7 @@ class Buffett(Base):
     name = Column(String)
     flow_sub_total = Column(DECIMAL)
     flow_sub_flow = Column(DECIMAL)
+    pb = Column(DECIMAL)
 
     def __int__(self, code, name):
         self.code = code

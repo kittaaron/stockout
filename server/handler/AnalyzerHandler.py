@@ -12,10 +12,13 @@ class PEEPSHandler(BaseHandler):
         pass
 
     def get(self):
-        page = 0
-        pageSize = 200
-        datas = get_pe_ranking_datas(page, pageSize)
-        self.write(super().return_json(datas))
+        page = int(self.get_query_argument("page", '0'))
+        page_size = int(self.get_query_argument("page_size", '200'))
+        datas = get_pe_ranking_datas(page, page_size)
+        total_row = get_total_wroe_ranking_row()
+        logging.info("total_row: %s", total_row)
+        total_page = math.ceil(total_row / int(page_size)) + 1
+        self.write(super().return_pager_resp(list=datas, total_row=total_row, total_page=total_page))
 
 
 class RankingROEHandler(BaseHandler):
@@ -23,9 +26,9 @@ class RankingROEHandler(BaseHandler):
         pass
 
     def get(self):
-        page = self.get_query_argument("page", '0')
-        page_size = self.get_query_argument("page_size", '200')
-        datas = get_wroe_ranking_datas(int(page), int(page_size))
+        page = int(self.get_query_argument("page", '0'))
+        page_size = int(self.get_query_argument("page_size", '200'))
+        datas = get_wroe_ranking_datas(page, page_size)
         total_row = get_total_wroe_ranking_row()
         logging.info("total_row: %s", total_row)
         total_page = math.ceil(total_row / int(page_size)) + 1

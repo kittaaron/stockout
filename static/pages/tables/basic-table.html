@@ -15,6 +15,7 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/pagination.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
 </head>
@@ -131,6 +132,9 @@
                           价格
                         </th>
                         <th>
+                          pb
+                        </th>
+                        <th>
                           扣非PE
                         </th>
                         <th>
@@ -175,6 +179,7 @@
                         <td>{{val.industry + "(" + val.industry_classified + ")"}}</td>
                         <td>{{val.mktcap}}</td>
                         <td>{{val.price}}</td>
+                        <td>{{val.pb}}</td>
                         <td>{{val.koufei_pe}}</td>
                         <td>{{val.pe1}}</td>
                         <td>{{val.koufei_eps}}</td>
@@ -194,7 +199,9 @@
               </div>
             </div>
           </div>
-          <div class="row" style="margin-top:-2rem"><div class="col-sm-12 col-md-5"><div class="dataTables_info" id="order-listing_info" role="status" aria-live="polite">Showing 1 to 10 of 10 entries</div></div><div class="col-sm-12 col-md-7"><div class="dataTables_paginate paging_simple_numbers" id="order-listing_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="order-listing_previous"><a href="#" aria-controls="order-listing" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="order-listing" data-dt-idx="1" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item next disabled" id="order-listing_next"><a href="#" aria-controls="order-listing" data-dt-idx="2" tabindex="0" class="page-link">Next</a></li></ul></div></div></div>
+          <vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>
+          <div class="row">
+          </div>
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
@@ -224,6 +231,7 @@
   <!-- endinject -->
   <!-- Custom js for this page-->
   <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-paginate.min.js"></script>
   <script src="../../js/basictable.js"></script>
   <!-- End custom js for this page-->
 </body>

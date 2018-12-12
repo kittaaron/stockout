@@ -41,6 +41,8 @@ def calc_buffet_result(code, name, stock):
     flow_assets = zycwzb.flow_assets
     total_debts = zycwzb.total_debts
     flow_debts = zycwzb.flow_debts
+    total_assets = zycwzb.total_assets
+    sheq = zycwzb.sheq
 
     mktcap = stock.mktcap
 
@@ -51,9 +53,10 @@ def calc_buffet_result(code, name, stock):
     logging.info("%s %s 流动资产:%s 总负债:%s 流动负债: %s, 总市值:%s", code, name, flow_assets, total_debts, flow_debts, mktcap)
     old_safe = session.query(Buffett).filter(and_(Buffett.code == code)).first()
     if old_safe is None:
-        old_safe = Buffett(code = code, name = name)
+        old_safe = Buffett(code=code, name=name)
     old_safe.flow_sub_total = round((flow_assets - total_debts) / mktcap, 2)
     old_safe.flow_sub_flow = round((flow_assets - flow_debts) / mktcap, 2)
+    old_safe.pb = round(mktcap / sheq, 2)
 
     save(old_safe)
 

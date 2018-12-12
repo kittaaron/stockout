@@ -17,7 +17,7 @@ var vm = new Vue({
         'vue-pagination': Vue.Pagination
     },
     methods: {
-        get_ranking_wroe_list: function(currpage) {
+        get_ranking_wroe_list: function() {
             var that = this;
             $.ajax({
                 type: "GET",
