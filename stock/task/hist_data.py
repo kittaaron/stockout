@@ -62,6 +62,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 def dump_hist_data(start_date, end_date):
     stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code == '601636').all()
 
     i = 1
     for row in stocks:
@@ -84,6 +85,7 @@ def dump_hist_data(start_date, end_date):
             HistData.code).first()
         mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
         maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
+        logging.info("%s 已dump数据 %s至%s", code, mindate, maxdate)
 
         i += 1
 
@@ -93,6 +95,8 @@ def dump_hist_data(start_date, end_date):
         elif start_date < mindate < end_date < maxdate:
             end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime(
                 '%Y-%m-%d')
+        elif end_date < mindate:
+            pass
         else:
             logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
             continue

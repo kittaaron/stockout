@@ -10,12 +10,18 @@ session = Session()
 
 
 def save(data, autocommit=True):
-    session.add(data)
-    if autocommit:
-        session.commit()
+    try:
+        session.add(data)
+        if autocommit:
+            session.commit()
+    except Exception as e:
+        session.close()
 
 
 def save_list(datas, autocommit=True):
-    session.add_all(datas)
-    if autocommit:
-        session.commit()
+    try:
+        session.add_all(datas)
+        if autocommit:
+            session.commit()
+    except Exception as e:
+        session.close()
