@@ -38,3 +38,13 @@ class HistData(Base):
         msg = self.code + " " + self.name + ", 开盘: " + str(self.open) + ",收盘(手): " + str(self.close) + \
               ",涨跌: " + str(self.p_change) + ",换手率: " + str(self.turnover)
         return msg
+
+    def reprJSON(self):
+        ret = {}
+        for item in self.__dict__.items():
+            key = item[0]
+            val = item[1]
+            if key.startswith("_"):
+                continue
+            ret[key] = val
+        return ret

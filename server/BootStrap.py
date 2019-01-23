@@ -6,6 +6,7 @@ from server.handler.ReportHandler import *
 from server.handler.StockInfoHandler import StockInfoHandler
 from server.handler.DDHandler import DDHandler
 from server.handler.DDTopHandler import DDTopHandler
+from server.handler.HistDataHandler import PriceListHandler
 from server.handler.IndexHandler import *
 from server.handler.MarketDataHandler import *
 
@@ -29,6 +30,7 @@ def make_app():
         (r"/get_ranking_wroe", RankingROEHandler),
         (r"/get_report_list", ReportDetailHandler),
         (r"/get_ranking_netflow", NetFlowHandler),
+        (r"/get_price_list/(.*)", PriceListHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),

@@ -76,9 +76,6 @@ def dump_hist_data(start_date, end_date):
         # name = row['name']
         logging.info("%s %s 开始处理 %d", code, name, i)
 
-        hist_data = session.query(HistData).filter(
-            and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).first()
-
         mindatedata = session.query(HistData.code, func.min(HistData.date)).filter(HistData.code == code).group_by(
             HistData.code).first()
         maxdatedata = session.query(HistData.code, func.max(HistData.date)).filter(HistData.code == code).group_by(
@@ -135,6 +132,12 @@ def get_start_date():
 
     return max_date_indb if max_date_indb == datetime.date.today().strftime('%Y-%m-%d') \
         else(datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+
+def get_price_list(code, start_date, end_date):
+    hist_data = session.query(HistData).filter(
+        and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).all()
+    return hist_data
 
 
 if __name__ == '__main__':
