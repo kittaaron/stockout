@@ -168,10 +168,10 @@ def get_netflow_ranking_datas(page, pageSize):
 def get_reports_detail(code, start_date, end_date):
     start_date = start_date if start_date else '2009-12-31'
     end_date = end_date if end_date else get_latest_record_date()
-    realtimepeepss = session.query(Zycwzb).filter(and_(Zycwzb.code == code,
+    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code,
                                                        Zycwzb.date >= start_date,
                                                        Zycwzb.date <= end_date)).order_by(desc(Zycwzb.date)).all()
-    return realtimepeepss
+    return zycwzbs
 
 
 if __name__ == '__main__':

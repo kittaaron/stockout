@@ -29,6 +29,7 @@ def make_app():
         (r"/get_ranking_pe", PEEPSHandler),
         (r"/get_ranking_wroe", RankingROEHandler),
         (r"/get_report_list", ReportDetailHandler),
+        (r"/get_report_chart_list", ReportDetailHandler),
         (r"/get_ranking_netflow", NetFlowHandler),
         (r"/get_price_list/(.*)", PriceListHandler),
     ],

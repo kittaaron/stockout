@@ -13,6 +13,14 @@ class Select(Base):
     code = Column(String)
     # 股票名称
     name = Column(String)
+
+    safe_pe = Column(Integer)
+
+    fair_pe = Column(Integer)
+
+    danger_pe = Column(Integer)
+
+    predict_net = Column(Integer)
     # 股票名称
     cc = Column(Integer)
 

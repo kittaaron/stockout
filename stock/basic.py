@@ -28,6 +28,34 @@ def get_codes_by_names(names):
     return codes
 
 
+def get_all_stocks():
+    stocks = session.query(StockInfo).all()
+    return stocks
+
+
+def get_stocks_map(stocks):
+    ret = {}
+    for stock in stocks:
+        ret[stock.code] = stock
+    return ret
+
+
+def get_all_codes():
+    codes = []
+    stocks = get_all_stocks()
+    for stock in stocks:
+        codes.append(stock.code)
+    return codes
+
+
+def get_all_stocks_map():
+    ret = {}
+    stocks = get_all_stocks()
+    for stock in stocks:
+        ret[stock.code] = stock
+    return ret
+
+
 def get_industry_classified_dict():
     icdf = ts.get_industry_classified()
     industry_classified_dict = icdf.to_dict(orient='records')

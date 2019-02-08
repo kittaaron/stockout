@@ -71,7 +71,7 @@
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title" v-cloak>
-              {{code}} - {{stockname}}
+
             </h3>
           </div>
 
@@ -82,6 +82,30 @@
                   <div class="clearfix">
                   </div>
                   <div id="price_chart" style="position:relative;width:96%;height:360px">加载中...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="clearfix">
+                  </div>
+                  <div id="report_chart" style="position:relative;width:96%;height:360px">加载中...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="clearfix">
+                  </div>
+                  <div id="yoy_chart" style="position:relative;width:96%;height:360px">加载中...</div>
                 </div>
               </div>
             </div>
@@ -114,6 +138,7 @@
   <script src="../../js/off-canvas.js"></script>
   <script src="../../js/misc.js"></script>
   <!-- endinject -->
+  <script src="../../js/echarts.min.js"></script>
   <!-- Custom js for this page-->
   <script src="../../js/vue.min.js"></script>
   <script src="../../js/vue-router.js"></script>

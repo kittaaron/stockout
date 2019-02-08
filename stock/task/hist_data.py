@@ -6,12 +6,15 @@ import config.logginconfig
 import logging
 from sqlalchemy import *
 from config import dbconfig
+from stock.basic import *
 import datetime
 from model.StockInfo import StockInfo
 from model.HistData import HistData
 from utils.holiday_util import get_pre_transact_date
 import sys
 from utils.db_utils import *
+from model.report.Zycwzb import Zycwzb
+from stock.report.report_utils import *
 
 
 def save_list(datas, autocommit=True):
@@ -134,9 +137,44 @@ def get_start_date():
         else(datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 
+def getzycwzbs_map(zycwzbs):
+    ret = {}
+    for zycwzb in zycwzbs:
+        ret[zycwzb.date] = zycwzb
+    return ret
+
+
 def get_price_list(code, start_date, end_date):
     hist_data = session.query(HistData).filter(
         and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).all()
+
+    stockinfo = get_by_code(code)
+    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+    zycwzbs_map = getzycwzbs_map(zycwzbs)
+    for hist_data_i in hist_data:
+        price_date = hist_data_i.date
+        price = hist_data_i.close
+        report_date = get_latest_record_date_by_date(price_date)
+        pre_year_report_date = get_pre_yearreport_date(report_date)
+        static_eps = 0
+        dynamic_eps = 0
+        if pre_year_report_date in zycwzbs_map:
+            ## 计算前一年的净利润，再乘以增长率，得出动态市盈指标
+            static_eps = round((zycwzbs_map[pre_year_report_date].net_profit / (stockinfo.totals * 10000)), 2)
+        if report_date in zycwzbs_map and zycwzbs_map[report_date].net_yoy is not None:
+            dynamic_eps = round(static_eps * zycwzbs_map[report_date].net_yoy, 2)
+        static_pe = round(price / static_eps, 2) if static_eps != 0 else 0
+        dynamic_pe = round(price / dynamic_eps, 2) if dynamic_eps != 0 else 0
+        logging.info("日期: %s, report_date: %s, pre_year_report_date: %s, price: %s, 静态eps: %s, 静态pe: %s, 动态eps: %s, 动态pe: %s",
+                     price_date, report_date, pre_year_report_date, price, static_eps, static_pe, dynamic_eps, dynamic_pe)
+        hist_data_i.static_pe8 = round(static_eps * 8, 2)
+        hist_data_i.static_pe12 = round(static_eps * 12, 2)
+        hist_data_i.static_pe16 = round(static_eps * 16, 2)
+        hist_data_i.static_pe20 = round(static_eps * 20, 2)
+        hist_data_i.dynamic_pe8 = round(dynamic_eps * 8, 2)
+        hist_data_i.dynamic_pe12 = round(dynamic_eps * 12, 2)
+        hist_data_i.dynamic_pe16 = round(dynamic_eps * 16, 2)
+        hist_data_i.dynamic_pe20 = round(dynamic_eps * 20, 2)
     return hist_data
 
 

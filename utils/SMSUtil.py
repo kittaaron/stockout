@@ -3,7 +3,7 @@
 
 from twilio.rest import Client
 
-account_sid = "twilio账号"
+account_sid = "AC4fdaa08e24fc9c5d7462558a03031a20"
 auth_token = "twilio32位长token"
 
 client = Client(account_sid, auth_token)

@@ -16,6 +16,24 @@ class ReportDetailHandler(BaseHandler):
         if code is None:
             self.write(super().return_json(None))
             return
+        start_date = '2007-01-31'
+        end_date = get_latest_record_date()
+        datas = get_reports_detail(code, start_date, end_date)
+
+        self.write(super().return_json(datas))
+
+
+class ReportChartHandler(BaseHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self):
+        page = 0
+        pageSize = 10
+        code = self.get_argument('code', None)
+        if code is None:
+            self.write(super().return_json(None))
+            return
         start_date = '2009-12-31'
         end_date = get_latest_record_date()
         datas = get_reports_detail(code, start_date, end_date)
