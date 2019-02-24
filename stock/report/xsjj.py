@@ -16,13 +16,13 @@ from dateutil.relativedelta import relativedelta
 
 
 def save_list(datas, autocommit=True):
-    session.add_all(datas)
+    getSession().add_all(datas)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def get_xsjj_by_code_time(code, start_date, end_date):
-    xsjj_datas = session.query(xsjj_model).filter(
+    xsjj_datas = getSession().query(xsjj_model).filter(
         and_(xsjj_model.code == code, xsjj_model.date >= start_date, xsjj_model.date <= end_date)).all()
     return xsjj_datas
 

@@ -8,6 +8,8 @@ import config.logginconfig
 from stock import idx
 from utils.db_utils import *
 
+session = Session()
+
 def get_by_code(code):
     return session.query(StockInfo).filter(StockInfo.code == code).first()
 

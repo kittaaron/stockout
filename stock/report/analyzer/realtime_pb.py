@@ -18,6 +18,9 @@ from model.report.Zycwzb import Zycwzb
 from utils.db_utils import *
 
 
+session = getSession()
+
+
 def calc_pb(code, name, stock):
     logging.info("handle %s %s", code, name)
     report_max_date = session.query(func.max(Zycwzb.date)).filter(Zycwzb.code == code).first()

@@ -30,7 +30,7 @@ from utils.db_utils import *
 
 def yoy_filter(code, name, stock):
     logging.info("handle %s %s", code, name)
-    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+    zycwzbs = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
 
     pre_por = 0
     por_grow_cnt = 0
@@ -48,7 +48,7 @@ def yoy_filter(code, name, stock):
             por_grow_10_cnt += 1
         if current_por > pre_por * 1.2:
             por_grow_20_cnt += 1
-    porYoySts = session.query(PorYoySts).filter(and_(PorYoySts.code == code)).first()
+    porYoySts = getSession().query(PorYoySts).filter(and_(PorYoySts.code == code)).first()
     if porYoySts is None:
         porYoySts = PorYoySts(code = code, name = name)
     porYoySts.por_grow_cnt = por_grow_cnt
@@ -59,7 +59,7 @@ def yoy_filter(code, name, stock):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).all()
     for row in stocks:
         if row is None:
             continue

@@ -72,7 +72,7 @@ def realtime_dd(date_str):
     实时获取当天大单数据，不存到DB，直接内存统计并打印
     :return:
     '''
-    stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).all()
 
     i = 1
     sts_list = []

@@ -16,7 +16,7 @@ from utils.db_utils import *
 
 
 def get_select_codes():
-    selected_stocks = session.query(Select).filter().all()
+    selected_stocks = getSession().query(Select).filter().all()
     codes = []
 
     for selected in selected_stocks:
@@ -25,7 +25,7 @@ def get_select_codes():
 
 
 def get_all_select():
-    selected_stocks = session.query(Select).filter().all()
+    selected_stocks = getSession().query(Select).filter().all()
     return selected_stocks
 
 

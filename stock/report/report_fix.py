@@ -13,7 +13,7 @@ if __name__ == '__main__':
         codes = sys.argv[1].split(",")
     logging.info("%s", codes)
     for code in codes:
-        stock = session.query(StockInfo).filter(StockInfo.code == code).first()
+        stock = getSession().query(StockInfo).filter(StockInfo.code == code).first()
         if stock is None:
             continue
         name = stock.name

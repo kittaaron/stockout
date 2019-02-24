@@ -33,7 +33,7 @@ def analyze_zhangting_stocks(hist_data, date_str):
         name = data.name
         i = 0
         dieting_dates = []
-        latest_10_days_data = session.query(HistData).filter(
+        latest_10_days_data = getSession().query(HistData).filter(
             and_(HistData.code == code, HistData.date <= date_str, HistData.date >= start_time_str)).all()
         if hist_data is None or len(latest_10_days_data) <= 0:
             logging.info("%s %s 获取最近10天数据出错", code, name)
@@ -44,7 +44,7 @@ def analyze_zhangting_stocks(hist_data, date_str):
                 i += 1
                 dieting_dates.append(date_data.date)
         # 当日大单数据分析.
-        dd_sts = session.query(DaDanSts).filter(and_(DaDanSts.code == code, DaDanSts.date == date_str)).first()
+        dd_sts = getSession().query(DaDanSts).filter(and_(DaDanSts.code == code, DaDanSts.date == date_str)).first()
         if dd_sts is None:
             logging.info("%s %s 涨停天数 %d, 日期: %s 无大单数据", code, name, i, str(dieting_dates))
         else:
@@ -63,7 +63,7 @@ def analyze_next_day_info(hist_datas, next_date_str):
     total_change = 0
     for hist_data in hist_datas:
         codes.append(hist_data.code)
-    next_day_infos = session.query(HistData).filter(
+    next_day_infos = getSession().query(HistData).filter(
         and_(HistData.date == next_date_str, HistData.code.in_(codes))).all()
     next_day_dict = {}
     for next_day_info in next_day_infos:
@@ -88,7 +88,7 @@ def get_zhangting_stocks(date_str, next_date_str):
     :return:
     '''
     # 取出某日期跌幅 >= 9%的股票
-    hist_datas = session.query(HistData).filter(
+    hist_datas = getSession().query(HistData).filter(
         and_(HistData.date == date_str, HistData.p_change >= RANGE)).all()
 
     if hist_datas is None or len(hist_datas) <= 0:
@@ -102,7 +102,7 @@ def get_zhangting_stocks(date_str, next_date_str):
         codes = []
         for data in hist_datas:
             codes.append(data.code)
-        sorted_dd_sts = session.query(DaDanSts).filter(
+        sorted_dd_sts = getSession().query(DaDanSts).filter(
         and_(DaDanSts.code.in_(codes), DaDanSts.date == date_str)).order_by(DaDanSts.s_volume).all()
         analyze_zhangting_stocks(hist_datas, date_str)
         for dd_sts in sorted_dd_sts:

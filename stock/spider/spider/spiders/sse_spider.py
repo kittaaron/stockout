@@ -32,8 +32,8 @@ class SseSpider(scrapy.Spider):
         #sse_url = 'http://www.sse.com.cn/js/common/stocks/new/%s.js'
         sse_url = "http://query.sse.com.cn/security/stock/queryCompanyStatementNew.do"
 
-        stocks = session.query(StockInfo).all()
-        #stocks = session.query(StockInfo).filter(StockInfo.code=="000651").all()
+        stocks = getSession().query(StockInfo).all()
+        #stocks = getSession().query(StockInfo).filter(StockInfo.code=="000651").all()
         end_date = datetime.date.today().strftime('%Y-%m-%d')
         start_date = str(datetime.datetime.now().year - 1) + "-01-01"
 
@@ -109,7 +109,7 @@ class SseSpider(scrapy.Spider):
             file_suffix = bulletin_file_url[bulletin_file_url.rfind("."):]
 
             if '度报告' in bulletin_title:
-                announce_record = session.query(AnnouncePub).filter(and_(AnnouncePub.code == code,
+                announce_record = getSession().query(AnnouncePub).filter(and_(AnnouncePub.code == code,
                                                                 AnnouncePub.bulletin_year == bulletin_year,
                                                                 AnnouncePub.title == bulletin_title)).first()
                 if announce_record is None:

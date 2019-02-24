@@ -120,13 +120,13 @@ class HKSESpider(scrapy.Spider):
             name = dataI['NAME']
             self.log("获取到数据 %s, %s 市值: %s, 净利润: %s, eps: %s pe: %s" % (code, name, dataI['MARKET_CAPITAL'], dataI['FINANCEDATA']['NET_PROFIT'], dataI['EPS'], dataI['PE']))
 
-            oldstock = session.query(HKStock).filter(and_(HKStock.code == code,
+            oldstock = getSession().query(HKStock).filter(and_(HKStock.code == code,
                                                                  HKStock.date == data_date)).first()
             if oldstock is None:
                 oldstock = HKStock(code=code, name=name, date=data_date)
             build_stockinfo(oldstock, dataI)
-            save(oldstock)
             self.log("保存 %s 成功" % oldstock)
+            save(oldstock)
 
     def err_callback(self, response):
         self.log("response: %s" % response.value.response.body.decode('utf8'))

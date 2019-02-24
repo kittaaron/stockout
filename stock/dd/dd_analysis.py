@@ -26,9 +26,9 @@ session = Session()
 
 
 def save(data, autocommit=True):
-    session.add(data)
+    getSession().add(data)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def to_dict(pre_four_days_data):
@@ -41,14 +41,14 @@ def to_dict(pre_four_days_data):
 def handle_one(data, date_str, index, fhh_index, lhh_index, pre_tran_date, pre_two_tran_date, pre_three_tran_date,
                pre_four_tran_date):
     # 后四天的涨跌数据
-    day_data = session.query(HistData).filter(and_(HistData.code == data.code, HistData.date == date_str)).first()
-    pre_day_data = session.query(HistData).filter(
+    day_data = getSession().query(HistData).filter(and_(HistData.code == data.code, HistData.date == date_str)).first()
+    pre_day_data = getSession().query(HistData).filter(
         and_(HistData.code == data.code, HistData.date == pre_tran_date)).first()
-    pre_two_day_data = session.query(HistData).filter(
+    pre_two_day_data = getSession().query(HistData).filter(
         and_(HistData.code == data.code, HistData.date == pre_two_tran_date)).first()
-    pre_three_day_data = session.query(HistData).filter(
+    pre_three_day_data = getSession().query(HistData).filter(
         and_(HistData.code == data.code, HistData.date == pre_three_tran_date)).first()
-    pre_four_day_data = session.query(HistData).filter(
+    pre_four_day_data = getSession().query(HistData).filter(
         and_(HistData.code == data.code, HistData.date == pre_four_tran_date)).first()
 
     p_change = day_data.p_change if day_data is not None else None
@@ -59,7 +59,7 @@ def handle_one(data, date_str, index, fhh_index, lhh_index, pre_tran_date, pre_t
 
     # 后四天的大单统计数据
     arr = [pre_tran_date, pre_two_tran_date, pre_three_tran_date, pre_four_tran_date]
-    pre_four_days_data = session.query(DaDanSts).filter(and_(DaDanSts.code == data.code, DaDanSts.date.in_(arr))).all()
+    pre_four_days_data = getSession().query(DaDanSts).filter(and_(DaDanSts.code == data.code, DaDanSts.date.in_(arr))).all()
     pre_four_days_dict = to_dict(pre_four_days_data)
 
     ## 后4天净流入
@@ -90,12 +90,12 @@ def handle_one(data, date_str, index, fhh_index, lhh_index, pre_tran_date, pre_t
 
 
 def get_top_dd_sts(date_str):
-    top20 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.net)).limit(20).all()
-    lhhtop30 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_net)).limit(30).all()
-    fhhtop30 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.fhh_net)).limit(30).all()
-    ratiotop20 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.ratio)).limit(
+    top20 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.net)).limit(20).all()
+    lhhtop30 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_net)).limit(30).all()
+    fhhtop30 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.fhh_net)).limit(30).all()
+    ratiotop20 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.ratio)).limit(
         20).all()
-    lhhratiotop20 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_ratio)).limit(
+    lhhratiotop20 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_ratio)).limit(
         20).all()
 
     lhhtop30_codes = []
@@ -152,12 +152,12 @@ def get_top_dd_sts(date_str):
 
 
 def get_dds_by_date(code, date_str):
-    dds = session.query(DaDan).filter(and_(DaDan.code == code, DaDan.date == date_str)).all()
+    dds = getSession().query(DaDan).filter(and_(DaDan.code == code, DaDan.date == date_str)).all()
     return dds
 
 
 def get_fhh_dds_by_date(code, date_str):
-    dds = session.query(DaDan).filter(
+    dds = getSession().query(DaDan).filter(
         and_(DaDan.code == code, DaDan.date == date_str, DaDan.time >= '09:30:00', DaDan.time <= '10:00:00')).all()
     return dds
 
@@ -168,7 +168,7 @@ def get_ddsts_by_date(date_str):
     :param date_str:
     :return:
     """
-    ddstss = session.query(DaDanSts).filter(DaDanSts.date == date_str).all()
+    ddstss = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).all()
     return ddstss
 
 

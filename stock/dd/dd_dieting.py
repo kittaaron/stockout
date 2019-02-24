@@ -77,7 +77,7 @@ def analyze_dieting_stocks(hist_data, date_str):
         name = data.name
         i = 0
         dieting_dates = []
-        latest_10_days_data = session.query(HistData).filter(
+        latest_10_days_data = getSession().query(HistData).filter(
             and_(HistData.code == code, HistData.date <= date_str, HistData.date >= start_time_str)).all()
         if hist_data is None or len(latest_10_days_data) <= 0:
             logging.info("%s %s 获取最近10天数据出错", code, name)
@@ -88,7 +88,7 @@ def analyze_dieting_stocks(hist_data, date_str):
                 i += 1
                 dieting_dates.append(date_data.date)
         # 当日大单数据分析.
-        dd_sts = session.query(DaDanSts).filter(and_(DaDanSts.code == code, DaDanSts.date == date_str)).first()
+        dd_sts = getSession().query(DaDanSts).filter(and_(DaDanSts.code == code, DaDanSts.date == date_str)).first()
         if dd_sts is None:
             logging.info("%s %s 跌停天数 %d 昨日无大单",
                          code, name, i)
@@ -112,7 +112,7 @@ def get_dieting_stocks(date_str):
     """
 
     # 取出某日期跌幅 >= 9%的股票
-    hist_data = session.query(HistData).filter(
+    hist_data = getSession().query(HistData).filter(
         and_(HistData.date == date_str, HistData.p_change <= RANGE)).all()
 
     if hist_data is None or len(hist_data) <= 0:

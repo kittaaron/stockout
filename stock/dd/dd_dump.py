@@ -20,13 +20,13 @@ from utils.db_utils import *
 
 
 def save_list(datas, autocommit=True):
-    session.add_all(datas)
+    getSession().add_all(datas)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def dump_stock_dd_by_date(code, name, totals, date_str):
-    dds = session.query(DaDanSts).filter(and_(DaDan.code == code, DaDan.date == date_str)).first()
+    dds = getSession().query(DaDanSts).filter(and_(DaDan.code == code, DaDan.date == date_str)).first()
     if dds is not None:
         logging.info("%s %s 已有数据", code, name)
         return
@@ -100,8 +100,8 @@ def dump_dd(date_str):
     # code = '603843' # 正平股份
     # code = '002219' # 恒康医疗
 
-    stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
-    #stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).filter(StockInfo.code.in_(codes)).all()
+    #stocks = getSession().query(StockInfo).all()
 
     i = 1
     for row in stocks:
@@ -119,7 +119,7 @@ def dump_dd(date_str):
 
 
 def get_start_date():
-    max_date_indb = session.query(func.max(DaDanSts.date)).first()
+    max_date_indb = getSession().query(func.max(DaDanSts.date)).first()
     max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
     return datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)
 

@@ -57,7 +57,7 @@ def handle_zycwzb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            zycwzb = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == val[0])).first()
+            zycwzb = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == val[0])).first()
             if zycwzb is not None:
                 continue
 
@@ -130,7 +130,7 @@ def handle_zcfzb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code, Zcfzb.date == val[0])).first()
+            zcfzb = getSession().query(Zcfzb).filter(and_(Zcfzb.code == code, Zcfzb.date == val[0])).first()
             if zcfzb is not None:
                 continue
 
@@ -194,7 +194,7 @@ def handle_cwbbzy(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            cwbbzy = session.query(Cwbbzy).filter(and_(Cwbbzy.code == code, Cwbbzy.date == val[0])).first()
+            cwbbzy = getSession().query(Cwbbzy).filter(and_(Cwbbzy.code == code, Cwbbzy.date == val[0])).first()
             if cwbbzy is not None:
                 continue
 
@@ -246,7 +246,7 @@ def handle_lrb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            cwbbzy = session.query(Lrb).filter(and_(Lrb.code == code, Lrb.date == val[0])).first()
+            cwbbzy = getSession().query(Lrb).filter(and_(Lrb.code == code, Lrb.date == val[0])).first()
             if cwbbzy is not None:
                 continue
 
@@ -306,7 +306,7 @@ def handle_xjllb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            xjllb = session.query(Xjllb).filter(and_(Xjllb.code == code, Xjllb.date == val[0])).first()
+            xjllb = getSession().query(Xjllb).filter(and_(Xjllb.code == code, Xjllb.date == val[0])).first()
             if xjllb is not None:
                 continue
 
@@ -320,8 +320,8 @@ def handle_xjllb(code, name):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '002943').all()
+    stocks = getSession().query(StockInfo).all()
+    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '002943').all()
     for row in stocks:
         if row is None:
             continue

@@ -46,8 +46,8 @@ def download_pdf(code):
 
 
 if __name__ == '__main__':
-    #stocks = session.query(StockInfo).all()
-    stocks = session.query(StockInfo).filter(StockInfo.code == '600060').all()
+    #stocks = getSession().query(StockInfo).all()
+    stocks = getSession().query(StockInfo).filter(StockInfo.code == '600060').all()
     for row in stocks:
         if row is None:
             continue

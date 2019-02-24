@@ -26,9 +26,9 @@ from utils.db_utils import *
 
 
 def save(data, autocommit=True):
-    session.add(data)
+    getSession().add(data)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def build_extraZB(extraZB, zcfzb, zycwzb):
@@ -63,8 +63,8 @@ def calc_cznl(code, name, stock):
     :return:
     """
     # 如果code_date已经录入，则已经插入过，不继续插入
-    zcfzbs = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).all()
-    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).all()
+    zcfzbs = getSession().query(Zcfzb).filter(and_(Zcfzb.code == code)).all()
+    zycwzbs = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code)).all()
     zycwzbs_dict = to_dict(zycwzbs)
     for zcfzb in zcfzbs:
         date = zcfzb.date
@@ -77,7 +77,7 @@ def calc_cznl(code, name, stock):
 
         zycwzb = zycwzbs_dict[date] if date in zycwzbs_dict else None
         #liquidity_ratio = round(tca / total_current_liabi, 2)
-        extraZB = session.query(ExtraZB).filter(and_(ExtraZB.code == code, ExtraZB.date == date)).first()
+        extraZB = getSession().query(ExtraZB).filter(and_(ExtraZB.code == code, ExtraZB.date == date)).first()
         if extraZB is None:
             extraZB = ExtraZB(code=code, name=name, date=date)
         build_extraZB(extraZB, zcfzb, zycwzb)
@@ -86,8 +86,8 @@ def calc_cznl(code, name, stock):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
-    #stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).filter(StockInfo.code == '002236').all()
+    #stocks = getSession().query(StockInfo).all()
     for row in stocks:
         if row is None:
             continue

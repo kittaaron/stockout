@@ -23,7 +23,7 @@ def get_ddsts_by_code_date(code, start_date_str, end_date_str):
     :param date_str:
     :return:
     """
-    ddstss = session.query(DaDanSts).filter(and_(DaDanSts.code == code,
+    ddstss = getSession().query(DaDanSts).filter(and_(DaDanSts.code == code,
                                                  DaDanSts.date >= start_date_str,
                                                  DaDanSts.date <= end_date_str)).order_by(desc(DaDanSts.date)).all()
     return ddstss
@@ -37,7 +37,7 @@ def get_ddsts_by_date(date_str, order_by = None, limit = 20):
     """
     if limit > 100:
         limit = 100
-    ddstss = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(
+    ddstss = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(
         desc(DaDanSts.ratio if order_by == 'ratio' else DaDanSts.net)).limit(limit).all()
     return ddstss
 
@@ -71,7 +71,7 @@ def stock_dd_sts(code, name, date_str, sts_result, last_half_hour_sts_result):
 
 
 def get_dd():
-    stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).all()
     # df = ts.get_stock_basics()
 
     end_date = datetime.date.today()
@@ -132,9 +132,9 @@ def get_dd():
 
 
 def get_top_dd_sts(date_str):
-    top100 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.net)).limit(100).all()
-    llhtop300 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_net)).limit(300).all()
-    ratiotop100 = session.query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.ratio)).limit(100).all()
+    top100 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.net)).limit(100).all()
+    llhtop300 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.lhh_net)).limit(300).all()
+    ratiotop100 = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).order_by(desc(DaDanSts.ratio)).limit(100).all()
 
     lhhtop300_codes = []
     for lhhdata in llhtop300:

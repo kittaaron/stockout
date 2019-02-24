@@ -20,7 +20,7 @@ from utils.db_utils import *
 
 
 def get_industry_list():
-    i_c_list = session.query(StockInfo.industry).filter(StockInfo.industry != '').group_by(
+    i_c_list = getSession().query(StockInfo.industry).filter(StockInfo.industry != '').group_by(
         StockInfo.industry).all()
     ret = []
     for data in i_c_list:
@@ -59,7 +59,7 @@ def get_codes_reports(codes, years):
         ret[code] = {}
         for year in years:
             ret[code][year] = ReportData()
-    reports = session.query(ReportData).filter(and_(ReportData.code.in_(codes),
+    reports = getSession().query(ReportData).filter(and_(ReportData.code.in_(codes),
                                                     ReportData.year.in_(years), ReportData.season == 4)).all()
     for report in reports:
         code = report.code
@@ -72,7 +72,7 @@ def get_codes_reports(codes, years):
 
 def get_avg_pe_by_industry():
     ret = {}
-    list = session.query(StockInfo.industry, func.avg(StockInfo.pe)).filter(and_(StockInfo.industry != '',
+    list = getSession().query(StockInfo.industry, func.avg(StockInfo.pe)).filter(and_(StockInfo.industry != '',
                                          StockInfo.pe > 0)).group_by(StockInfo.industry).all()
     for data in list:
         ret[data[0]] = round(data[1], 2)
@@ -80,7 +80,7 @@ def get_avg_pe_by_industry():
 
 
 def save_industry_top(stockinfo, rank):
-    old = session.query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
+    old = getSession().query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
     if old is None:
         old = GoodStock(code=stockinfo.code, name=stockinfo.name)
     # 重点关注
@@ -90,7 +90,7 @@ def save_industry_top(stockinfo, rank):
 
 
 def save_blue_chip(stockinfo, blue_chip_flag):
-    old = session.query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
+    old = getSession().query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
     if old is None:
         old = GoodStock(code=stockinfo.code, name=stockinfo.name)
     if old.blue_chip == '蓝筹' and blue_chip_flag != 1:
@@ -157,9 +157,9 @@ def is_blue_chip(stockinfo, last_five_years_reports):
 def sts_pe_by_industry(industry_list):
     avg_pes = get_avg_pe_by_industry()
     for industry in industry_list:
-        top10 = session.query(StockInfo).filter(and_(StockInfo.industry == industry,
+        top10 = getSession().query(StockInfo).filter(and_(StockInfo.industry == industry,
                                                      StockInfo.pe > 0)).order_by(StockInfo.pe).limit(10).all()
-        mktcaptop10 = session.query(StockInfo).filter(and_(StockInfo.industry == industry,
+        mktcaptop10 = getSession().query(StockInfo).filter(and_(StockInfo.industry == industry,
                                                            StockInfo.mktcap > 0)).order_by(
             desc(StockInfo.mktcap)).limit(10).all()
         logging.info("行业: %s 平均市盈率: %s", industry, avg_pes[industry])

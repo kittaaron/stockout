@@ -33,9 +33,9 @@ session = Session()
 
 
 def save(data, autocommit=True):
-    session.add(data)
+    getSession().add(data)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def to_dict(pre_four_days_data):
@@ -48,16 +48,16 @@ def to_dict(pre_four_days_data):
 def get_continually_in(start_date_str, end_date_str):
     #stmt = text("select * from (select name,count(net) cnt from dd_sts where date in (:start_date_str,:end_date_str) and net > 100000 and ratio > 0.1 group by name) t where cnt > 1")
     #stmt = stmt.columns(DDCnt.name, DDCnt.cnt)
-    #datas = session.query(DaDanSts).from_statement(stmt).params(start_date_str=start_date_str, end_date_str=end_date_str).all()
+    #datas = getSession().query(DaDanSts).from_statement(stmt).params(start_date_str=start_date_str, end_date_str=end_date_str).all()
 
-    datas = session.query(DaDanSts.code, func.count(DaDanSts.net).label("cnt")).\
+    datas = getSession().query(DaDanSts.code, func.count(DaDanSts.net).label("cnt")).\
         filter(and_(DaDanSts.date.in_([start_date_str,end_date_str]), DaDanSts.net > 900000, DaDanSts.ratio > 0.1)).\
         group_by(DaDanSts.code).having(func.count(DaDanSts.net) > 1).all()
     codes = []
     for data in datas:
         codes.append(data[0])
-    dds = session.query(DaDanSts).filter(and_(DaDanSts.code.in_(codes), DaDanSts.date >= start_date_str, DaDanSts.date <= end_date_str)).all()
-    hists = session.query(HistData).filter(and_(HistData.code.in_(codes), HistData.date >= start_date_str, HistData.date <= end_date_str)).all()
+    dds = getSession().query(DaDanSts).filter(and_(DaDanSts.code.in_(codes), DaDanSts.date >= start_date_str, DaDanSts.date <= end_date_str)).all()
+    hists = getSession().query(HistData).filter(and_(HistData.code.in_(codes), HistData.date >= start_date_str, HistData.date <= end_date_str)).all()
     hist_dict = {}
     for hist in hists:
         if hist.code not in hist_dict:
@@ -87,12 +87,12 @@ def get_continually_in(start_date_str, end_date_str):
 
 
 def get_dds_by_date(code, date_str):
-    dds = session.query(DaDan).filter(and_(DaDan.code == code, DaDan.date == date_str)).all()
+    dds = getSession().query(DaDan).filter(and_(DaDan.code == code, DaDan.date == date_str)).all()
     return dds
 
 
 def get_fhh_dds_by_date(code, date_str):
-    dds = session.query(DaDan).filter(
+    dds = getSession().query(DaDan).filter(
         and_(DaDan.code == code, DaDan.date == date_str, DaDan.time >= '09:30:00', DaDan.time <= '10:00:00')).all()
     return dds
 
@@ -103,7 +103,7 @@ def get_ddsts_by_date(date_str):
     :param date_str:
     :return:
     """
-    ddstss = session.query(DaDanSts).filter(DaDanSts.date == date_str).all()
+    ddstss = getSession().query(DaDanSts).filter(DaDanSts.date == date_str).all()
     return ddstss
 
 

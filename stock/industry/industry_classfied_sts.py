@@ -24,13 +24,13 @@ session = Session()
 
 
 def add(stock, autocommit=True):
-    session.add(stock)
+    getSession().add(stock)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 def get_industry_classified_list():
-    i_c_list = session.query(StockInfo.industry_classified).filter(StockInfo.industry_classified != '').group_by(
+    i_c_list = getSession().query(StockInfo.industry_classified).filter(StockInfo.industry_classified != '').group_by(
         StockInfo.industry_classified).all()
     ret = []
     for data in i_c_list:
@@ -40,7 +40,7 @@ def get_industry_classified_list():
 
 def get_avg_pe_by_industry_classified():
     ret = {}
-    list = session.query(StockInfo.industry_classified, func.avg(StockInfo.pe)).filter(and_(StockInfo.industry_classified != '',
+    list = getSession().query(StockInfo.industry_classified, func.avg(StockInfo.pe)).filter(and_(StockInfo.industry_classified != '',
                                          StockInfo.pe > 0)).group_by(StockInfo.industry_classified).all()
     for data in list:
         ret[data[0]] = round(data[1], 2)
@@ -48,7 +48,7 @@ def get_avg_pe_by_industry_classified():
 
 
 def save_industry_classified_top(stockinfo, rank):
-    old = session.query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
+    old = getSession().query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
     if old is None:
         old = GoodStock(code=stockinfo.code, name=stockinfo.name)
     # 重点关注
@@ -58,7 +58,7 @@ def save_industry_classified_top(stockinfo, rank):
 
 
 def save_blue_chip(stockinfo, blue_chip_flag):
-    old = session.query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
+    old = getSession().query(GoodStock).filter(GoodStock.code == stockinfo.code).first()
     if old is None:
         old = GoodStock(code=stockinfo.code, name=stockinfo.name)
     if old.blue_chip == '蓝筹' and blue_chip_flag != 1:
@@ -82,9 +82,9 @@ def save_blue_chip(stockinfo, blue_chip_flag):
 def sts_pe_by_industry_classified(industry_classified_list):
     avg_pes = get_avg_pe_by_industry_classified()
     for industry_classified in industry_classified_list:
-        top10 = session.query(StockInfo).filter(and_(StockInfo.industry_classified == industry_classified,
+        top10 = getSession().query(StockInfo).filter(and_(StockInfo.industry_classified == industry_classified,
                                                      StockInfo.pe > 0)).order_by(StockInfo.pe).limit(10).all()
-        mktcaptop10 = session.query(StockInfo).filter(and_(StockInfo.industry_classified == industry_classified,
+        mktcaptop10 = getSession().query(StockInfo).filter(and_(StockInfo.industry_classified == industry_classified,
                                                            StockInfo.mktcap > 0)).order_by(
             desc(StockInfo.mktcap)).limit(10).all()
         logging.info("行业: %s 平均市盈率: %s", industry_classified, avg_pes[industry_classified])

@@ -20,6 +20,8 @@ from utils.db_utils import *
 import numpy as np
 from stock.report.report_utils import *
 
+session = getSession()
+
 
 def analyze():
     latest_date = get_latest_record_date()
@@ -194,7 +196,6 @@ def get_stocks_map(stocks):
 
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '300232').all()
     for row in stocks:
         if row is None:
             continue

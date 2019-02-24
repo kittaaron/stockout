@@ -31,6 +31,7 @@ def make_app():
         (r"/get_report_list", ReportDetailHandler),
         (r"/get_report_chart_list", ReportDetailHandler),
         (r"/get_ranking_netflow", NetFlowHandler),
+        (r"/get_ranking_pb", PBRankingHandler),
         (r"/get_price_list/(.*)", PriceListHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",

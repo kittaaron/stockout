@@ -17,10 +17,7 @@ from model.report.Zycwzb import Zycwzb
 from stock.report.report_utils import *
 
 
-def save_list(datas, autocommit=True):
-    session.add_all(datas)
-    if autocommit:
-        session.commit()
+session = getSession()
 
 
 def build_by_hist_data(hist_data, serie):
@@ -65,7 +62,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 def dump_hist_data(start_date, end_date):
     stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '601636').all()
+    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '600309').all()
 
     i = 1
     for row in stocks:
@@ -77,7 +74,7 @@ def dump_hist_data(start_date, end_date):
         # 股票名称
         name = row.name
         # name = row['name']
-        logging.info("%s %s 开始处理 %d", code, name, i)
+        #logging.info("%s %s 开始处理 %d", code, name, i)
 
         mindatedata = session.query(HistData.code, func.min(HistData.date)).filter(HistData.code == code).group_by(
             HistData.code).first()
@@ -85,7 +82,7 @@ def dump_hist_data(start_date, end_date):
             HistData.code).first()
         mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
         maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
-        logging.info("%s 已dump数据 %s至%s", code, mindate, maxdate)
+        logging.info("%s %s 已dump数据 %s至%s %s", code, name, mindate, maxdate, i)
 
         i += 1
 
@@ -130,11 +127,16 @@ def dump_hist_data(start_date, end_date):
 
 
 def get_start_date():
-    max_date_indb = session.query(func.max(HistData.date)).first()
-    max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
+    try:
+        max_date_indb = session.query(func.max(HistData.date)).first()
+        max_date_indb = max_date_indb[0] if max_date_indb is not None else "2005-12-31"
 
-    return max_date_indb if max_date_indb == datetime.date.today().strftime('%Y-%m-%d') \
-        else(datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        return max_date_indb if max_date_indb == datetime.date.today().strftime('%Y-%m-%d') \
+            else(datetime.datetime.strptime(max_date_indb, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    except Exception as e:
+        pass
+    finally:
+        session.close()
 
 
 def getzycwzbs_map(zycwzbs):
@@ -145,37 +147,42 @@ def getzycwzbs_map(zycwzbs):
 
 
 def get_price_list(code, start_date, end_date):
-    hist_data = session.query(HistData).filter(
-        and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).all()
+    try:
+        hist_data = session.query(HistData).filter(
+            and_(HistData.code == code, HistData.date >= start_date, HistData.date <= end_date)).all()
 
-    stockinfo = get_by_code(code)
-    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
-    zycwzbs_map = getzycwzbs_map(zycwzbs)
-    for hist_data_i in hist_data:
-        price_date = hist_data_i.date
-        price = hist_data_i.close
-        report_date = get_latest_record_date_by_date(price_date)
-        pre_year_report_date = get_pre_yearreport_date(report_date)
-        static_eps = 0
-        dynamic_eps = 0
-        if pre_year_report_date in zycwzbs_map:
-            ## 计算前一年的净利润，再乘以增长率，得出动态市盈指标
-            static_eps = round((zycwzbs_map[pre_year_report_date].net_profit / (stockinfo.totals * 10000)), 2)
-        if report_date in zycwzbs_map and zycwzbs_map[report_date].net_yoy is not None:
-            dynamic_eps = round(static_eps * zycwzbs_map[report_date].net_yoy, 2)
-        static_pe = round(price / static_eps, 2) if static_eps != 0 else 0
-        dynamic_pe = round(price / dynamic_eps, 2) if dynamic_eps != 0 else 0
-        logging.info("日期: %s, report_date: %s, pre_year_report_date: %s, price: %s, 静态eps: %s, 静态pe: %s, 动态eps: %s, 动态pe: %s",
-                     price_date, report_date, pre_year_report_date, price, static_eps, static_pe, dynamic_eps, dynamic_pe)
-        hist_data_i.static_pe8 = round(static_eps * 8, 2)
-        hist_data_i.static_pe12 = round(static_eps * 12, 2)
-        hist_data_i.static_pe16 = round(static_eps * 16, 2)
-        hist_data_i.static_pe20 = round(static_eps * 20, 2)
-        hist_data_i.dynamic_pe8 = round(dynamic_eps * 8, 2)
-        hist_data_i.dynamic_pe12 = round(dynamic_eps * 12, 2)
-        hist_data_i.dynamic_pe16 = round(dynamic_eps * 16, 2)
-        hist_data_i.dynamic_pe20 = round(dynamic_eps * 20, 2)
-    return hist_data
+        stockinfo = get_by_code(code)
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+        zycwzbs_map = getzycwzbs_map(zycwzbs)
+        for hist_data_i in hist_data:
+            price_date = hist_data_i.date
+            price = hist_data_i.close
+            report_date = get_latest_record_date_by_date(price_date)
+            pre_year_report_date = get_pre_yearreport_date(report_date)
+            static_eps = 0
+            dynamic_eps = 0
+            if pre_year_report_date in zycwzbs_map:
+                ## 计算前一年的净利润，再乘以增长率，得出动态市盈指标
+                static_eps = round((zycwzbs_map[pre_year_report_date].net_profit / (stockinfo.totals * 10000)), 2)
+            if report_date in zycwzbs_map and zycwzbs_map[report_date].net_yoy is not None:
+                dynamic_eps = round(static_eps * zycwzbs_map[report_date].net_yoy, 2)
+            static_pe = round(price / static_eps, 2) if static_eps != 0 else 0
+            dynamic_pe = round(price / dynamic_eps, 2) if dynamic_eps != 0 else 0
+            logging.info("日期: %s, report_date: %s, pre_year_report_date: %s, price: %s, 静态eps: %s, 静态pe: %s, 动态eps: %s, 动态pe: %s",
+                         price_date, report_date, pre_year_report_date, price, static_eps, static_pe, dynamic_eps, dynamic_pe)
+            hist_data_i.static_pe8 = round(static_eps * 8, 2)
+            hist_data_i.static_pe12 = round(static_eps * 12, 2)
+            hist_data_i.static_pe16 = round(static_eps * 16, 2)
+            hist_data_i.static_pe20 = round(static_eps * 20, 2)
+            hist_data_i.dynamic_pe8 = round(dynamic_eps * 8, 2)
+            hist_data_i.dynamic_pe12 = round(dynamic_eps * 12, 2)
+            hist_data_i.dynamic_pe16 = round(dynamic_eps * 16, 2)
+            hist_data_i.dynamic_pe20 = round(dynamic_eps * 20, 2)
+        return hist_data
+    except Exception as e:
+        pass
+    finally:
+        session.close()
 
 
 if __name__ == '__main__':
@@ -188,11 +195,12 @@ if __name__ == '__main__':
         end_date = get_pre_transact_date(end_date)
 
     argv = len(sys.argv)
+    start_date = '2018-12-14'
     if argv > 2:
         start_date = sys.argv[1]
         end_date = sys.argv[2]
     if start_date > end_date:
-        logging.warning("开始日期不能大于结束日期")
+        logging.warning("开始日期 %s 不能大于结束日期 %s", start_date, end_date)
         exit(0)
     logging.info("%s %s", start_date, end_date)
     dump_hist_data(start_date, end_date)

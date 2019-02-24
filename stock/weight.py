@@ -18,12 +18,12 @@ def save_hs300s():
     hs300s_dict = df.to_dict("orient='records'")
     for data in hs300s_dict:
         code = data['code']
-        stock_weight = session.query(StockWeight).filter_by(and_(StockWeight.code==code, StockWeight.date==data['date'])).one()
+        stock_weight = getSession().query(StockWeight).filter_by(and_(StockWeight.code==code, StockWeight.date==data['date'])).one()
         if stock_weight != None:
             continue
         else:
             logging.info("stock_weight: %s", stock_weight)
-            session.add(stock_weight)
+            getSession().add(stock_weight)
 
 
 if __name__ == '__main__':

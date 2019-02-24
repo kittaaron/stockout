@@ -28,7 +28,7 @@ def get_year_reports(codes, years):
         ret[code] = {}
         for year in years:
             ret[code][year] = ReportData()
-    reports = session.query(ReportData).filter(and_(ReportData.code.in_(codes),
+    reports = getSession().query(ReportData).filter(and_(ReportData.code.in_(codes),
                                                     ReportData.year.in_(years), ReportData.season == 4)).order_by(
             desc(ReportData.year)).all()
     for report in reports:
@@ -63,7 +63,7 @@ def get_latest_report(code):
     else:
         year -= 1
         season = 4
-    report = session.query(ReportData).filter(ReportData.code == code).first()
+    report = getSession().query(ReportData).filter(ReportData.code == code).first()
     return report
 
 

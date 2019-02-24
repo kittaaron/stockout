@@ -48,7 +48,7 @@ class SseMarketData(scrapy.Spider):
         #today = datetime.datetime.strptime('2010-09-01', '%Y-%m-%d').date()
         #start_date = datetime.datetime.strptime('2005-01-03', '%Y-%m-%d').date()
 
-        already_max_date = session.query(func.max(MarketDataSZ.date)).first()
+        already_max_date = getSession().query(func.max(MarketDataSZ.date)).first()
         start_date = (datetime.datetime.strptime(already_max_date[0], '%Y-%m-%d') + datetime.timedelta(days=1)).date() if already_max_date is not None else datetime.datetime.strptime('2005-01-03', '%Y-%m-%d').date()
         end_date = today
 
@@ -108,7 +108,7 @@ class SseMarketData(scrapy.Spider):
             zbtype = getzbtype(zbmc)
             brsz = dataI['brsz']  #本日数值
 
-            old_market_data = session.query(MarketDataSZ).filter(and_(MarketDataSZ.date == date,
+            old_market_data = getSession().query(MarketDataSZ).filter(and_(MarketDataSZ.date == date,
                                                                       MarketDataSZ.zbtype == zbtype)).first()
             if old_market_data is None:
                 old_market_data = MarketDataSZ(date=date, zbtype=zbtype)

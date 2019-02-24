@@ -69,7 +69,7 @@ def get_multiple():
 
 def calc_yoy(code, name, stock):
     logging.info("handle %s %s", code, name)
-    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+    zycwzbs = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
 
     if zycwzbs is None:
         logging.info("%s no zycwzb")
@@ -96,8 +96,8 @@ def calc_yoy(code, name, stock):
 
 
 if __name__ == '__main__':
-    stocks = session.query(StockInfo).all()
-    #stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
+    stocks = getSession().query(StockInfo).all()
+    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '002236').all()
     for row in stocks:
         if row is None:
             continue

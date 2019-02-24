@@ -136,7 +136,7 @@ def dump_report_data(year, season):
         i = 0
         for data in records:
             code = data['code']
-            report_data = session.query(ReportData).filter_by(code=code, year=year, season=season).first()
+            report_data = getSession().query(ReportData).filter_by(code=code, year=year, season=season).first()
             if report_data is None:
                 report_data = ReportData()
             logging.info("build code: %s report data.", code)
@@ -216,9 +216,9 @@ def get_cashflow_data_dict(year, season):
 
 
 def add(report_data, autocommit=True):
-    session.add(report_data)
+    getSession().add(report_data)
     if autocommit:
-        session.commit()
+        getSession().commit()
 
 
 if __name__ == '__main__':

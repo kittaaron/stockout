@@ -70,7 +70,7 @@ class SzseSpider(scrapy.Spider):
             dateI = date_arr[i]
             price = series[i]
             i += 1
-            old_data = session.query(SteelPriceHist).filter(and_(SteelPriceHist.type == 1,
+            old_data = getSession().query(SteelPriceHist).filter(and_(SteelPriceHist.type == 1,
                                                                  SteelPriceHist.date == dateI,
                                                                  SteelPriceHist.price == price)).first()
             if old_data is None:

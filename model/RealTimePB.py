@@ -30,3 +30,13 @@ class RealTimePB(Base):
     def __str__(self):
         msg = self.code + " " + self.name
         return msg
+
+    def reprJSON(self):
+        ret = {}
+        for item in self.__dict__.items():
+            key = item[0]
+            val = item[1]
+            if key.startswith("_"):
+                continue
+            ret[key] = val
+        return ret

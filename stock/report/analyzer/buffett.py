@@ -13,6 +13,9 @@ from model.Buffett import Buffett
 from utils.db_utils import *
 
 
+session = Session()
+
+
 def get_latest_record_date():
     year = datetime.datetime.now().year
     month = datetime.datetime.now().month

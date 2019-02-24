@@ -46,5 +46,16 @@ class NetFlowHandler(BaseHandler):
         self.write(super().return_json(datas))
 
 
+class PBRankingHandler(BaseHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self):
+        page = self.get_query_argument("page", 0)
+        page_size = self.get_query_argument("page_size", 200)
+        datas = get_pb_ranking_datas(page, page_size)
+        self.write(super().return_json(datas))
+
+
 if __name__ == "__main__":
     pass
