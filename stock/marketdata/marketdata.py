@@ -7,6 +7,8 @@ from model.market.MarketDataSZ import MarketDataSZ
 from model.market.MarketDataSZ import zbmcs
 from model.industry.SteelPrice import SteelPriceHist
 
+session = getSession()
+
 
 def get_sh_market_data(market, productType, start_date, end_date):
     records = session.query(MarketData).filter(and_(MarketData.date >= start_date,

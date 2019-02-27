@@ -113,8 +113,8 @@ class SseMarketData(scrapy.Spider):
             if old_market_data is None:
                 old_market_data = MarketDataSZ(date=date, zbtype=zbtype)
             build_old_market_data(old_market_data, dataI, zbtype)
-            save(old_market_data)
             self.log("保存 %s 成功" % old_market_data)
+            save(old_market_data)
 
     def err_callback(self, response):
         self.log("response: %s" % response.value.response.body.decode('utf8'))

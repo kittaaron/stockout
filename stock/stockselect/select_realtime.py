@@ -34,10 +34,11 @@ if __name__ == '__main__':
                      "安全pe: %s 安全价格: %s - "
                      "合理pe: %s 合理价格: %s - "
                      "当前pe: %s 当前价格: %s - "
-                     "距安全线: %s, 距合理线: %s",
+                     "距安全线: %s, 距合理线: %s, 距危险线: %s",
                      code, stockinfo.name, latest_hist.date,
                      select_info.safe_pe, safe_price,
                      select_info.fair_pe, fair_price,
                      real_pe, latest_hist.close,
                      round((real_pe - select_info.safe_pe) / select_info.safe_pe, 2),
-                     round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2))
+                     round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2),
+                     round((real_pe - select_info.danger_pe) / select_info.danger_pe, 2))
