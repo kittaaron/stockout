@@ -28,7 +28,8 @@ class RankingROEHandler(BaseHandler):
     def get(self):
         page = int(self.get_query_argument("page", '0'))
         page_size = int(self.get_query_argument("page_size", '200'))
-        datas = get_wroe_ranking_datas(page, page_size)
+        code = self.get_query_argument("code", None)
+        datas = get_wroe_ranking_datas(page, page_size, code)
         total_row = get_total_wroe_ranking_row()
         logging.info("total_row: %s", total_row)
         total_page = math.ceil(total_row / int(page_size)) + 1

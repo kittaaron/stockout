@@ -17,6 +17,7 @@ from sqlalchemy import *
 爬取上交所大盘、PE等历史数据
 """
 
+session = getSession()
 save_dir = "/Users/kittaaron/Downloads/report/"
 market = "sh"
 
@@ -51,7 +52,7 @@ class SseMarketData(scrapy.Spider):
         today = datetime.date.today()
         #today = datetime.datetime.strptime('2010-09-01', '%Y-%m-%d').date()
 
-        already_max_date = getSession().query(MarketData.market, func.max(MarketData.date)).filter(MarketData.market == "sh").group_by(
+        already_max_date = session.query(MarketData.market, func.max(MarketData.date)).filter(MarketData.market == "sh").group_by(
             MarketData.market).first()
         start_date = (datetime.datetime.strptime(already_max_date[1], '%Y-%m-%d') + datetime.timedelta(days=1)).date() if already_max_date is not None else datetime.datetime.strptime('1999-02-01', '%Y-%m-%d').date()
         #start_date = datetime.datetime.strptime('1999-02-01', '%Y-%m-%d').date()
@@ -108,14 +109,14 @@ class SseMarketData(scrapy.Spider):
                 self.log("wrong data. %s" % dataI)
                 continue
 
-            old_market_data = getSession().query(MarketData).filter(and_(MarketData.date == searchDate,
+            old_market_data = session.query(MarketData).filter(and_(MarketData.date == searchDate,
                                                                     MarketData.productType == dataI['productType'],
                                                                     MarketData.market == market)).first()
             if old_market_data is None:
                 old_market_data = MarketData(market=market, date=searchDate)
             build_old_market_data(old_market_data, dataI)
             self.log("保存 %s 成功" % old_market_data)
-            save(old_market_data)
+            session.add(old_market_data)
 
     def err_callback(self, response):
         self.log("response: %s" % response.value.response.body.decode('utf8'))

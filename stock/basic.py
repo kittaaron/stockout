@@ -174,7 +174,7 @@ def update_stock_basics():
             logging.info("已退市? %s %s", code, name)
             continue
 
-        save(stock)
+        session.add(stock)
 
 
 def query_stock_order_by_pe():

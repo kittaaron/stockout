@@ -14,6 +14,7 @@ from model.report.Xjllb import Xjllb
 from model.StockInfo import StockInfo
 from utils.db_utils import *
 
+session = getSession()
 
 def build_zycwzb_obj(obj, val):
     obj.eps = val[1] if val[1] != '--' else 0
@@ -57,7 +58,7 @@ def handle_zycwzb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            zycwzb = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == val[0])).first()
+            zycwzb = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == val[0])).first()
             if zycwzb is not None:
                 continue
 
@@ -65,7 +66,7 @@ def handle_zycwzb(code, name):
             build_zycwzb_obj(obj, val)
             records.append(obj)
 
-        save_list(records)
+        session.add_all(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -91,14 +92,20 @@ def build_zcfzb_obj(obj, val):
     obj.shangyu = val[46] if val[46] != '--' else 0
     obj.deferred_taxes = val[49] if val[49] != '--' else 0
     obj.total_n_c_a = val[51] if val[51] != '--' else 0
-    obj.total_assets = val[52] if val[52] != '--' else 0
+    total_assets = float(val[52]) if val[52] != '--' else 0
+    obj.total_assets = total_assets
     obj.short_term_loans = val[53] if val[53] != '--' else 0
     obj.notes_payable = val[59] if val[59] != '--' else 0
     obj.accounts_payable = val[60] if val[60] != '--' else 0
     obj.a_f_c = val[61] if val[61] != '--' else 0
     obj.total_current_liabi = val[84] if val[84] != '--' else 0
-    obj.total_not_current_liabi = val[93] if val[93] != '--' else 0
-    obj.total_liabi = val[94] if val[94] != '--' else 0
+    total_not_current_liabi = float(val[93]) if val[93] != '--' else 0
+    obj.total_not_current_liabi = total_not_current_liabi
+    total_liabi = float(val[94]) if val[94] != '--' else 0
+    obj.total_liabi = total_liabi
+    obj.liab_ratio = round(total_liabi * 100 / total_assets, 2) if total_assets > 0 else -1
+    obj.non_current_liab_ratio = round(total_not_current_liabi * 100 / total_assets, 2) if obj.total_assets > 0 else -1
+    logging.info("日期 %s 总资产 %s 总负债 %s 非流动负债 %s 总负债率 %s 非流动负债率 %s", val[0], total_assets, total_liabi, total_not_current_liabi, obj.liab_ratio, obj.non_current_liab_ratio)
     obj.paid_in_capital = val[95] if val[95] != '--' else 0
     obj.capital_reserve = val[96] if val[96] != '--' else 0
     obj.capital_surplus = val[99] if val[99] != '--' else 0
@@ -130,14 +137,14 @@ def handle_zcfzb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            zcfzb = getSession().query(Zcfzb).filter(and_(Zcfzb.code == code, Zcfzb.date == val[0])).first()
+            zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code, Zcfzb.date == val[0])).first()
             if zcfzb is not None:
-                continue
-
-            obj = Zcfzb(code=code, name=name, date=date)
+                obj = zcfzb
+            else:
+                obj = Zcfzb(code=code, name=name, date=date)
             build_zcfzb_obj(obj, val)
             records.append(obj)
-        save_list(records)
+        session.add_all(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -194,14 +201,14 @@ def handle_cwbbzy(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            cwbbzy = getSession().query(Cwbbzy).filter(and_(Cwbbzy.code == code, Cwbbzy.date == val[0])).first()
+            cwbbzy = session.query(Cwbbzy).filter(and_(Cwbbzy.code == code, Cwbbzy.date == val[0])).first()
             if cwbbzy is not None:
                 continue
 
             obj = Cwbbzy(code=code, name=name, date=date)
             build_cwbbzy_obj(obj, val)
             records.append(obj)
-        save_list(records)
+        session.add_all(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -246,14 +253,14 @@ def handle_lrb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            cwbbzy = getSession().query(Lrb).filter(and_(Lrb.code == code, Lrb.date == val[0])).first()
+            cwbbzy = session.query(Lrb).filter(and_(Lrb.code == code, Lrb.date == val[0])).first()
             if cwbbzy is not None:
                 continue
 
             obj = Lrb(code=code, name=name, date=date)
             build_lrb_obj(obj, val)
             records.append(obj)
-        save_list(records)
+        session.add_all(records)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -306,21 +313,21 @@ def handle_xjllb(code, name):
             date = val[0]
 
             # 如果code_date已经录入，则已经插入过，不继续插入
-            xjllb = getSession().query(Xjllb).filter(and_(Xjllb.code == code, Xjllb.date == val[0])).first()
+            xjllb = session.query(Xjllb).filter(and_(Xjllb.code == code, Xjllb.date == val[0])).first()
             if xjllb is not None:
                 continue
 
             obj = Xjllb(code=code, name=name, date=date)
             build_xjllb_obj(obj, val)
             records.append(obj)
-        save_list(records)
+        session.add_all(records)
     except Exception as e:
         logging.error("%s", e)
         return
 
 
 if __name__ == '__main__':
-    stocks = getSession().query(StockInfo).all()
+    stocks = session.query(StockInfo).all()
     #stocks = getSession().query(StockInfo).filter(StockInfo.code == '002943').all()
     for row in stocks:
         if row is None:

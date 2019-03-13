@@ -122,7 +122,7 @@ def dump_hist_data(start_date, end_date):
                 build_by_hist_data(hist_data, serie)
 
                 stock_hist_data.append(hist_data)
-        save_list(stock_hist_data)
+        session.add_all(stock_hist_data)
         logging.info("%s %s %s~%s hist data save ok", code, name, start_date, end_date)
 
 

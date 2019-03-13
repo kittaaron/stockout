@@ -96,7 +96,7 @@ def get_total_wroe_ranking_row():
         session.close()
 
 
-def get_wroe_ranking_datas(page, pageSize):
+def get_wroe_ranking_datas(page, pageSize, code):
     try:
         """
             获取根据pe排名的股票数据
@@ -107,7 +107,7 @@ def get_wroe_ranking_datas(page, pageSize):
         offset = page * pageSize
         latest_record_date = get_latest_record_date()
         # 获取wroe排名前100的数据
-        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code == code if code is not None else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
         codes = get_codes(zycwzbs)
 
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
@@ -133,11 +133,7 @@ def get_wroe_ranking_datas(page, pageSize):
             zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
             zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
 
-            if zycwzb.variance > 0.25 or zycwzb.pe >= 25 or zycwzb.koufei_pe >= 25 or zycwzb.industry == '普钢' \
-                    or zycwzb.industry == '水泥' or zycwzb.industry == '化工原料':
-                continue
-            else:
-                ret.append(zycwzb)
+            ret.append(zycwzb)
         logging.info("return cnt: %s", len(ret))
 
         return ret

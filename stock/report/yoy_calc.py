@@ -23,6 +23,9 @@ from model.report.Xjllb import Xjllb
 from utils.db_utils import *
 
 
+session = getSession()
+
+
 def get_latest_record_date():
     year = datetime.datetime.now().year
     month = datetime.datetime.now().month
@@ -69,7 +72,7 @@ def get_multiple():
 
 def calc_yoy(code, name, stock):
     logging.info("handle %s %s", code, name)
-    zycwzbs = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
 
     if zycwzbs is None:
         logging.info("%s no zycwzb")
@@ -92,12 +95,12 @@ def calc_yoy(code, name, stock):
             zycwzb.por_yoy = round(zycwzb.por / pre_zycwzb.por, 2)
         if zycwzb.pop is not None and pre_zycwzb.pop is not None and pre_zycwzb.pop != 0:
             zycwzb.pop_yoy = round(zycwzb.pop / pre_zycwzb.pop, 2)
-        save(zycwzb)
+        session.add(zycwzb)
 
 
 if __name__ == '__main__':
-    stocks = getSession().query(StockInfo).all()
-    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '002236').all()
+    stocks = session.query(StockInfo).all()
+    #stocks = session.query(StockInfo).filter(StockInfo.code == '002236').all()
     for row in stocks:
         if row is None:
             continue

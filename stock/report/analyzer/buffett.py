@@ -61,7 +61,7 @@ def calc_buffet_result(code, name, stock):
     old_safe.flow_sub_flow = round((flow_assets - flow_debts) / mktcap, 2)
     old_safe.pb = round(mktcap / sheq, 2)
 
-    save(old_safe)
+    session.add(old_safe)
 
 
 if __name__ == '__main__':

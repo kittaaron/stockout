@@ -28,9 +28,13 @@ from utils.db_utils import *
 找出近几年主营业务收入连续增长的股票
 """
 
+
+session = getSession()
+
+
 def yoy_filter(code, name, stock):
     logging.info("handle %s %s", code, name)
-    zycwzbs = getSession().query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
+    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).all()
 
     pre_por = 0
     por_grow_cnt = 0
@@ -48,18 +52,18 @@ def yoy_filter(code, name, stock):
             por_grow_10_cnt += 1
         if current_por > pre_por * 1.2:
             por_grow_20_cnt += 1
-    porYoySts = getSession().query(PorYoySts).filter(and_(PorYoySts.code == code)).first()
+    porYoySts = session.query(PorYoySts).filter(and_(PorYoySts.code == code)).first()
     if porYoySts is None:
         porYoySts = PorYoySts(code = code, name = name)
     porYoySts.por_grow_cnt = por_grow_cnt
     porYoySts.por_grow_10_cnt = por_grow_10_cnt
     porYoySts.por_grow_20_cnt = por_grow_20_cnt
-    save(porYoySts)
+    session.add(porYoySts)
     logging.info("%s %s %s %s", name, por_grow_cnt, por_grow_10_cnt, por_grow_20_cnt)
 
 
 if __name__ == '__main__':
-    stocks = getSession().query(StockInfo).all()
+    stocks = session.query(StockInfo).all()
     for row in stocks:
         if row is None:
             continue

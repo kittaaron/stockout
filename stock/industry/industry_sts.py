@@ -19,6 +19,8 @@ import string
 from utils.db_utils import *
 
 
+
+
 def get_industry_list():
     i_c_list = getSession().query(StockInfo.industry).filter(StockInfo.industry != '').group_by(
         StockInfo.industry).all()

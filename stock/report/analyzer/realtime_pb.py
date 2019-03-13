@@ -53,7 +53,7 @@ def calc_pb(code, name, stock):
     old.mktcap = stock.mktcap
     old.pb = round(old.mktcap / old.sheq, 2)
 
-    save(old)
+    session.add(old)
     logging.info("%s %s pb save ok", code, name)
 
 

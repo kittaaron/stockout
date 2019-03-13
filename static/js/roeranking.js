@@ -7,6 +7,7 @@ var vm = new Vue({
         cur: 1,
         all: 100,
         page_size: 200,
+        searchCode: null
     },
     // 页面加载完执行，用vue的create或者mounted函数
     mounted: function() {
@@ -19,9 +20,13 @@ var vm = new Vue({
     methods: {
         get_ranking_wroe_list: function() {
             var that = this;
+            var params = {'page_size': that.page_size, 'page': that.cur - 1};
+            if (!!that.searchCode) {
+                params.code = that.searchCode;
+            }
             $.ajax({
                 type: "GET",
-                data: {'page_size': that.page_size, 'page': that.cur - 1},
+                data: params,
                 url: "/get_ranking_wroe",
                 dataType: "json",
                 async: false,
@@ -38,6 +43,9 @@ var vm = new Vue({
         to_detail: function(code) {
             detail_page = "detail.html#/?code=" + code;
             window.open(detail_page, '_blank');
+        },
+        search: function() {
+            var searchCode = this.searchCode;
         },
         listen: function (data) {
             console.log("当前页: ", data);

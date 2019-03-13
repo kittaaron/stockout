@@ -20,6 +20,7 @@ from sqlalchemy import and_
 爬取钢铁价格爬虫
 """
 
+session = getSession()
 
 class SzseSpider(scrapy.Spider):
     name = "steel_price"
@@ -79,7 +80,7 @@ class SzseSpider(scrapy.Spider):
                 old_data.type = 1
                 old_data.date = dateI
                 old_data.price = price
-            save(old_data)
+            session.add(old_data)
             self.log("%s %s元/吨" % (dateI, price))
 
     def err_callback(self, response):

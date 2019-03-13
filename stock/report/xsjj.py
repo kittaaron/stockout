@@ -15,11 +15,7 @@ from dateutil.relativedelta import relativedelta
 """
 
 
-def save_list(datas, autocommit=True):
-    getSession().add_all(datas)
-    if autocommit:
-        getSession().commit()
-
+session = getSession()
 
 def get_xsjj_by_code_time(code, start_date, end_date):
     xsjj_datas = getSession().query(xsjj_model).filter(
@@ -38,7 +34,7 @@ def dump_xsjj(year, month):
         xsjj_data.count = row['count']
         xsjj_data.ratio = float(row['ratio'])
         list.append(xsjj_data)
-    save_list(list)
+    session.add_all(list)
 
 
 if __name__ == '__main__':

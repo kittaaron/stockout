@@ -21,6 +21,9 @@ from sqlalchemy import and_
 从网易财经，爬取港交所股票数据
 """
 
+session = getSession()
+
+
 save_dir = "/Users/kittaaron/Downloads/report/"
 
 def build_url(hkse_url, page, pagesize):
@@ -120,13 +123,13 @@ class HKSESpider(scrapy.Spider):
             name = dataI['NAME']
             self.log("获取到数据 %s, %s 市值: %s, 净利润: %s, eps: %s pe: %s" % (code, name, dataI['MARKET_CAPITAL'], dataI['FINANCEDATA']['NET_PROFIT'], dataI['EPS'], dataI['PE']))
 
-            oldstock = getSession().query(HKStock).filter(and_(HKStock.code == code,
+            oldstock = session.query(HKStock).filter(and_(HKStock.code == code,
                                                                  HKStock.date == data_date)).first()
             if oldstock is None:
                 oldstock = HKStock(code=code, name=name, date=data_date)
             build_stockinfo(oldstock, dataI)
             self.log("保存 %s 成功" % oldstock)
-            save(oldstock)
+            session.add(oldstock)
 
     def err_callback(self, response):
         self.log("response: %s" % response.value.response.body.decode('utf8'))

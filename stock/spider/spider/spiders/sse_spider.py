@@ -21,6 +21,8 @@ from sqlalchemy import and_
 爬取上证财报
 """
 
+
+session = getSession()
 save_dir = "/Users/kittaaron/Downloads/report/"
 
 
@@ -32,8 +34,8 @@ class SseSpider(scrapy.Spider):
         #sse_url = 'http://www.sse.com.cn/js/common/stocks/new/%s.js'
         sse_url = "http://query.sse.com.cn/security/stock/queryCompanyStatementNew.do"
 
-        stocks = getSession().query(StockInfo).all()
-        #stocks = getSession().query(StockInfo).filter(StockInfo.code=="000651").all()
+        stocks = session.query(StockInfo).all()
+        #stocks = session.query(StockInfo).filter(StockInfo.code=="000651").all()
         end_date = datetime.date.today().strftime('%Y-%m-%d')
         start_date = str(datetime.datetime.now().year - 1) + "-01-01"
 
@@ -109,7 +111,7 @@ class SseSpider(scrapy.Spider):
             file_suffix = bulletin_file_url[bulletin_file_url.rfind("."):]
 
             if '度报告' in bulletin_title:
-                announce_record = getSession().query(AnnouncePub).filter(and_(AnnouncePub.code == code,
+                announce_record = session.query(AnnouncePub).filter(and_(AnnouncePub.code == code,
                                                                 AnnouncePub.bulletin_year == bulletin_year,
                                                                 AnnouncePub.title == bulletin_title)).first()
                 if announce_record is None:
@@ -119,7 +121,7 @@ class SseSpider(scrapy.Spider):
                 announce_record.file_url = "http://static.sse.com.cn" + bulletin_file_url
                 announce_record.bulletin_type = bulletin_type
                 announce_record.bulletin_year = bulletin_year
-                save(announce_record)
+                session.add(announce_record)
                 self.log('文件名: %s bulletin_file_url %s' % (bulletin_title, bulletin_file_url))
 
                 save_path = save_dir + code + "/" + bulletin_title + file_suffix

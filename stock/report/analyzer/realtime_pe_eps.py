@@ -184,7 +184,7 @@ def calc_pe_eps(code, name, stock):
         old.eval_price = round(old.koufei_eps * (8.5 + 2 * mean_ratio), 2)
         old.eval_price_ratio = round(old.eval_price / float(old.price), 2)
 
-    save(old)
+    session.add(old)
 
 
 def get_stocks_map(stocks):

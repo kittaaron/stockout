@@ -70,6 +70,10 @@ class Zcfzb(Base):
 
     total_not_current_liabi = Column(DECIMAL)
 
+    liab_ratio = Column(DECIMAL)
+
+    non_current_liab_ratio = Column(DECIMAL)
+
     paid_in_capital = Column(DECIMAL)
 
     capital_reserve = Column(DECIMAL)
