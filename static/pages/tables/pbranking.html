@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="../../css/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-paginate.min.js"></script>
 </head>
 
 <body>
@@ -111,7 +113,10 @@
         <div class="content-wrapper">
           <div class="page-header" style="margin-top:2rem">
             <h3 class="page-title">
-              按流动资产减总负债
+              按负债排序
+              <select name="public-choice" v-model="sort_by" @change="changeSort">
+                <option :value="sortField.val" v-for="sortField in sortFields" >{{sortField.desc}}</option>
+              </select>
             </h3>
           </div>
           <div class="row">
@@ -136,6 +141,12 @@
                         <th>
                           pb
                         </th>
+                        <th>
+                          liab_ratio
+                        </th>
+                        <th>
+                          non_current_liab_ratio
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -145,6 +156,8 @@
                         <td>{{val.industry}}</td>
                         <td>{{val.mktcap}}</td>
                         <td>{{val.pb}}</td>
+                        <td>{{val.liab_ratio}}</td>
+                        <td>{{val.non_current_liab_ratio}}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -152,6 +165,8 @@
               </div>
             </div>
           </div>
+
+          <vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
@@ -180,7 +195,6 @@
   <script src="../../js/misc.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="../../js/vue.min.js"></script>
   <script src="../../js/pbranking.js"></script>
   <!-- End custom js for this page-->
 </body>

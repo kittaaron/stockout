@@ -15,6 +15,7 @@ from model.RealTimePEEPS import RealTimePEEPS
 import math
 from model.StockInfo import StockInfo
 from model.report.Zycwzb import Zycwzb
+from model.report.Zcfzb import Zcfzb
 from stock.industry.industry_sts import get_codes
 from utils.db_utils import *
 import numpy as np
@@ -124,6 +125,11 @@ def calc_pe_eps(code, name, stock):
     date2 = get_pre_yearreport_date(date1)
     date3 = get_pre_yearreport_date(date2)
     date4 = get_pre_yearreport_date(date3)
+    zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
+    # 负债率
+    liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
+    non_current_liab_ratio = zcfzb.non_current_liab_ratio if zcfzb is not None else None
+    # 非流动负债率(长期负债率)
     zycwzb1 = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).order_by(desc(Zycwzb.date)).limit(1).first()
     if zycwzb1 is None:
         logging.error("%s %s 没有找到财报信息", code, name)
@@ -174,6 +180,9 @@ def calc_pe_eps(code, name, stock):
     old.pe4 = pe4
     old.date = hist.date
     old.price = hist.close
+    old.liab_ratio = liab_ratio
+    old.non_current_liab_ratio = non_current_liab_ratio
+
     # eval_pe = E * (8.5 + 2 * R)  或者 股价=E*(2R+8.5)*4.4/Y (Y为国债利率)
 
     mean_ratio = get_mean_ratio1(code, name, old)

@@ -195,7 +195,6 @@ if __name__ == '__main__':
         end_date = get_pre_transact_date(end_date)
 
     argv = len(sys.argv)
-    start_date = '2018-12-14'
     if argv > 2:
         start_date = sys.argv[1]
         end_date = sys.argv[2]

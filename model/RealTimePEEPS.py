@@ -28,6 +28,8 @@ class RealTimePEEPS(Base):
     eval_price = Column(DECIMAL)
     eval_price_ratio = Column(DECIMAL)
     std_devi = Column(DECIMAL)
+    liab_ratio = Column(DECIMAL)
+    non_current_liab_ratio = Column(DECIMAL)
 
     latest_report_date = Column(String)
     date = Column(String)

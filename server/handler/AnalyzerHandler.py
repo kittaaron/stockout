@@ -54,7 +54,8 @@ class PBRankingHandler(BaseHandler):
     def get(self):
         page = self.get_query_argument("page", 0)
         page_size = self.get_query_argument("page_size", 200)
-        datas = get_pb_ranking_datas(page, page_size)
+        sort_by = self.get_query_argument("sort_by", 'pb')
+        datas = get_pb_ranking_datas(page, page_size, sort_by)
         self.write(super().return_json(datas))
 
 

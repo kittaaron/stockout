@@ -6,7 +6,7 @@ var vm = new Vue({
         ranking_wroe_list: [],
         cur: 1,
         all: 100,
-        page_size: 200,
+        page_size: 500,
         searchCode: null
     },
     // 页面加载完执行，用vue的create或者mounted函数

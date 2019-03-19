@@ -6,6 +6,7 @@ import config.logginconfig
 from stock.report.report_utils import *
 from utils.db_utils import *
 from model.report.Zycwzb import Zycwzb
+from model.report.Zcfzb import Zcfzb
 from sqlalchemy import *
 from model.StockInfo import StockInfo
 from model.RealTimePEEPS import RealTimePEEPS
@@ -120,7 +121,11 @@ def get_wroe_ranking_datas(page, pageSize, code):
         for zycwzb in zycwzbs:
             code = zycwzb.code
             name = zycwzb.name
-            logging.info("%s %s wroe: %s", code, name, zycwzb.wroe)
+            #logging.info("%s %s wroe: %s", code, name, zycwzb.wroe)
+            zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
+            # 负债率
+            liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
+            non_current_liab_ratio = zcfzb.non_current_liab_ratio if zcfzb is not None else None
             zycwzb.price = realtimepeeps_map[code].price
             zycwzb.eps = realtimepeeps_map[code].eps1
             zycwzb.pe = realtimepeeps_map[code].pe1
@@ -132,9 +137,18 @@ def get_wroe_ranking_datas(page, pageSize, code):
             zycwzb.mktcap = round(stocks_map[code].mktcap / 10000, 2)
             zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
             zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
+            zycwzb.liab_ratio = liab_ratio
+            zycwzb.non_current_liab_ratio = non_current_liab_ratio
+            if zycwzb.koufei_pe < 25 and liab_ratio < 50 and non_current_liab_ratio < 30:
+                #logging.info("%s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
+                zycwzb.good = 1
+            if zycwzb.koufei_pe < 16 and liab_ratio < 40 and non_current_liab_ratio < 10:
+                logging.info("%s %s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.industry, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
+                zycwzb.verygood = 1
+
 
             ret.append(zycwzb)
-        logging.info("return cnt: %s", len(ret))
+        logging.info(": %s", len(ret))
 
         return ret
     except Exception as e:
@@ -189,18 +203,23 @@ def get_netflow_ranking_datas(page, pageSize):
         session.close()
 
 
-def get_pb_ranking_datas(page, pageSize):
+def get_pb_ranking_datas(page, pageSize, sort_by):
     try:
         """
             获取根据pe排名的股票数据
         :return:
         """
-        page = 0 if not page else page
-        pageSize = 100 if not pageSize else pageSize
+        page = 0 if not page else int(page)
+        pageSize = 100 if not pageSize else int(pageSize)
         offset = page * pageSize
-        latest_record_date = get_latest_record_date()
+        #latest_record_date = get_latest_record_date()
         # 获取wroe排名前100的数据
-        rankingpbs = session.query(RealTimePB).order_by(RealTimePB.pb).limit(pageSize).offset(offset).all()
+        sort_by_field = RealTimePB.pb
+        if sort_by == 'liab_ratio':
+            sort_by_field = RealTimePB.liab_ratio
+        if sort_by == 'non_current_liab_ratio':
+            sort_by_field = RealTimePB.non_current_liab_ratio
+        rankingpbs = session.query(RealTimePB).order_by(sort_by_field).limit(pageSize).offset(offset).all()
         codes = get_codes(rankingpbs)
 
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
@@ -225,7 +244,7 @@ def get_pb_ranking_datas(page, pageSize):
 
         return ret
     except Exception as e:
-        pass
+        logging.error(e)
     finally:
         session.close()
 

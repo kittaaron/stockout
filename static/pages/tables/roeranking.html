@@ -18,6 +18,10 @@
   <link rel="stylesheet" href="../../css/pagination.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
+  <style type="text/css">
+    .redline {color: #CD2626}
+    .purpleline {color: #B23AEE}
+  </style>
   <script src="../../js/vue.min.js"></script>
   <script src="../../js/vue-paginate.min.js"></script>
 </head>
@@ -120,13 +124,7 @@
                     <thead>
                       <tr>
                         <th>
-                          code
-                        </th>
-                        <th>
-                          name
-                        </th>
-                        <th>
-                          industry
+                          股票
                         </th>
                         <!--<th>
                           date
@@ -135,19 +133,16 @@
                           wroe
                         </th>
                         <th>
-                          price
+                          当前价
                         </th>
                         <th>
-                          eps
+                          负债率(非流动负债率)
                         </th>
                         <th>
-                          pe
+                          动态pe(扣非pe)
                         </th>
                         <th>
-                          koufei_pe
-                        </th>
-                        <th>
-                          上一年度pe
+                          静态pe
                         </th>
                         <th>
                           预测PE/价格
@@ -164,16 +159,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in ranking_wroe_list" v-bind:style="{'background-color': val.mktcap < 100 ? '#6495ED' : ''}">
-                        <td>{{val.code}}</td>
-                        <td>{{val.name}}</td>
-                        <td>{{val.industry}}</td>
+                      <tr v-cloak v-for="val in ranking_wroe_list" v-bind:style="{'background-color': val.mktcap < 100 ? '#6495ED' : ''}" :class="val.verygood == 1 ? 'purpleline' : (val.good == 1 ? 'redline' : '')">
+                        <td>{{val.code}} {{val.name}}({{val.industry}})</td>
                         <!--<td>{{val.date}}</td>-->
                         <td>{{val.wroe}}</td>
                         <td>{{val.price}}</td>
-                        <td>{{val.eps}}</td>
-                        <td>{{val.pe}}</td>
-                        <td>{{val.koufei_pe}}</td>
+                        <td>{{val.liab_ratio}}({{val.non_current_liab_ratio}})</td>
+                        <td>{{val.pe}}({{val.koufei_pe}})</td>
                         <td>{{val.lastyear_pe}}</td>
                         <td>{{val.predict_pe}}/{{val.predict_price}}</td>
                         <td>{{val.mktcap}}</td>
