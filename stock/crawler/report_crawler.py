@@ -64,16 +64,25 @@ def download_one(url, code):
 
 
 if __name__ == '__main__':
-    stocks = getSession().query(StockInfo).all()
+    stocks = session.query(StockInfo).all()
     #stocks = getSession().query(StockInfo).filter(StockInfo.code =='002943').all()
+    iscon = True
+    i = 0
     for row in stocks:
         if row is None:
             continue
         try:
             # 股票代码
+            i = i+1
             code = row.code
+            if code == '603351':
+                iscon = false
+            if iscon == True:
+                logging.info('%s continue', code)
+                continue
             download_all(code)
-            time.sleep(1)
+            logging.info("第 %s 条", i)
+            time.sleep(3)
         except Exception as e:
             logging.warning("%s %s exception when downloading.", row.code, row.name)
             time.sleep(5)

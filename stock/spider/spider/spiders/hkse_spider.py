@@ -26,6 +26,7 @@ session = getSession()
 
 save_dir = "/Users/kittaaron/Downloads/report/"
 
+
 def build_url(hkse_url, page, pagesize):
     req_num = str(random.randint(1, 9999))
     param = ""

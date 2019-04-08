@@ -63,6 +63,7 @@ def handle_zycwzb(code, name):
                 continue
 
             obj = Zycwzb(code=code, name=name, date=date)
+            logging.info("准备录入主要财务指标 %s %s %s 数据", code, name, date)
             build_zycwzb_obj(obj, val)
             records.append(obj)
 
@@ -142,6 +143,7 @@ def handle_zcfzb(code, name):
                 obj = zcfzb
             else:
                 obj = Zcfzb(code=code, name=name, date=date)
+            logging.info("准备录入资产负债表 %s %s %s 数据", code, name, date)
             build_zcfzb_obj(obj, val)
             records.append(obj)
         session.add_all(records)
@@ -206,6 +208,7 @@ def handle_cwbbzy(code, name):
                 continue
 
             obj = Cwbbzy(code=code, name=name, date=date)
+            logging.info("准备录入财务报表摘要 %s %s %s 数据", code, name, date)
             build_cwbbzy_obj(obj, val)
             records.append(obj)
         session.add_all(records)
@@ -258,6 +261,7 @@ def handle_lrb(code, name):
                 continue
 
             obj = Lrb(code=code, name=name, date=date)
+            logging.info("准备录入利润表 %s %s %s 数据", code, name, date)
             build_lrb_obj(obj, val)
             records.append(obj)
         session.add_all(records)
@@ -318,6 +322,7 @@ def handle_xjllb(code, name):
                 continue
 
             obj = Xjllb(code=code, name=name, date=date)
+            logging.info("准备录入现金流量表 %s %s %s 数据", code, name, date)
             build_xjllb_obj(obj, val)
             records.append(obj)
         session.add_all(records)

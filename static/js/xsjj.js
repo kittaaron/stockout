@@ -2,43 +2,37 @@ var vm = new Vue({
   // 选项
     el: '#content',
     data: {
-        ranking_pe_list: [],
-        ranking_wroe_list: [],
+        xsjj_list: [],
         cur: 1,
         all: 100,
-        page_size: 500,
-        searchCode: null,
-        market_time_in: null,
-        in_years: [{'val': null, 'desc': '不限'},{'val': 1, 'desc': '1年内'},{'val': 3, 'desc': '3年内'},{'val': 5, 'desc': '5年内'}]
+        page_size: 200,
+        month_from: 1,
+        month_to: 1,
+        month_froms: [{'val': 1, 'desc': '前1个月'},{'val': 2, 'desc': '前2个月'},{'val': 3, 'desc': '前3个月'},{'val': 6, 'desc': '前6个月'}],
+        month_tos: [{'val': 1, 'desc': '后1个月'},{'val': 2, 'desc': '后2个月'},{'val': 3, 'desc': '后3个月'},{'val': 6, 'desc': '后6个月'},{'val': 12, 'desc': '后12个月'}]
     },
     // 页面加载完执行，用vue的create或者mounted函数
     mounted: function() {
-        this.get_ranking_wroe_list();
+        this.get_xsjj_list();
     },
     components: {
         // 引用组件
         'vue-pagination': Vue.Pagination
     },
     methods: {
-        get_ranking_wroe_list: function() {
+        get_xsjj_list: function() {
             var that = this;
-            var params = {'page_size': that.page_size, 'page': that.cur - 1};
-            if (!!that.searchCode) {
-                params.code = that.searchCode;
-            }
-            if (!!that.market_time_in) {
-                params.market_time_in = that.market_time_in;
-            }
+            var params = {'page_size': that.page_size, 'page': that.cur - 1, 'month_from': that.month_from, 'month_to': that.month_to};
             $.ajax({
                 type: "GET",
                 data: params,
-                url: "/get_ranking_wroe",
+                url: "/get_xsjj_list",
                 dataType: "json",
                 async: false,
                 success: function(data) {
                     var list_data = data.data;
                     that.all = data.total_page;
-                    that.ranking_wroe_list = list_data;
+                    that.xsjj_list = list_data;
                 },
                 error: function(data) {
                     alert("获取数据失败");
@@ -49,16 +43,12 @@ var vm = new Vue({
             detail_page = "detail.html#/?code=" + code;
             window.open(detail_page, '_blank');
         },
-        select_market_time_in: function(select_market_time_in) {
-
-        },
         search: function() {
-            var searchCode = this.searchCode;
         },
         listen: function (data) {
             console.log("当前页: ", data);
             this.cur = data;
-            this.get_ranking_wroe_list();
+            this.get_xsjj_list();
         }
     }
 })

@@ -82,28 +82,27 @@ def dump_hist_data(start_date, end_date):
             HistData.code).first()
         mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
         maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
-        logging.info("%s %s 已dump数据 %s至%s %s", code, name, mindate, maxdate, i)
+        logging.info("%s %s 已dump数据 %s至%s,参数时间 %s %s %s", code, name, mindate, maxdate, start_date, end_date, i)
 
         i += 1
 
-        if mindate < start_date < maxdate < end_date or maxdate < start_date:
-            start_date = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
-                '%Y-%m-%d')
+        start_date_i = start_date
+        if (mindate < start_date < maxdate < end_date) or maxdate < start_date:
+            start_date_i = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         elif start_date < mindate < end_date < maxdate:
-            end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime(
-                '%Y-%m-%d')
+            end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
         elif end_date < mindate:
             pass
         else:
             logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
             continue
-        logging.info("开始dump %s %s %s~%s", code, name, start_date, end_date)
+        logging.info("开始dump %s %s %s~%s", code, name, start_date_i, end_date)
 
-        df = ts.get_hist_data(code, start=start_date, end=end_date)
+        df = ts.get_hist_data(code, start=start_date_i, end=end_date)
         stock_hist_data = []
         if df is None or df.empty is True:
             logging.info("%s %s get_hist_data 没有取到历史数据, 开始从get_k_data获取", code, name)
-            df = ts.get_k_data(code, start=start_date, end=end_date)
+            df = ts.get_k_data(code, start=start_date_i, end=end_date)
             if df is None or df.empty is True:
                 logging.info("%s %s get_k_data 没有取到历史数据.", code, name)
                 continue
@@ -123,7 +122,7 @@ def dump_hist_data(start_date, end_date):
 
                 stock_hist_data.append(hist_data)
         session.add_all(stock_hist_data)
-        logging.info("%s %s %s~%s hist data save ok", code, name, start_date, end_date)
+        logging.info("%s %s %s~%s hist data save ok", code, name, start_date_i, end_date)
 
 
 def get_start_date():
@@ -199,7 +198,6 @@ if __name__ == '__main__':
         start_date = sys.argv[1]
         end_date = sys.argv[2]
     if start_date > end_date:
-        logging.warning("开始日期 %s 不能大于结束日期 %s", start_date, end_date)
-        exit(0)
+        start_date = end_date
     logging.info("%s %s", start_date, end_date)
     dump_hist_data(start_date, end_date)

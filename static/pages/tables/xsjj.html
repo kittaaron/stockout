@@ -105,6 +105,12 @@
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="javascript:return false;" href="/static/pages/tables/xsjj.html">
+              <span class="menu-title">xsjj</span>
+              <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- partial -->
@@ -114,11 +120,13 @@
             <h3 class="page-title">
               按最近财报的ROE排名
             </h3>
-            <select name="market_time_in" v-model="market_time_in" @change="select_market_time_in">
-              <option :value="in_year.val" v-for="in_year in in_years">{{in_year.desc}}</option>
+            <select name="month_from" v-model="month_from">
+              <option :value="month_from_i.val" v-for="month_from_i in month_froms">{{month_from_i.desc}}</option>
             </select>
-            <input type="text" v-model="searchCode">
-            <button v-on:click="get_ranking_wroe_list()" class=" btn-outline-primary" style="line-height: 0.3; padding: 0.5rem 1rem">查询</button>
+            <select name="month_to" v-model="month_to">
+              <option :value="month_to.val" v-for="month_to in month_tos">{{month_from.desc}}</option>
+            </select>
+            <button v-on:click="get_xsjj_list()" class=" btn-outline-primary" style="line-height: 0.3; padding: 0.5rem 1rem">查询</button>
           </div>
           <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
@@ -130,9 +138,9 @@
                         <th>
                           股票
                         </th>
-                        <!--<th>
-                          date
-                        </th>-->
+                        <th>
+                          解禁时间(比例)
+                        </th>
                         <th>
                           wroe
                         </th>
@@ -163,9 +171,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in ranking_wroe_list" v-bind:style="{'background-color': val.mktcap < 100 ? '#6495ED' : ''}" :class="val.verygood == 1 ? 'purpleline' : (val.good == 1 ? 'redline' : '')">
+                      <tr v-cloak v-for="val in xsjj_list" v-bind:style="{'background-color': val.mktcap < 100 ? '#6495ED' : ''}" :class="val.verygood == 1 ? 'purpleline' : (val.good == 1 ? 'redline' : '')">
                         <td>{{val.code}} {{val.name}}({{val.industry}})</td>
-                        <!--<td>{{val.date}}</td>-->
+                        <td>{{val.jjsjtime}}({{val.jjsjratio}})</td>
                         <td>{{val.wroe}}</td>
                         <td>{{val.price}}</td>
                         <td>{{val.liab_ratio}}({{val.non_current_liab_ratio}})</td>
@@ -214,7 +222,7 @@
   <!-- inject:js -->
   <script src="../../js/off-canvas.js"></script>
   <script src="../../js/misc.js"></script>
-  <script src="../../js/roeranking.js"></script>
+  <script src="../../js/xsjj.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
   <!-- End custom js for this page-->

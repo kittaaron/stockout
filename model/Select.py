@@ -21,6 +21,10 @@ class Select(Base):
     danger_pe = Column(Integer)
 
     predict_net = Column(Integer)
+
+    dividend = Column(DECIMAL)
+
+    dividend_year = Column(String)
     # 股票名称
     cc = Column(Integer)
 

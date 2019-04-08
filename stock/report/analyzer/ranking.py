@@ -97,7 +97,7 @@ def get_total_wroe_ranking_row():
         session.close()
 
 
-def get_wroe_ranking_datas(page, pageSize, code):
+def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None):
     try:
         """
             获取根据pe排名的股票数据
@@ -108,9 +108,14 @@ def get_wroe_ranking_datas(page, pageSize, code):
         offset = page * pageSize
         latest_record_date = get_latest_record_date()
         # 获取wroe排名前100的数据
-        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code == code if code is not None else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code.in_(paramcodes) if len(paramcodes) > 0 else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
         codes = get_codes(zycwzbs)
 
+        #stocks = []
+        #if market_time_in is not None:
+        #    after_date = (datetime.date.today() - datetime.timedelta(days=int(market_time_in) * 365)).strftime('%Y-%m-%d')
+        #    stocks = session.query(StockInfo).filter(and_(StockInfo.code.in_(codes), StockInfo.timeToMarket >= after_date)).all()
+        #else:
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
         stocks_map = get_stocks_map(stocks)
 
@@ -118,9 +123,16 @@ def get_wroe_ranking_datas(page, pageSize, code):
         realtimepeeps_map = build_map(realtimepeepss)
 
         ret = []
+        filter_date_start = None
+        if market_time_in is not None:
+            filter_date_start = (datetime.date.today() - datetime.timedelta(days=int(market_time_in) * 365)).strftime('%Y%m%d')
         for zycwzb in zycwzbs:
             code = zycwzb.code
             name = zycwzb.name
+            stock_info = stocks_map[code]
+            if market_time_in is not None and filter_date_start is not None and stock_info.timeToMarket <= filter_date_start:
+                logging.info("%s %s 上市时间 %s 非 %s 年以内", code, name, market_time_in, stock_info.timeToMarket)
+                continue
             #logging.info("%s %s wroe: %s", code, name, zycwzb.wroe)
             zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
             # 负债率
@@ -132,9 +144,9 @@ def get_wroe_ranking_datas(page, pageSize, code):
             zycwzb.lastyear_pe = realtimepeeps_map[code].pe2
             zycwzb.koufei_pe = realtimepeeps_map[code].koufei_pe
             zycwzb.net_assets = round((zycwzb.total_assets - zycwzb.total_debts)/10000, 2)
-            zycwzb.industry = stocks_map[code].industry
+            zycwzb.industry = stock_info.industry
             zycwzb.variance = round(abs(zycwzb.net_profit - zycwzb.npad) / zycwzb.net_profit, 2) if zycwzb.net_profit != 0 else 0
-            zycwzb.mktcap = round(stocks_map[code].mktcap / 10000, 2)
+            zycwzb.mktcap = round(stock_info.mktcap / 10000, 2)
             zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
             zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
             zycwzb.liab_ratio = liab_ratio

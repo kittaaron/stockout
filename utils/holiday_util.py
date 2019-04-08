@@ -3,10 +3,9 @@ from model.Holiday import Holiday
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import dbconfig
+from utils.db_utils import *
 
-engine = create_engine(dbconfig.getConfig('database', 'connURL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+session = getSession()
 
 
 def get_next_transact_date(date_str):

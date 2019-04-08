@@ -15,8 +15,11 @@ from stock.basic import get_codes_by_names
 from utils.db_utils import *
 
 
+session = getSession()
+
+
 def get_select_codes():
-    selected_stocks = getSession().query(Select).filter().all()
+    selected_stocks = get_all_select()
     codes = []
 
     for selected in selected_stocks:
@@ -25,7 +28,7 @@ def get_select_codes():
 
 
 def get_all_select():
-    selected_stocks = getSession().query(Select).filter().all()
+    selected_stocks = session.query(Select).filter().all()
     return selected_stocks
 
 
@@ -36,6 +39,9 @@ def get_all_select_map():
         ret[selected_stock.code] = selected_stock
     return ret
 
+
+def save_select(select_info):
+    session.add(select_info)
 
 if __name__ == '__main__':
     pass

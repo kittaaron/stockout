@@ -53,9 +53,9 @@ def calc_pb(code, name, stock):
     old.net_assets = zycwzb.total_assets - zycwzb.total_debts
     old.sheq = zycwzb.sheq
     old.mktcap = stock.mktcap
-    old.pb = round(old.mktcap / old.sheq, 2)
-    old.liab_ratio = round(old.total_debts * 100 / old.total_assets, 2) if old.total_debts is not None and old.total_assets is not None else None
-    old.non_current_liab_ratio = round((old.total_debts - old.flow_debts) * 100/ old.total_assets, 2) if old.total_debts is not None and old.total_assets is not None and old.flow_debts is not None else None
+    old.pb = round(old.mktcap / old.sheq, 2) if old.sheq > 0 else None
+    old.liab_ratio = round(old.total_debts * 100 / old.total_assets, 2) if old.total_debts > 0 and old.total_assets > 0 else None
+    old.non_current_liab_ratio = round((old.total_debts - old.flow_debts) * 100/ old.total_assets, 2) if old.total_debts is not None and old.total_assets > 0 and old.flow_debts is not None else None
 
     session.add(old)
     logging.info("%s %s pb save ok", code, name)
