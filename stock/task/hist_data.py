@@ -81,7 +81,7 @@ def dump_hist_data(start_date, end_date):
         maxdatedata = session.query(HistData.code, func.max(HistData.date)).filter(HistData.code == code).group_by(
             HistData.code).first()
         mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
-        maxdate = maxdatedata[1] if maxdatedata is not None else datetime.date.today().strftime('%Y-%m-%d')
+        maxdate = maxdatedata[1] if maxdatedata is not None else '2013-01-01'
         logging.info("%s %s 已dump数据 %s至%s,参数时间 %s %s %s", code, name, mindate, maxdate, start_date, end_date, i)
 
         i += 1
