@@ -21,6 +21,7 @@ if __name__ == '__main__':
     attention_stocks = []
     recommend_stocks = []
     chicang_stocks = []
+    now_year = datetime.date.today().year
     for code in codes:
         latest_hist = session.query(HistData).filter(and_(HistData.code == code)).order_by(desc(HistData.date)).first()
         stockinfo = stocks_map[code]
@@ -29,8 +30,14 @@ if __name__ == '__main__':
         # 没有股息率，把最近的股息率拿出来推测股息率
         latest_fpya = session.query(Fpya).filter(Fpya.code == code).order_by(desc(Fpya.report_date)).first()
         if latest_fpya is not None:
-            select_info.dividend = round(latest_fpya.divi * 10 / float(latest_hist.close), 2)
             select_info.dividend_year = latest_fpya.year
+            if int(now_year) - 1 == latest_fpya.year:
+                ## 今年的分红
+                select_info.dividend = round(latest_fpya.divi * 10 / float(latest_hist.close), 2)
+            elif int(now_year) - 2 == latest_fpya.year:
+                select_info.dividend = round(latest_fpya.divi * 10 * 10 / ((10 + latest_fpya.shares) * float(latest_hist.close)), 2)
+            else:
+                pass
             save_select(select_info)
 
         predict_net = select_info.predict_net
@@ -78,9 +85,9 @@ if __name__ == '__main__':
         attention_params = [attention_stock_names[:-1], attention_real_pes[:-1]]
         if len(recommend_stocks) > 0:
             logging.info("到达安全价格(当前PE): %s", recommend_params)
-            #sendRecommendMsgTX(recommend_params)
+            sendRecommendMsgTX(recommend_params)
         else:
             logging.info("接近安全价格(当前PE): %s", attention_params)
-            #sendAttentionMsgTX(attention_params)
+            sendAttentionMsgTX(attention_params)
     else:
         logging.info("没有需要注意的股票")

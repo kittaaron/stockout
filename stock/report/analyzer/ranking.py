@@ -15,6 +15,7 @@ from numpy import *
 from model.Buffett import Buffett
 from model.RealTimePB import RealTimePB
 from model.HistData import HistData
+import traceback
 
 
 session = getSession()
@@ -81,7 +82,7 @@ def get_pe_ranking_datas(page, pageSize):
         logging.info("ret cnt: %s", len(ret))
         return ret
     except Exception as e:
-        pass
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -92,7 +93,7 @@ def get_total_wroe_ranking_row():
         cnt = session.query(func.count(Zycwzb.id)).filter(and_(Zycwzb.date == latest_record_date)).scalar()
         return cnt
     except Exception as e:
-        pass
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -138,25 +139,26 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
             # 负债率
             liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
             non_current_liab_ratio = zcfzb.non_current_liab_ratio if zcfzb is not None else None
-            zycwzb.price = realtimepeeps_map[code].price
-            zycwzb.eps = realtimepeeps_map[code].eps1
-            zycwzb.pe = realtimepeeps_map[code].pe1
-            zycwzb.lastyear_pe = realtimepeeps_map[code].pe2
-            zycwzb.koufei_pe = realtimepeeps_map[code].koufei_pe
+            zycwzb.liab_ratio = liab_ratio
+            zycwzb.non_current_liab_ratio = non_current_liab_ratio
             zycwzb.net_assets = round((zycwzb.total_assets - zycwzb.total_debts)/10000, 2)
             zycwzb.industry = stock_info.industry
             zycwzb.variance = round(abs(zycwzb.net_profit - zycwzb.npad) / zycwzb.net_profit, 2) if zycwzb.net_profit != 0 else 0
             zycwzb.mktcap = round(stock_info.mktcap / 10000, 2)
-            zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
-            zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
-            zycwzb.liab_ratio = liab_ratio
-            zycwzb.non_current_liab_ratio = non_current_liab_ratio
-            if zycwzb.koufei_pe < 25 and liab_ratio < 50 and non_current_liab_ratio < 30:
-                #logging.info("%s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
-                zycwzb.good = 1
-            if zycwzb.koufei_pe < 16 and liab_ratio < 40 and non_current_liab_ratio < 10:
-                logging.info("%s %s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.industry, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
-                zycwzb.verygood = 1
+            if code in realtimepeeps_map:
+                zycwzb.price = realtimepeeps_map[code].price
+                zycwzb.eps = realtimepeeps_map[code].eps1
+                zycwzb.pe = realtimepeeps_map[code].pe1
+                zycwzb.lastyear_pe = realtimepeeps_map[code].pe2
+                zycwzb.koufei_pe = realtimepeeps_map[code].koufei_pe
+                zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
+                zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
+                if zycwzb.koufei_pe < 25 and liab_ratio < 50 and non_current_liab_ratio < 30:
+                    #logging.info("%s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
+                    zycwzb.good = 1
+                if zycwzb.koufei_pe < 16 and liab_ratio < 40 and non_current_liab_ratio < 10:
+                    logging.info("%s %s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.industry, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
+                    zycwzb.verygood = 1
 
 
             ret.append(zycwzb)
@@ -164,7 +166,7 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
 
         return ret
     except Exception as e:
-        pass
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -210,7 +212,7 @@ def get_netflow_ranking_datas(page, pageSize):
 
         return ret
     except Exception as e:
-        pass
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -256,7 +258,7 @@ def get_pb_ranking_datas(page, pageSize, sort_by):
 
         return ret
     except Exception as e:
-        logging.error(e)
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -270,7 +272,7 @@ def get_reports_detail(code, start_date, end_date):
                                                            Zycwzb.date <= end_date)).order_by(desc(Zycwzb.date)).all()
         return zycwzbs
     except Exception as e:
-        pass
+        traceback.print_exc()
     finally:
         session.close()
 
