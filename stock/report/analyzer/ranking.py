@@ -108,6 +108,7 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
         pageSize = 100 if not pageSize else pageSize
         offset = page * pageSize
         latest_record_date = get_latest_record_date()
+        logging.info("latest_record_date: %s", latest_record_date)
         # 获取wroe排名前100的数据
         zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code.in_(paramcodes) if len(paramcodes) > 0 else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
         codes = get_codes(zycwzbs)
