@@ -21,7 +21,15 @@
                 exchangeRate_data.push(value.exchangeRate)
                 marketValue_data.push(value.marketValue)
             });
-            renderShMarketChart(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data)
+            var pe_lt_cnt = 0;
+            var latest_pe = profitRate_data[profitRate_data.length - 1];
+            $.each(profitRate_data, function(index, value){
+                if (value <= latest_pe) {
+                    pe_lt_cnt+=1;
+                }
+            })
+            var hist_pos = (pe_lt_cnt * 100 / profitRate_data.length).toFixed(2)
+            renderShMarketChart(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data, hist_pos)
          },
          error: function(data) {
             alert("获取数据失败");
@@ -30,7 +38,7 @@
      });
   }
 
-  var renderShMarketChart = function(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data) {
+  var renderShMarketChart = function(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data, hist_pos) {
     var myChart = echarts.init(document.getElementById('sh_market_data_chart'));
         if (!xAxis_data) {
             alert("获取数据失败.")
@@ -40,7 +48,7 @@
         // 线图
         var option = {
             title: {
-                text: '上证大盘指标历史图'
+                text: '上证大盘指标历史图\n\r(历史分位' + hist_pos + ')'
             },
             tooltip: {
                 trigger: 'axis'
@@ -112,7 +120,7 @@
                 }
                 if (value.zbtype == 14) {
                     profitRate_data.push(value.brsz)
-                } else if (value.zbtype == 12) {
+                } else if (value.zbtype == 7) {
                     trdAmt_data.push(value.brsz)
                 } else if (value.zbtype == 15) {
                     exchangeRate_data.push(value.brsz)
@@ -120,7 +128,15 @@
                     marketValue_data.push(value.brsz)
                 }
             });
-            renderSZMarketChart(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data)
+            var pe_lt_cnt = 0;
+            var latest_pe = profitRate_data[profitRate_data.length - 1];
+            $.each(profitRate_data, function(index, value){
+                if (value <= latest_pe) {
+                    pe_lt_cnt+=1;
+                }
+            })
+            var hist_pos = (pe_lt_cnt * 100 / profitRate_data.length).toFixed(2)
+            renderSZMarketChart(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data,hist_pos)
          },
          error: function(data) {
             alert("获取数据失败");
@@ -129,7 +145,7 @@
      });
   }
 
-  var renderSZMarketChart = function(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data) {
+  var renderSZMarketChart = function(xAxis_data, profitRate_data, trdAmt_data, exchangeRate_data, marketValue_data,hist_pos) {
     var myChart = echarts.init(document.getElementById('sz_market_data_chart'));
         if (!xAxis_data) {
             alert("获取数据失败.")
@@ -139,7 +155,7 @@
         // 线图
         var option = {
             title: {
-                text: '深证大盘指标历史图'
+                text: '深证大盘指标历史图\n\r(历史分位' + hist_pos + ')'
             },
             tooltip: {
                 trigger: 'axis'

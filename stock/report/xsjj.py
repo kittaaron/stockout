@@ -36,7 +36,7 @@ def get_xsjj_by_range(page, page_size, start_date, end_date):
 
 
 def get_xsjj_totals_by_range(start_date, end_date):
-    cnt = session.query(func.count(xsjj_model.id)).filter(and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date)).scalar()
+    cnt = session.query(func.count(xsjj_model.id)).filter(and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).scalar()
     return cnt
 
 

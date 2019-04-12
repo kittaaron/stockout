@@ -103,7 +103,7 @@ class XsjjHandler(BaseHandler):
 
         total_row = get_xsjj_totals_by_range(start_date, end_date)
         logging.info("total_row: %s", total_row)
-        total_page = math.ceil(total_row / int(page_size)) + 1
+        total_page = math.ceil(total_row / int(page_size))
         self.write(super().return_pager_resp(list=ranking_datas, total_row=total_row, total_page=total_page))
 
 
