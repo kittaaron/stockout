@@ -69,10 +69,12 @@ var vm = new Vue({
                     static_pe12 = []
                     static_pe16 = []
                     static_pe20 = []
+                    static_pe30 = []
                     dynamic_pe8 = []
                     dynamic_pe12 = []
                     dynamic_pe16 = []
                     dynamic_pe20 = []
+                    dynamic_pe30 = []
                     list_data.forEach(v=>{
                         xAxis_data.push(v.date);
                         price_data.push(v.close);
@@ -80,12 +82,14 @@ var vm = new Vue({
                         static_pe12.push(v.static_pe12);
                         static_pe16.push(v.static_pe16);
                         static_pe20.push(v.static_pe20);
+                        static_pe30.push(v.static_pe30);
                         dynamic_pe8.push(v.dynamic_pe8);
                         dynamic_pe12.push(v.dynamic_pe12);
                         dynamic_pe16.push(v.dynamic_pe16);
                         dynamic_pe20.push(v.dynamic_pe20);
+                        dynamic_pe30.push(v.dynamic_pe30);
                     });
-                    that.render_price_chart(xAxis_data, price_data, static_pe8, static_pe12, static_pe12, static_pe16, dynamic_pe8, dynamic_pe12, dynamic_pe16, dynamic_pe20);
+                    that.render_price_chart(xAxis_data, price_data, static_pe8, static_pe12, static_pe16, static_pe20, static_pe30, dynamic_pe8, dynamic_pe12, dynamic_pe16, dynamic_pe20, dynamic_pe30);
                 },
                 error: function(data) {
                     alert("获取数据失败");
@@ -93,7 +97,7 @@ var vm = new Vue({
             });
         },
 
-        render_price_chart: function(xAxis_data, price_data, static_pe8, static_pe12, static_pe12, static_pe16, dynamic_pe8, dynamic_pe12, dynamic_pe16, dynamic_pe20) {
+        render_price_chart: function(xAxis_data, price_data, static_pe8, static_pe12, static_pe16, static_pe20, static_pe30, dynamic_pe8, dynamic_pe12, dynamic_pe16, dynamic_pe20, dynamic_pe30) {
             var myChart = echarts.init(document.getElementById('price_chart'));
             if (!xAxis_data) {
                 alert("获取数据失败.")
@@ -109,7 +113,7 @@ var vm = new Vue({
                     trigger: 'axis'
                 },
                 legend: {
-                    data:['价格', '静态8pe', '静态12pe', '静态16pe', '静态20pe', '动态8pe', '动态12pe', '动态16pe', '动态20pe'],
+                    data:['价格', '静态8pe', '静态12pe', '静态16pe', '静态20pe', '静态30pe', '动态8pe', '动态12pe', '动态16pe', '动态20pe', '动态30pe'],
                 },
                 xAxis: {
                     type: 'category',
@@ -157,6 +161,12 @@ var vm = new Vue({
                         data:static_pe20
                     },
                     {
+                        name:'静态30pe',
+                        type:'line',
+                        stack: '静态30pe',
+                        data:static_pe30
+                    },
+                    {
                         name:'动态8pe',
                         type:'line',
                         stack: '动态8pe',
@@ -178,7 +188,13 @@ var vm = new Vue({
                         name:'动态20pe',
                         type:'line',
                         stack: '动态20pe',
-                        data:dynamic_pe20
+                        data:dynamic_pe20,
+                    },
+                    {
+                        name:'动态30pe',
+                        type:'line',
+                        stack: '动态30pe',
+                        data:dynamic_pe30
                     }
                 ]
             };

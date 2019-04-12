@@ -173,10 +173,12 @@ def get_price_list(code, start_date, end_date):
             hist_data_i.static_pe12 = round(static_eps * 12, 2)
             hist_data_i.static_pe16 = round(static_eps * 16, 2)
             hist_data_i.static_pe20 = round(static_eps * 20, 2)
+            hist_data_i.static_pe30 = round(static_eps * 30, 2)
             hist_data_i.dynamic_pe8 = round(dynamic_eps * 8, 2)
             hist_data_i.dynamic_pe12 = round(dynamic_eps * 12, 2)
             hist_data_i.dynamic_pe16 = round(dynamic_eps * 16, 2)
             hist_data_i.dynamic_pe20 = round(dynamic_eps * 20, 2)
+            hist_data_i.dynamic_pe30 = round(dynamic_eps * 30, 2)
         return hist_data
     except Exception as e:
         pass

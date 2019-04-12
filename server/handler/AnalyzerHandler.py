@@ -83,13 +83,13 @@ class XsjjHandler(BaseHandler):
         xsjj_ratio_maps = {}
         for xsjj in xsjjs:
             code = xsjj.code
-            ratio = xsjj.code
+            ratio = round(float(xsjj.ratio), 1)
             xsjj_codes.append(code)
             if code in xsjj_time_maps:
                 oldtimeval = xsjj_time_maps[code]
                 oldratioival = xsjj_ratio_maps[code]
                 xsjj_time_maps[code] = oldtimeval + "," + xsjj.date
-                xsjj_ratio_maps[code] = str(oldratioival) + "," + str(ratio)
+                xsjj_ratio_maps[code] = oldratioival + "," + str(ratio)
             else:
                 xsjj_time_maps[code] = xsjj.date
                 xsjj_ratio_maps[code] = str(xsjj.ratio)

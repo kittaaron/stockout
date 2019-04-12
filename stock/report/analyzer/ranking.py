@@ -111,7 +111,24 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
         logging.info("latest_record_date: %s", latest_record_date)
         # 获取wroe排名前100的数据
         zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code.in_(paramcodes) if len(paramcodes) > 0 else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
+        logging.info("获取主要财务指标数据OK")
         codes = get_codes(zycwzbs)
+
+        zcfzbs = getSession().query(Zcfzb).filter(and_(Zcfzb.date == latest_record_date, Zcfzb.code.in_(codes))).all()
+        logging.info("获取资产负债表数据OK.")
+        zcfzbs_map = {}
+        for zcfzbi in zcfzbs:
+            zcfzbs_map[zcfzbi.code] = zcfzbi
+
+        hist_max_date_record = session.query(func.max(HistData.date)).filter(HistData.code.in_(codes)).first()
+        hist_max_date = hist_max_date_record[0]
+        logging.info("获取价格的日期为: %s", hist_max_date)
+
+        hist_datas = session.query(HistData).filter(and_(HistData.date == hist_max_date, HistData.code.in_(codes))).all()
+        logging.info("获取价格数据ok.")
+        hist_datas_map = {}
+        for hist_datas_i in hist_datas:
+            hist_datas_map[hist_datas_i.code] = hist_datas_i
 
         #stocks = []
         #if market_time_in is not None:
@@ -136,7 +153,8 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
                 logging.info("%s %s 上市时间 %s 非 %s 年以内", code, name, market_time_in, stock_info.timeToMarket)
                 continue
             #logging.info("%s %s wroe: %s", code, name, zycwzb.wroe)
-            zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
+            #zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
+            zcfzb = zcfzbs_map[code]
             # 负债率
             liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
             non_current_liab_ratio = zcfzb.non_current_liab_ratio if zcfzb is not None else None
@@ -146,20 +164,28 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
             zycwzb.industry = stock_info.industry
             zycwzb.variance = round(abs(zycwzb.net_profit - zycwzb.npad) / zycwzb.net_profit, 2) if zycwzb.net_profit != 0 else 0
             zycwzb.mktcap = round(stock_info.mktcap / 10000, 2)
+            if code in hist_datas_map:
+                zycwzb.price = hist_datas_map[code].close
+            else:
+                logging.warning("%s 没有最新价格.", code)
             if code in realtimepeeps_map:
-                zycwzb.price = realtimepeeps_map[code].price
+                if not hasattr(zycwzb, 'price'):
+                    logging.info("%s 使用realtimepeeps的最新价格(可能不实时)", code)
+                    zycwzb.price = realtimepeeps_map[code].price
                 zycwzb.eps = realtimepeeps_map[code].eps1
                 zycwzb.pe = realtimepeeps_map[code].pe1
                 zycwzb.lastyear_pe = realtimepeeps_map[code].pe2
                 zycwzb.koufei_pe = realtimepeeps_map[code].koufei_pe
                 zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
                 zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
-                if zycwzb.koufei_pe < 25 and liab_ratio < 50 and non_current_liab_ratio < 30:
+                if zycwzb.koufei_pe < 25 and liab_ratio < 70 and non_current_liab_ratio < 30:
                     #logging.info("%s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
                     zycwzb.good = 1
-                if zycwzb.koufei_pe < 16 and liab_ratio < 40 and non_current_liab_ratio < 10:
+                if zycwzb.koufei_pe < 16 and liab_ratio < 70 and non_current_liab_ratio < 10:
                     logging.info("%s %s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.industry, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
                     zycwzb.verygood = 1
+            else:
+                logging.warning("%s realtimepeeps最新信息没找到.", code)
 
 
             ret.append(zycwzb)

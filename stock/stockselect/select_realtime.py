@@ -22,6 +22,8 @@ if __name__ == '__main__':
     recommend_stocks = []
     chicang_stocks = []
     now_year = datetime.date.today().year
+
+    sts_list = []
     for code in codes:
         latest_hist = session.query(HistData).filter(and_(HistData.code == code)).order_by(desc(HistData.date)).first()
         stockinfo = stocks_map[code]
@@ -49,6 +51,7 @@ if __name__ == '__main__':
         eps = select_info.predict_net / totals
         safe_price = round(eps * select_info.safe_pe, 2)
         fair_price = round(eps * select_info.fair_pe, 2)
+        danger_price = round(eps * select_info.danger_pe, 2)
         select_info.safe_price = safe_price
         select_info.fair_price = fair_price
         real_pe = round(latest_hist.close / eps, 2)
@@ -57,6 +60,23 @@ if __name__ == '__main__':
             recommend_stocks.append(stockinfo)
         elif latest_hist.close <= float(safe_price) * 1.2:
             attention_stocks.append(stockinfo)
+
+        sts_i = {'code': code,
+                 'name': stockinfo.name,
+                 'safe_price': safe_price,
+                 'safe_pe': select_info.safe_pe,
+                 'fair_price': fair_price,
+                 'fair_pe': select_info.fair_pe,
+                 'danger_price': danger_price,
+                 'danger_pe': select_info.danger_pe,
+                 'now_price': latest_hist.close,
+                 'safe_ratio': round((real_pe - select_info.safe_pe) / select_info.safe_pe, 2),
+                 'fair_ratio': round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2),
+                 'dividend_year': select_info.dividend_year,
+                 'dividend': select_info.dividend
+                 }
+        sts_list.append(sts_i)
+        '''
         logging.info("%s %s %s "
                      "安全pe: %s 安全价格: %s - "
                      "合理pe: %s 合理价格: %s - "
@@ -69,6 +89,16 @@ if __name__ == '__main__':
                      round((real_pe - select_info.safe_pe) / select_info.safe_pe, 2),
                      round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2),
                      select_info.dividend_year, select_info.dividend)
+        '''
+
+    sorted_list = sorted(sts_list, key=lambda sts_i: sts_i['fair_ratio'])
+    for list_i in sorted_list:
+        logging.info("%s %s "
+                     "安全价格/pe: %s/%s - 合理价格/pe: %s/%s - 当前价格: %s - 危险价格/pe: %s/%s"
+                     "距安全线: %s, 距合理线: %s, 股息率(%s): %s",
+                     list_i['code'], list_i['name'],
+                     list_i['safe_price'], list_i['safe_pe'], list_i['fair_price'], list_i['fair_pe'], list_i['now_price'], list_i['danger_price'], list_i['danger_pe'],
+                     list_i['safe_ratio'], list_i['fair_ratio'], list_i['dividend_year'], list_i['dividend'])
 
     if len(attention_stocks) > 0 or len(recommend_stocks) > 0:
         attention_stock_names = ''
@@ -88,6 +118,6 @@ if __name__ == '__main__':
             sendRecommendMsgTX(recommend_params)
         else:
             logging.info("接近安全价格(当前PE): %s", attention_params)
-            sendAttentionMsgTX(attention_params)
+            #sendAttentionMsgTX(attention_params)
     else:
         logging.info("没有需要注意的股票")

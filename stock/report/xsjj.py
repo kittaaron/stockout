@@ -31,7 +31,7 @@ def get_xsjj_by_range(page, page_size, start_date, end_date):
     pageSize = 200 if not page_size else page_size
     offset = page * pageSize
     xsjj_datas = session.query(xsjj_model).filter(
-        and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 1)).limit(pageSize).offset(offset).all()
+        and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).limit(pageSize).offset(offset).all()
     return xsjj_datas
 
 
