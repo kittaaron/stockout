@@ -11,6 +11,7 @@ from decimal import *
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import *
 import time
+import traceback
 
 """
 限售解禁数据
@@ -27,17 +28,27 @@ def get_xsjj_by_code_time(code, start_date, end_date):
 
 
 def get_xsjj_by_range(page, page_size, start_date, end_date):
-    page = 0 if not page else page
-    pageSize = 200 if not page_size else page_size
-    offset = page * pageSize
-    xsjj_datas = session.query(xsjj_model).filter(
-        and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).limit(pageSize).offset(offset).all()
-    return xsjj_datas
+    try:
+        page = 0 if not page else page
+        pageSize = 200 if not page_size else page_size
+        offset = page * pageSize
+        xsjj_datas = session.query(xsjj_model).filter(
+            and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).limit(pageSize).offset(offset).all()
+        return xsjj_datas
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
 
 
 def get_xsjj_totals_by_range(start_date, end_date):
-    cnt = session.query(func.count(xsjj_model.id)).filter(and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).scalar()
-    return cnt
+    try:
+        cnt = session.query(func.count(xsjj_model.id)).filter(and_(xsjj_model.date >= start_date, xsjj_model.date <= end_date, xsjj_model.ratio >= 5)).scalar()
+        return cnt
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
 
 
 def get_xsjj_by_code_date(code, date):

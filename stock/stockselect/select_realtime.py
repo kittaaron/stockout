@@ -70,6 +70,7 @@ if __name__ == '__main__':
                  'danger_price': danger_price,
                  'danger_pe': select_info.danger_pe,
                  'now_price': latest_hist.close,
+                 'now_pe': real_pe,
                  'safe_ratio': round((real_pe - select_info.safe_pe) / select_info.safe_pe, 2),
                  'fair_ratio': round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2),
                  'dividend_year': select_info.dividend_year,
@@ -94,10 +95,10 @@ if __name__ == '__main__':
     sorted_list = sorted(sts_list, key=lambda sts_i: sts_i['fair_ratio'])
     for list_i in sorted_list:
         logging.info("%s %s "
-                     "安全价格/pe: %s/%s - 合理价格/pe: %s/%s - 当前价格: %s - 危险价格/pe: %s/%s"
+                     "安全价格/pe: %s/%s, 合理价格/pe: %s/%s, 当前价格/pe: %s/%s, 危险价格/pe: %s/%s, "
                      "距安全线: %s, 距合理线: %s, 股息率(%s): %s",
                      list_i['code'], list_i['name'],
-                     list_i['safe_price'], list_i['safe_pe'], list_i['fair_price'], list_i['fair_pe'], list_i['now_price'], list_i['danger_price'], list_i['danger_pe'],
+                     list_i['safe_price'], list_i['safe_pe'], list_i['fair_price'], list_i['fair_pe'], list_i['now_price'], list_i['now_pe'], list_i['danger_price'], list_i['danger_pe'],
                      list_i['safe_ratio'], list_i['fair_ratio'], list_i['dividend_year'], list_i['dividend'])
 
     if len(attention_stocks) > 0 or len(recommend_stocks) > 0:
