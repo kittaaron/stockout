@@ -10,6 +10,7 @@ from config import dbconfig
 import config.logginconfig
 from dateutil.relativedelta import relativedelta
 from model.StockInfo import StockInfo
+from model.report.Zycwzb import Zycwzb
 import time
 
 
@@ -42,7 +43,6 @@ def download_all(code):
     logging.info("download ok %s", code)
 
 
-
 def download_one(url, code):
     """
     下载主要财务指标
@@ -66,8 +66,9 @@ def download_one(url, code):
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
     #stocks = getSession().query(StockInfo).filter(StockInfo.code =='002943').all()
-    iscon = True
+    #iscon = True
     i = 0
+    date = '2019-03-31'
     for row in stocks:
         if row is None:
             continue
@@ -75,11 +76,16 @@ if __name__ == '__main__':
             # 股票代码
             i = i+1
             code = row.code
-            if code == '603351':
-                iscon = false
-            if iscon == True:
-                logging.info('%s continue', code)
+            name = row.name
+            already_download = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == date)).first()
+            if already_download is not None:
+                logging.info('%s %s 年报已下载,跳过', code, name)
                 continue
+            #if code == '603351':
+            #    iscon = false
+            #if iscon == True:
+            #    logging.info('%s continue', code)
+            #    continue
             download_all(code)
             logging.info("第 %s 条", i)
             time.sleep(3)

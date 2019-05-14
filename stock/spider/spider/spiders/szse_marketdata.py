@@ -82,8 +82,7 @@ class SseMarketData(scrapy.Spider):
             yield scrapy.Request(url=url, headers=payload_header,
                                  errback=self.err_callback,
                                  callback=self.parse,
-                                 meta = {"date": end_date.strftime('%Y-%m-%d')}
-                                 )
+                                 meta = {"date": end_date.strftime('%Y-%m-%d')})
 
     def parse(self, response):
         url = response.url

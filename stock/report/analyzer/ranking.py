@@ -67,8 +67,6 @@ def get_pe_ranking_datas(page, pageSize):
         ret = []
         for realtime_pe_ep in realtime_pe_eps:
             code = realtime_pe_ep.code
-            #latest_hist = session.query(HistData).filter(and_(HistData.code == code)).order_by(desc(HistData.date)).first()
-            #realtime_pe_ep.price = latest_hist.close
             if code in codes_map:
                 realtime_pe_ep.industry = codes_map[realtime_pe_ep.code].industry
                 realtime_pe_ep.industry_classified = codes_map[realtime_pe_ep.code].industry_classified
@@ -130,11 +128,6 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
         for hist_datas_i in hist_datas:
             hist_datas_map[hist_datas_i.code] = hist_datas_i
 
-        #stocks = []
-        #if market_time_in is not None:
-        #    after_date = (datetime.date.today() - datetime.timedelta(days=int(market_time_in) * 365)).strftime('%Y-%m-%d')
-        #    stocks = session.query(StockInfo).filter(and_(StockInfo.code.in_(codes), StockInfo.timeToMarket >= after_date)).all()
-        #else:
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
         stocks_map = get_stocks_map(stocks)
 
@@ -152,8 +145,10 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
             if market_time_in is not None and filter_date_start is not None and stock_info.timeToMarket <= filter_date_start:
                 logging.info("%s %s 上市时间 %s 非 %s 年以内", code, name, market_time_in, stock_info.timeToMarket)
                 continue
-            #logging.info("%s %s wroe: %s", code, name, zycwzb.wroe)
-            #zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code)).order_by(desc(Zcfzb.date)).limit(1).first()
+            if stock_info.mktcap is None:
+                logging.info("%s %s 无市值数据，是新股？", code, name)
+                continue
+
             zcfzb = zcfzbs_map[code]
             # 负债率
             liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
@@ -178,16 +173,14 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
                 zycwzb.koufei_pe = realtimepeeps_map[code].koufei_pe
                 zycwzb.predict_pe = realtimepeeps_map[code].predict_pe if realtimepeeps_map[code].predict_pe else 0
                 zycwzb.predict_price = round(zycwzb.eps * zycwzb.predict_pe, 2)
-                if zycwzb.koufei_pe < 25 and liab_ratio < 70 and non_current_liab_ratio < 30:
+                if liab_ratio < 60 and non_current_liab_ratio < 30:
                     #logging.info("%s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
                     zycwzb.good = 1
-                if zycwzb.koufei_pe < 16 and liab_ratio < 70 and non_current_liab_ratio < 10:
+                if liab_ratio < 60 and non_current_liab_ratio < 10:
                     logging.info("%s %s %s PE: %s, 扣非PE: %s, 负债率: %s, 非流动负债率: %s", code, name, zycwzb.industry, zycwzb.pe, zycwzb.koufei_pe, liab_ratio, non_current_liab_ratio)
                     zycwzb.verygood = 1
             else:
                 logging.warning("%s realtimepeeps最新信息没找到.", code)
-
-
             ret.append(zycwzb)
         logging.info(": %s", len(ret))
 

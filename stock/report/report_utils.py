@@ -1,7 +1,6 @@
 import datetime
 
 
-
 def get_latest_record_date_by_date(datestr):
     datetimeobj = datetime.datetime.strptime(datestr, "%Y-%m-%d")
     year = datetimeobj.year

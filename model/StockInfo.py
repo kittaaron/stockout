@@ -13,6 +13,8 @@ class StockInfo(Base):
     code = Column(String)
     # 股票名称
     name = Column(String)
+    # 股票汉字拼音首字母(小写)
+    abbr = Column(String)
     # 股票行业
     industry = Column(String)
     # 行业分类

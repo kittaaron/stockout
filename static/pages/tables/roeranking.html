@@ -142,9 +142,9 @@
                         <th>
                           wroe
                         </th>
-                        <th>
+                        <!--<th>
                           当前价
-                        </th>
+                        </th>-->
                         <th>
                           负债率(非流动负债率)
                         </th>
@@ -154,9 +154,9 @@
                         <th>
                           静态pe
                         </th>
-                        <th>
+                        <!--<th>
                           预测PE/价格
-                        </th>
+                        </th>-->
                         <th>
                           市值
                         </th>
@@ -169,15 +169,15 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in ranking_wroe_list" v-bind:style="{'background-color': val.mktcap < 100 ? '#6495ED' : ''}" :class="val.verygood == 1 ? 'purpleline' : (val.good == 1 ? 'redline' : '')">
+                      <tr v-cloak v-for="val in ranking_wroe_list" v-bind:style="{'background-color': val.mktcap < 100 ? '' : ''}" :class="val.verygood == 1 ? 'purpleline' : (val.good == 1 ? 'redline' : '')">
                         <td>{{val.code}} {{val.name}}({{val.industry}})</td>
                         <!--<td>{{val.date}}</td>-->
                         <td>{{val.wroe}}</td>
-                        <td>{{val.price}}</td>
+                        <!--<td>{{val.price}}</td>-->
                         <td>{{val.liab_ratio}}({{val.non_current_liab_ratio}})</td>
                         <td>{{val.pe}}({{val.koufei_pe}})</td>
                         <td>{{val.lastyear_pe}}</td>
-                        <td>{{val.predict_pe}}/{{val.predict_price}}</td>
+                        <!--<td>{{val.predict_pe}}/{{val.predict_price}}</td>-->
                         <td>{{val.mktcap}}</td>
                         <td>{{val.net_assets}}</td>
                         <td>

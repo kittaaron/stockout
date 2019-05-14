@@ -95,6 +95,8 @@ def calc_yoy(code, name, stock):
             zycwzb.por_yoy = round(zycwzb.por / pre_zycwzb.por, 2)
         if zycwzb.pop is not None and pre_zycwzb.pop is not None and pre_zycwzb.pop != 0:
             zycwzb.pop_yoy = round(zycwzb.pop / pre_zycwzb.pop, 2)
+        if zycwzb.profit is not None and pre_zycwzb.profit is not None and pre_zycwzb.profit != 0:
+            zycwzb.profit_yoy = round(zycwzb.profit / pre_zycwzb.profit, 2)
         session.add(zycwzb)
 
 

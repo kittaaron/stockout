@@ -60,6 +60,8 @@ class Zycwzb(Base):
 
     pop_yoy = Column(DECIMAL)
 
+    profit_yoy = Column(DECIMAL)
+
     def __init__(self, code, name, date):
         self.code = code
         self.name = name

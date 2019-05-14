@@ -7,8 +7,10 @@ from server.handler.StockInfoHandler import StockInfoHandler
 from server.handler.DDHandler import DDHandler
 from server.handler.DDTopHandler import DDTopHandler
 from server.handler.HistDataHandler import PriceListHandler
-from server.handler.IndexHandler import *
-from server.handler.MarketDataHandler import *
+from server.handler.IndexHandler import IndexHandler
+from server.handler.MarketDataHandler import SHMarketDataHandler,SZMarketDataHandler,SteelPriceHistHandler
+from server.handler.StockAnalysisHandler import StockAnalysisHandler
+from server.handler.SearchStockHandler import SearchStockHandler
 
 
 class MainHandler(RequestHandler):
@@ -19,7 +21,6 @@ class MainHandler(RequestHandler):
 def make_app():
     return Application([
         (r"/static/index.html", IndexHandler),
-        #(r"/", MainHandler),
         (r"/stock/(.*)", StockInfoHandler),
         (r"/ddtop/(.*)", DDTopHandler),
         (r"/dd/(.*)", DDHandler),
@@ -34,6 +35,8 @@ def make_app():
         (r"/get_ranking_netflow", NetFlowHandler),
         (r"/get_ranking_pb", PBRankingHandler),
         (r"/get_price_list/(.*)", PriceListHandler),
+        (r"/get_stock_analysis/(.*)", StockAnalysisHandler),
+        (r"/get_stock/(.*)", SearchStockHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),
