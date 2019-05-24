@@ -69,6 +69,17 @@ def get_by_names(names):
         session.close()
 
 
+def get_by_name_like(name):
+    try:
+        # 缩写like
+        param = name + "%"
+        return session.query(StockInfo).filter(StockInfo.name.like(param)).all()
+    except Exception as e:
+        pass
+    finally:
+        session.close()
+
+
 def get_codes_by_names(names):
     try:
         stocks = session.query(StockInfo).filter(StockInfo.name.in_(names)).all()
