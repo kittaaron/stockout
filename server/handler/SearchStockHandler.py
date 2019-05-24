@@ -13,7 +13,7 @@ class SearchStockHandler(BaseHandler):
         if param.isdigit():
             ## 如果是数字
             stocks = basic.get_by_code_like(param)
-        elif param.isalpha():
+        elif param.encode('UTF-8').isalpha():
             ## 如果是字母
             stocks = basic.get_by_abbr_like(param.lower())
         else:
