@@ -4,7 +4,7 @@
   var get_steel_price_hist = function() {
      $.ajax({
          type: "GET",
-         url: "/get_steel_price_hist",
+         url: "../../../get_steel_price_hist",
          //data: {username:$("#username").val(), content:$("#content").val()},
          dataType: "json",
          success: function(data) {

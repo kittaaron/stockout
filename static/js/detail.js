@@ -24,7 +24,7 @@ var vm = new Vue({
             $.ajax({
                 type: "GET",
                 data: {"code": that.code},
-                url: "/get_report_list",
+                url: "../get_report_list",
                 dataType: "json",
                 async: false,
                 success: function(data) {

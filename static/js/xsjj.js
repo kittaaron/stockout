@@ -26,7 +26,7 @@ var vm = new Vue({
             $.ajax({
                 type: "GET",
                 data: params,
-                url: "/get_xsjj_list",
+                url: "../../../get_xsjj_list",
                 dataType: "json",
                 async: false,
                 success: function(data) {

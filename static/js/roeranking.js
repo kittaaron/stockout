@@ -32,7 +32,7 @@ var vm = new Vue({
             $.ajax({
                 type: "GET",
                 data: params,
-                url: "/get_ranking_wroe",
+                url: "../../../get_ranking_wroe",
                 dataType: "json",
                 async: false,
                 success: function(data) {

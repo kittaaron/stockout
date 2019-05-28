@@ -29,7 +29,7 @@ var vm = new Vue({
             };
             $.ajax({
                 type: "GET",
-                url: "/get_ranking_pb",
+                url: "../../../get_ranking_pb",
                 data: params,
                 dataType: "json",
                 async: false,

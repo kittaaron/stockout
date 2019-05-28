@@ -21,7 +21,7 @@ var vm = new Vue({
             $.ajax({
                 type: "GET",
                 data: {'page_size': that.page_size, 'page': that.cur - 1},
-                url: "/get_ranking_pe",
+                url: "../../../get_ranking_pe",
                 dataType: "json",
                 async: false,
                 success: function(data) {

@@ -13,7 +13,7 @@ var vm = new Vue({
             var that = this;
             $.ajax({
                 type: "GET",
-                url: "/get_ranking_netflow",
+                url: "../../../get_ranking_netflow",
                 dataType: "json",
                 async: false,
                 success: function(data) {
