@@ -4,7 +4,7 @@
   var get_sh_market_data = function() {
      $.ajax({
          type: "GET",
-         url: "/get_market_data/sh",
+         url: "../get_market_data/sh",
          //data: {username:$("#username").val(), content:$("#content").val()},
          dataType: "json",
          success: function(data) {
@@ -104,7 +104,7 @@
   var get_sz_market_data = function() {
      $.ajax({
          type: "GET",
-         url: "/get_market_data/sz",
+         url: "../get_market_data/sz",
          //data: {username:$("#username").val(), content:$("#content").val()},
          dataType: "json",
          success: function(data) {
