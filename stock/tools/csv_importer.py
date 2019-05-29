@@ -27,6 +27,7 @@ def import_vit_price(file_path):
             continue
         category0 = "维生素"
         date = dateutil.parser.parse(line[0]).strftime("%Y-%m-%d")
+        logging.info("date: %s", date)
         price_list = []
         for i, val in enumerate(line):
             if i == 0:
@@ -42,4 +43,4 @@ def import_vit_price(file_path):
 
 
 if __name__ == '__main__':
-    import_vit_price('/Users/kittaaron/Downloads/维生素价格excel表.csv')
+    import_vit_price('/Users/kittaaron/Downloads/2018年维生素价格跟踪2019-05-28.csv')
