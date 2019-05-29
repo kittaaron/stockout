@@ -11,6 +11,8 @@ session = getSession()
 def get_grouped_category1(category0, dateform, dateto):
     ret = {}
     records = get_category0_list(category0, dateform, dateto)
+    if records is None:
+        return ret
     for record_i in records:
         categoryi1 = record_i.category1
         if categoryi1 not in ret:
