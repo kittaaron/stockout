@@ -16,7 +16,6 @@ import math
 from model.StockInfo import StockInfo
 from model.report.Zycwzb import Zycwzb
 from model.report.Zcfzb import Zcfzb
-from stock.industry.industry_sts import get_codes
 from utils.db_utils import *
 import numpy as np
 from stock.report.report_utils import *

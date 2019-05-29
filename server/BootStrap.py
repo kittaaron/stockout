@@ -11,6 +11,7 @@ from server.handler.IndexHandler import IndexHandler
 from server.handler.MarketDataHandler import SHMarketDataHandler,SZMarketDataHandler,SteelPriceHistHandler
 from server.handler.StockAnalysisHandler import StockAnalysisHandler
 from server.handler.SearchStockHandler import SearchStockHandler
+from server.handler.ProductPriceHandler import ProductPriceHistHandler
 
 
 class MainHandler(RequestHandler):
@@ -37,6 +38,7 @@ def make_app():
         (r"/get_price_list/(.*)", PriceListHandler),
         (r"/get_stock_analysis/(.*)", StockAnalysisHandler),
         (r"/get_stock/(.*)", SearchStockHandler),
+        (r"/get_product_price_list", ProductPriceHistHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),
