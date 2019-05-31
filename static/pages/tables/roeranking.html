@@ -131,7 +131,7 @@
         <div class="content-wrapper">
           <div class="page-header" style="margin-top:2rem">
             <h3 class="page-title">
-              按最近财报的ROE排名
+              按最近财报的ROE排名(蓝色为市值小于100亿企业、红色为总负债小于60%且非流动负债小于30%、紫色为总负债小于60%且非流动负债小于10%)
             </h3>
             <select name="market_time_in" v-model="market_time_in" @change="select_market_time_in">
               <option :value="in_year.val" v-for="in_year in in_years">{{in_year.desc}}</option>
