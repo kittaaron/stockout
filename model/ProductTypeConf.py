@@ -5,26 +5,22 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class ProductHistPrice(Base):
-    __tablename__ = 'product_prict_list'
+class ProductTypeConf(Base):
+    __tablename__ = 'product_type_conf'
 
     id = Column(Integer, primary_key=True)
     # 首级目录
-    category0 = Column(String)
+    parent_id = Column(Integer)
     # 二级目录
-    category1 = Column(String)
-    date = Column(String)
-    price = Column(Float)
+    name = Column(String)
 
-    def __int__(self, category0, category1, date, price):
-        self.category0 = category0
-        self.category1 = category1
-        self.date = date
-        self.price = price
+    def __int__(self, parent_id, name):
+        self.parent_id = parent_id
+        self.name = name
         pass
 
     def __str__(self):
-        msg = self.category0 + " " + self.category0 + " " + self.date + " " + self.price
+        msg = self.parent_id + " " + self.name
         return msg
 
     def reprJSON(self):

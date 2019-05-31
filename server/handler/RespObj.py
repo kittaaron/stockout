@@ -17,6 +17,10 @@ class RespObj(json.JSONEncoder):
     def return_ok(data):
         return RespObj(0, '', data)
 
+    @staticmethod
+    def return_error(msg):
+        return RespObj(-1, msg, '')
+
     def reprJSON(self):
         return dict(data=self.data, code=self.code, msg=self.msg)
 

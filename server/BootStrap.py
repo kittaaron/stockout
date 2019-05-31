@@ -12,6 +12,10 @@ from server.handler.MarketDataHandler import SHMarketDataHandler,SZMarketDataHan
 from server.handler.StockAnalysisHandler import StockAnalysisHandler
 from server.handler.SearchStockHandler import SearchStockHandler
 from server.handler.ProductPriceHandler import ProductPriceHistHandler
+from server.handler.ProductPriceHandler import ProductCategory0ListHandler
+from server.handler.ProductPriceHandler import ProductCategory1ListHandler
+from server.handler.ProductPriceHandler import SaveProductPriceHandler
+from server.handler.ProductPriceHandler import BatchSaveProductPriceHandler
 
 
 class MainHandler(RequestHandler):
@@ -39,13 +43,17 @@ def make_app():
         (r"/get_stock_analysis/(.*)", StockAnalysisHandler),
         (r"/get_stock/(.*)", SearchStockHandler),
         (r"/get_product_price_list", ProductPriceHistHandler),
+        (r"/get_category0_def_list", ProductCategory0ListHandler),
+        (r"/get_category1_def_list/(.*)", ProductCategory1ListHandler),
+        (r"/save_product_price", SaveProductPriceHandler),
+        (r"/batch_save_product_price", BatchSaveProductPriceHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),
         #template_path=os.path.join(os.path.dirname(__file__), "../static", "../static/pages"),
         static_path=os.path.join(os.path.dirname(__file__), "../static/"),
         #template_path=os.path.join(os.path.dirname(__file__), "../static"),
-        xsrf_cookies=True)
+        xsrf_cookies=False)
 
 
 if __name__ == "__main__":
