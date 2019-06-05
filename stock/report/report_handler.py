@@ -65,9 +65,33 @@ def handle_zycwzb(code, name):
             obj = Zycwzb(code=code, name=name, date=date)
             logging.info("准备录入主要财务指标 %s %s %s 数据", code, name, date)
             build_zycwzb_obj(obj, val)
+            obj.kfroe = round(obj.npad * 100 / obj.sheq, 2) if obj.sheq > 0 else -99
             records.append(obj)
 
         session.add_all(records)
+    except Exception as e:
+        logging.error("%s", e)
+        return
+
+
+def update_zycwzb_kfroe(code, name):
+    """
+    主要账务指标
+    :param obj:
+    :param val:
+    :return:
+    """
+    try:
+        logging.info("开始处理主要财务指标表 %s %s", code, name)
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code)).all()
+        if len(zycwzbs) <= 0:
+            logging.warning("%s %s 没有财报信息.", code, name)
+            return
+
+        for zycwzb in zycwzbs:
+            zycwzb.kfroe = round(zycwzb.npad * 100 / zycwzb.sheq, 2) if zycwzb.sheq > 0 else -99
+
+        session.add_all(zycwzbs)
     except Exception as e:
         logging.error("%s", e)
         return
@@ -339,8 +363,9 @@ if __name__ == '__main__':
             continue
         code = row.code
         name = row.name
-        handle_zycwzb(code, name)
-        handle_zcfzb(code, name)
-        handle_cwbbzy(code, name)
-        handle_lrb(code, name)
-        handle_xjllb(code, name)
+        update_zycwzb_kfroe(code, name)
+        #handle_zycwzb(code, name)
+        #handle_zcfzb(code, name)
+        #handle_cwbbzy(code, name)
+        #handle_lrb(code, name)
+        #handle_xjllb(code, name)

@@ -18,8 +18,15 @@
 
             var xAxis_data_fulled = false
             for(var k in grouped_datas){
-                legend_arr.push(k)
                 var price_list = grouped_datas[k]
+                // 叶酸
+                if (k.indexOf('_') == -1) {
+                    renderXXPriceChart(k, price_list, k.toLowerCase()+'_price_chart', k, [k])
+                } else {
+                    var prefix = k.substr(0, k.indexOf('_'))
+                    renderXXPriceChart(prefix, price_list, prefix.toLowerCase()+'_price_chart', prefix, [prefix])
+                }
+                legend_arr.push(k)
                 price_list_map[k] = []
                 // 后端返回的数据结构，需要处理成只有价格的列表
                 var backend_price_list = grouped_datas[k]
@@ -66,6 +73,65 @@
             },
             legend: {
                 data: legend_arr
+            },
+            xAxis: {
+                type: 'category',
+                interval: 10,
+                data: xAxis_data
+            },
+            dataZoom:[
+                {
+                    xAxisIndex: [0]
+                },
+            ],
+            yAxis: {
+                type: 'value'
+            },
+            series: series
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+  }
+
+  var renderXXPriceChart = function(xx, pricedatas, dom_id, title, legend_data) {
+    var xAxis_data = []
+    var prices = []
+    for (var i in pricedatas) {
+        var obj = pricedatas[i]
+        xAxis_data.push(obj.date)
+        prices.push(obj.price)
+    }
+    var series = [
+        {
+            name:xx,
+            type:'line',
+            stack: '平均',
+            data:prices
+        }
+    ]
+
+    renderChart(dom_id, title, legend_data, xAxis_data, series)
+  }
+
+  var renderChart  = function(dom_id, title, legend_data, xAxis_data, series) {
+    var dom_obj = document.getElementById(dom_id)
+    if (!dom_obj) {
+        console.log(dom_id + '对象不存在')
+        return
+    }
+    var myChart = echarts.init(dom_obj);
+
+        // 线图
+        var option = {
+            title: {
+                text: title
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: legend_data
             },
             xAxis: {
                 type: 'category',

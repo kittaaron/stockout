@@ -54,6 +54,8 @@ class Zycwzb(Base):
 
     wroe = Column(DECIMAL)
 
+    kfroe = Column(DECIMAL)
+
     net_yoy = Column(DECIMAL)
 
     por_yoy = Column(DECIMAL)
