@@ -92,6 +92,7 @@ def update_zycwzb_kfroe(code, name):
             zycwzb.kfroe = round(zycwzb.npad * 100 / zycwzb.sheq, 2) if zycwzb.sheq > 0 else -99
 
         session.add_all(zycwzbs)
+        logging.info("%s %s更新kfroe完成", code, name)
     except Exception as e:
         logging.error("%s", e)
         return
