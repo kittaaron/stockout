@@ -11,10 +11,15 @@ class StockAnalysisHandler(BaseHandler):
         zcfzb = get_latest_year_zcfzb(code)
         zbs['zycwzb'] = zycwzb
         zbs['zcfzb'] = zcfzb
+        # 赢利指标
         zbs['profit_idx_score'] = self.get_profit_idx_score(zycwzb)
+        # 增长指标
         zbs['growth_idx_score'] = self.get_growth_idx_score(zycwzb)
+        # 偿债指标
         zbs['solvency_idx_score'] = self.get_solvency_idx_score(zcfzb)
+        # 现金流指标
         zbs['cashflow_idx_score'] = self.get_cashflow_idx_score(zycwzb)
+        # 商誉
         zbs['willbill_ratio_score'] = self.get_willbill_ratio_score(zcfzb)
         # 总资产周转率
         zbs['total_assets_turnover_score'] = self.get_total_assets_turnover_score(zycwzb)
@@ -81,11 +86,13 @@ class StockAnalysisHandler(BaseHandler):
             return 99
         if moneytory_funds < 0:
             score = 5
+        # 如果货币资金比短期贷款还小
         elif 0 < moneytory_funds < short_term_loans:
             if moneytory_funds/short_term_loans <= 0.8:
                 score = 5
             else:
                 score = 20
+        # 货币资金比短期贷款多，但是比短期借款+长期负债少
         elif short_term_loans <= moneytory_funds <= solvency_target:
             score = 50
         elif moneytory_funds > solvency_target:
@@ -102,7 +109,7 @@ class StockAnalysisHandler(BaseHandler):
         return score
 
     def get_cashflow_idx_score(self, zycwzb):
-        # 偿债能力得分
+        # 现金流得分
         score = 5
         # 扣非净利
         npad = zycwzb.npad

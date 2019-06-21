@@ -20,7 +20,7 @@ from stock.report.report_utils import *
 session = getSession()
 
 
-def build_by_hist_data(hist_data, serie):
+def build_by_hist_data(hist_data, serie, totals = None):
     hist_data.volume = float(serie.volume)
     hist_data.open = float(serie.open)
     hist_data.close = float(serie.close)
@@ -36,6 +36,9 @@ def build_by_hist_data(hist_data, serie):
     hist_data.v_ma20 = float(serie.v_ma20)
     if 'turnover' in serie:
         hist_data.turnover = float(serie.turnover)
+    else:
+        # 根据volumn和总股数来算
+        hist_data.turnover = round(hist_data.volume * 100 / float(totals), 2)
 
 
 def get_pre_day_data(code, data_str, candidate_datas):
@@ -54,6 +57,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
     hist_data.close = float(serie.close)
     hist_data.high = float(serie.high)
     hist_data.low = float(serie.low)
+    hist_data.turnover = float(serie.turnover)
     if pre_day_data is not None:
         price_change = round(hist_data.close - pre_day_data.close, 2)
         hist_data.price_change = float(price_change)
@@ -61,8 +65,8 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 
 def dump_hist_data(start_date, end_date):
-    stocks = session.query(StockInfo).all()
-    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '600309').all()
+    #stocks = session.query(StockInfo).all()
+    stocks = getSession().query(StockInfo).filter(StockInfo.code == '600230').all()
 
     i = 1
     for row in stocks:
@@ -100,6 +104,7 @@ def dump_hist_data(start_date, end_date):
 
         df = ts.get_hist_data(code, start=start_date_i, end=end_date)
         stock_hist_data = []
+        totals = row.totals * 1000000
         if df is None or df.empty is True:
             logging.info("%s %s get_hist_data 没有取到历史数据, 开始从get_k_data获取", code, name)
             df = ts.get_k_data(code, start=start_date_i, end=end_date)
@@ -118,10 +123,11 @@ def dump_hist_data(start_date, end_date):
             for index, serie in df.iterrows():
                 date = index
                 hist_data = HistData(code=code, name=name, date=date)
-                build_by_hist_data(hist_data, serie)
+                build_by_hist_data(hist_data, serie, totals)
 
                 stock_hist_data.append(hist_data)
         session.add_all(stock_hist_data)
+        session.commit()
         logging.info("%s %s %s~%s hist data save ok", code, name, start_date_i, end_date)
 
 

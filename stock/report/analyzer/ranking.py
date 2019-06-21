@@ -105,14 +105,16 @@ def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None)
         page = 0 if not page else page
         pageSize = 100 if not pageSize else pageSize
         offset = page * pageSize
-        latest_record_date = get_latest_record_date()
-        logging.info("latest_record_date: %s", latest_record_date)
+        latest_year_report = latest_record_date = get_latest_record_date()
+        if not latest_record_date.endswith("12-31"):
+            latest_year_report = get_pre_yearreport_date(latest_record_date)
+        logging.info("latest_year_report: %s", latest_year_report)
         # 获取wroe排名前100的数据
-        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_record_date, Zycwzb.code.in_(paramcodes) if len(paramcodes) > 0 else 1==1)).order_by(desc(Zycwzb.wroe)).limit(pageSize).offset(offset).all()
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.date == latest_year_report, Zycwzb.code.in_(paramcodes) if len(paramcodes) > 0 else 1==1)).order_by(desc(Zycwzb.kfroe)).limit(pageSize).offset(offset).all()
         logging.info("获取主要财务指标数据OK")
         codes = get_codes(zycwzbs)
 
-        zcfzbs = getSession().query(Zcfzb).filter(and_(Zcfzb.date == latest_record_date, Zcfzb.code.in_(codes))).all()
+        zcfzbs = getSession().query(Zcfzb).filter(and_(Zcfzb.date == latest_year_report, Zcfzb.code.in_(codes))).all()
         logging.info("获取资产负债表数据OK.")
         zcfzbs_map = {}
         for zcfzbi in zcfzbs:

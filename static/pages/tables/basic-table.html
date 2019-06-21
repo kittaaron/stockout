@@ -141,15 +141,15 @@
                         <th>
                           name
                         </th>
-                        <th>
+                        <!--<th>
                           行业(备选)
-                        </th>
+                        </th>-->
                         <th>
                           市值
                         </th>
-                        <th>
+                        <!--<th>
                           价格
-                        </th>
+                        </th>-->
                         <th>
                           pb
                         </th>
@@ -165,7 +165,7 @@
                         <th>
                           EPS
                         </th>
-                        <th>
+                        <!--<th>
                           前一年PE
                         </th>
                         <th>
@@ -173,7 +173,7 @@
                         </th>
                         <th>
                           前三年PE
-                        </th>
+                        </th>-->
                         <!--<th>
                           前一年eps
                         </th>
@@ -183,34 +183,33 @@
                         <th>
                           前三年eps
                         </th>-->
-                        <th>
+                        <!--<th>
                           净流动资产
                         </th>
                         <th>
                           流动净资产
-                        </th>
+                        </th>-->
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-cloak v-for="val in ranking_pe_list" v-bind:bgcolor="val.mktcap < 100 ? '#6495ED' : ''">
                         <td>{{val.code}}</td>
-                        <td>{{val.name}}</td>
-                        <td>{{val.industry + "(" + val.industry_classified + ")"}}</td>
+                        <td>{{val.name}}({{val.industry + "(" + val.industry_classified + ")"}})</td>
                         <td>{{val.mktcap}}</td>
-                        <td>{{val.price}}</td>
+                        <!--<td>{{val.price}}</td>-->
                         <td>{{val.pb}}</td>
                         <td>{{val.koufei_pe}}</td>
                         <td>{{val.pe1}}</td>
                         <td>{{val.koufei_eps}}</td>
                         <td>{{val.eps1}}</td>
-                        <td>{{val.pe2}}</td>
+                        <!--<td>{{val.pe2}}</td>
                         <td>{{val.pe3}}</td>
                         <td>{{val.pe4}}</td>
-                        <!--<td>{{val.eps2}}</td>
+                        <td>{{val.eps2}}</td>
                         <td>{{val.eps3}}</td>
-                        <td>{{val.eps4}}</td>-->
+                        <td>{{val.eps4}}</td>
                         <td>{{val.flow_sub_total}}</td>
-                        <td>{{val.flow_sub_flow}}</td>
+                        <td>{{val.flow_sub_flow}}</td>-->
                       </tr>
                     </tbody>
                   </table>
