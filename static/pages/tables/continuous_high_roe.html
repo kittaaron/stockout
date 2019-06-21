@@ -18,6 +18,11 @@
   <link rel="stylesheet" href="../../css/pagination.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
+  <style type="text/css">
+    .redline {color: #CD2626}
+    .purpleline {color: #B23AEE}
+  </style>
+  <script src="../../js/vue.min.js"></script>
 </head>
 
 <body>
@@ -89,7 +94,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" onclick="javascript:return false;" href="./basic-table.html">
+            <a class="nav-link" href="./basic-table.html">
               <span class="menu-title">peranking</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
@@ -119,7 +124,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./continuous_high_roe.html">
+            <a class="nav-link" onclick="javascript:return false;" href="./continuous_high_roe.html">
               <span class="menu-title">连续高ROE</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
@@ -129,9 +134,18 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="page-header">
+          <div class="page-header" style="margin-top:2rem">
             <h3 class="page-title">
-              按PE排名
+              连续
+            <select name="continuous_year" v-model="continuous_year">
+              <option :value="continuous_year.val" v-for="continuous_year in continuous_years">{{continuous_year.desc}}</option>
+            </select> 年,
+            roe大于等于:
+            <select name="roe_threshold" v-model="roe_threshold">
+              <option :value="roe_threshold.val" v-for="roe_threshold in roe_thresholds">{{roe_threshold.desc}}</option>
+            </select>
+            <lable>&nbsp;&nbsp;&nbsp;&nbsp;筛选股票总数: {{total_cnt}}</lable>
+            &nbsp;&nbsp;&nbsp;&nbsp;<button v-on:click="get_data_list()" class=" btn-outline-primary" style="line-height: 0.3; padding: 0.5rem 1rem">查询</button>
             </h3>
           </div>
           <div class="row">
@@ -142,88 +156,38 @@
                     <thead>
                       <tr>
                         <th>
-                          code
+                          股票
                         </th>
                         <th>
-                          name
-                        </th>
-                        <!--<th>
-                          行业(备选)
-                        </th>-->
-                        <th>
-                          市值
-                        </th>
-                        <!--<th>
-                          价格
-                        </th>-->
-                        <th>
-                          pb
+                          年份
                         </th>
                         <th>
-                          扣非PE
+                          roe(扣非roe)
                         </th>
                         <th>
-                          PE(估算)
+                          当前PE
                         </th>
                         <th>
-                          扣非EPS
+                          当前市值(亿)
                         </th>
-                        <th>
-                          EPS
-                        </th>
-                        <!--<th>
-                          前一年PE
-                        </th>
-                        <th>
-                          前二年PE
-                        </th>
-                        <th>
-                          前三年PE
-                        </th>-->
-                        <!--<th>
-                          前一年eps
-                        </th>
-                        <th>
-                          前二年eps
-                        </th>
-                        <th>
-                          前三年eps
-                        </th>-->
-                        <!--<th>
-                          净流动资产
-                        </th>
-                        <th>
-                          流动净资产
-                        </th>-->
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in ranking_pe_list" v-bind:bgcolor="val.mktcap < 100 ? '#6495ED' : ''">
-                        <td>{{val.code}}</td>
-                        <td>{{val.name}}({{val.industry + "(" + val.industry_classified + ")"}})</td>
+                      <tr v-cloak v-for="val in result_list" v-bind:style="">
+                        <td>{{val.code}} {{val.name}}({{val.industry}})</td>
+                        <td>{{val.date}}</td>
+                        <td>{{val.wroe}}({{val.kfroe}})</td>
+                        <td>{{val.pe}}</td>
                         <td>{{val.mktcap}}</td>
-                        <!--<td>{{val.price}}</td>-->
-                        <td>{{val.pb}}</td>
-                        <td>{{val.koufei_pe}}</td>
-                        <td>{{val.pe1}}</td>
-                        <td>{{val.koufei_eps}}</td>
-                        <td>{{val.eps1}}</td>
-                        <!--<td>{{val.pe2}}</td>
-                        <td>{{val.pe3}}</td>
-                        <td>{{val.pe4}}</td>
-                        <td>{{val.eps2}}</td>
-                        <td>{{val.eps3}}</td>
-                        <td>{{val.eps4}}</td>
-                        <td>{{val.flow_sub_total}}</td>
-                        <td>{{val.flow_sub_flow}}</td>-->
                       </tr>
                     </tbody>
                   </table>
                 </div>
+
               </div>
             </div>
           </div>
-          <vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>
+          <!--<vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>-->
           <div class="row">
           </div>
         </div>
@@ -252,11 +216,9 @@
   <!-- inject:js -->
   <script src="../../js/off-canvas.js"></script>
   <script src="../../js/misc.js"></script>
+  <script src="../../js/continuous_high_roe.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="../../js/vue.min.js"></script>
-  <script src="../../js/vue-paginate.min.js"></script>
-  <script src="../../js/basictable.js"></script>
   <!-- End custom js for this page-->
 </body>
 

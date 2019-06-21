@@ -107,5 +107,17 @@ class XsjjHandler(BaseHandler):
         self.write(super().return_pager_resp(list=ranking_datas, total_row=total_row, total_page=total_page))
 
 
+class ContinuousHighRoeHandler(BaseHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self):
+        continuous_years = int(self.get_query_argument("continuous_years", 4))
+        roe_threshold = int(self.get_query_argument("roe_threshold", 15))
+        logging.info("continuous_years: %s, roe_threshold: %s", continuous_years, roe_threshold)
+        data = get_continuous_high_roe_codes(continuous_years, roe_threshold)
+        self.write(super().return_json(data))
+
+
 if __name__ == "__main__":
     pass

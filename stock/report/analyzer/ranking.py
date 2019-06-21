@@ -255,7 +255,7 @@ def get_pb_ranking_datas(page, pageSize, sort_by):
             sort_by_field = RealTimePB.liab_ratio
         if sort_by == 'non_current_liab_ratio':
             sort_by_field = RealTimePB.non_current_liab_ratio
-        rankingpbs = session.query(RealTimePB).order_by(sort_by_field).limit(pageSize).offset(offset).all()
+        rankingpbs = session.query(RealTimePB).filter(and_(RealTimePB.pb.isnot(None))).order_by(sort_by_field).limit(pageSize).offset(offset).all()
         codes = get_codes(rankingpbs)
 
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
@@ -272,6 +272,8 @@ def get_pb_ranking_datas(page, pageSize, sort_by):
             code = rankingpb.code
             name = rankingpb.name
             logging.info("%s %s", code, name)
+            if code not in stocks_map:
+                continue
             rankingpb.industry = stocks_map[code].industry
             rankingpb.mktcap = round(stocks_map[code].mktcap / 10000, 2)
 
@@ -297,6 +299,37 @@ def get_reports_detail(code, start_date, end_date):
         traceback.print_exc()
     finally:
         session.close()
+
+
+def get_continuous_high_roe_codes(continuous_years, roe):
+    # 最近一年
+    latest_year_report = get_pre_yearreport_date(get_latest_record_date())
+    search_years = [latest_year_report]
+    one_year_before = latest_year_report
+    for i in range(1, continuous_years):
+        one_year_before = get_pre_yearreport_date(one_year_before)
+        search_years.append(one_year_before)
+    logging.info('查询年份: %s', search_years)
+    matched_records = session.query(Zycwzb.code, func.count(Zycwzb.code)).\
+        filter(and_(Zycwzb.kfroe >= roe, Zycwzb.date.in_(search_years))).\
+        group_by(Zycwzb.code).having(func.count(Zycwzb.code) >= continuous_years).all()
+    logging.info('cnt: %s, searched_codes : %s', len(matched_records), matched_records)
+    matched_codes = []
+    for record_i in matched_records:
+        matched_codes.append(record_i[0])
+    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code.in_(matched_codes), Zycwzb.date == latest_year_report)).\
+        order_by(desc(Zycwzb.kfroe)).all()
+    stocks = session.query(StockInfo).filter(StockInfo.code.in_(matched_codes)).all()
+    stocks_map = get_stocks_map(stocks)
+    for zycwzb_i in zycwzbs:
+        if zycwzb_i.code not in stocks_map:
+            continue
+        stock_info = stocks_map[zycwzb_i.code]
+        zycwzb_i.industry = stock_info.industry
+        zycwzb_i.industry_classified = stock_info.industry_classified
+        zycwzb_i.pe = stock_info.pe
+        zycwzb_i.mktcap = round(stock_info.mktcap / 10000, 2)
+    return zycwzbs
 
 
 if __name__ == '__main__':
