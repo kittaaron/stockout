@@ -45,7 +45,7 @@ def get_pre_day_data(code, data_str, candidate_datas):
     pass
 
 
-def build_by_k_data(hist_data, serie, pre_day_data):
+def build_by_k_data(hist_data, serie, pre_day_data, totals = None):
     '''
     :param hist_data:
     :param serie:
@@ -57,7 +57,12 @@ def build_by_k_data(hist_data, serie, pre_day_data):
     hist_data.close = float(serie.close)
     hist_data.high = float(serie.high)
     hist_data.low = float(serie.low)
-    hist_data.turnover = float(serie.turnover)
+    if 'turnover' in serie:
+        hist_data.turnover = float(serie.turnover)
+    else:
+        # 根据volumn和总股数来算
+        hist_data.turnover = round(hist_data.volume * 100 / float(totals), 2)
+    #hist_data.turnover = float(serie.turnover)
     if pre_day_data is not None:
         price_change = round(hist_data.close - pre_day_data.close, 2)
         hist_data.price_change = float(price_change)
@@ -66,7 +71,7 @@ def build_by_k_data(hist_data, serie, pre_day_data):
 
 def dump_hist_data(start_date, end_date):
     stocks = session.query(StockInfo).all()
-    #stocks = getSession().query(StockInfo).filter(StockInfo.code == '600230').all()
+    #stocks = getSession().query(StockInfo).filter(StockInfo.code.in_(['000651'])).all()
 
     i = 1
     for row in stocks:
@@ -84,30 +89,34 @@ def dump_hist_data(start_date, end_date):
             HistData.code).first()
         maxdatedata = session.query(HistData.code, func.max(HistData.date)).filter(HistData.code == code).group_by(
             HistData.code).first()
-        mindate = mindatedata[1] if mindatedata is not None else '2013-01-01'
-        maxdate = maxdatedata[1] if maxdatedata is not None else '2013-01-01'
+        mindate = mindatedata[1] if mindatedata is not None else '2006-01-01'
+        maxdate = maxdatedata[1] if maxdatedata is not None else '2015-07-26'
         logging.info("%s %s 已dump数据 %s至%s,参数时间 %s %s %s", code, name, mindate, maxdate, start_date, end_date, i)
 
         i += 1
 
         start_date_i = start_date
+        end_date_i = end_date
         if (mindate < start_date < maxdate < end_date) or maxdate < start_date:
             start_date_i = (datetime.datetime.strptime(maxdate, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        elif start_date < mindate < end_date < maxdate:
-            end_date = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
+        elif start_date < mindate <= end_date < maxdate:
+            end_date_i = (datetime.datetime.strptime(mindate, '%Y-%m-%d') + datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
         elif end_date < mindate:
             pass
         else:
-            logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
-            continue
-        logging.info("开始dump %s %s %s~%s", code, name, start_date_i, end_date)
+            param_result = session.query(HistData.code).filter(and_(HistData.code == code, HistData.date <= end_date, HistData.date >= start_date)).group_by(
+                HistData.code).all()
+            if len(param_result) > 0:
+                logging.warning("%s %s %s~%s时间段内已有数据存在", code, name, start_date, end_date)
+                continue
+        logging.info("开始dump %s %s %s~%s", code, name, start_date_i, end_date_i)
 
-        df = ts.get_hist_data(code, start=start_date_i, end=end_date)
+        df = ts.get_hist_data(code, start=start_date_i, end=end_date_i)
         stock_hist_data = []
         totals = row.totals * 1000000
         if df is None or df.empty is True:
             logging.info("%s %s get_hist_data 没有取到历史数据, 开始从get_k_data获取", code, name)
-            df = ts.get_k_data(code, start=start_date_i, end=end_date)
+            df = ts.get_k_data(code, start=start_date_i, end=end_date_i)
             if df is None or df.empty is True:
                 logging.info("%s %s get_k_data 没有取到历史数据.", code, name)
                 continue
@@ -116,7 +125,7 @@ def dump_hist_data(start_date, end_date):
             for index, serie in df.iterrows():
                 date = serie.date
                 hist_data = HistData(code=code, name=name, date=date)
-                build_by_k_data(hist_data, serie, pre_day_data)
+                build_by_k_data(hist_data, serie, pre_day_data, totals)
                 pre_day_data = serie
                 stock_hist_data.append(hist_data)
         else:
@@ -128,7 +137,7 @@ def dump_hist_data(start_date, end_date):
                 stock_hist_data.append(hist_data)
         session.add_all(stock_hist_data)
         session.commit()
-        logging.info("%s %s %s~%s hist data save ok", code, name, start_date_i, end_date)
+        logging.info("%s %s %s~%s hist data save ok", code, name, start_date_i, end_date_i)
 
 
 def get_start_date():
@@ -207,5 +216,8 @@ if __name__ == '__main__':
         end_date = sys.argv[2]
     if start_date > end_date:
         start_date = end_date
+
+    #start_date = '2006-01-20'
+    #end_date = '2012-12-31'
     logging.info("%s %s", start_date, end_date)
     dump_hist_data(start_date, end_date)

@@ -21,6 +21,7 @@
   <style type="text/css">
     .redline {color: #CD2626}
     .purpleline {color: #B23AEE}
+    .greenline {color: #A2CD5A}
   </style>
   <script src="../../js/vue.min.js"></script>
 </head>
@@ -159,26 +160,52 @@
                           股票
                         </th>
                         <th>
+                          上市时间
+                        </th>
+                        <!--<th>
                           年份
+                        </th>-->
+                        <th>
+                          最近roe(扣非)
                         </th>
                         <th>
-                          roe(扣非roe)
+                          当前市值(pe)
                         </th>
                         <th>
-                          当前PE
+                          近1年
                         </th>
                         <th>
-                          当前市值(亿)
+                          近2年
                         </th>
+                        <th>
+                          近3年
+                        </th>
+                        <th>
+                          近4年
+                        </th>
+                        <th>
+                          近5年
+                        </th>
+                        <th>详情</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in result_list" v-bind:style="">
+                      <tr v-cloak v-for="val in result_list" v-if="!val.newStock" :class="val.timeIsFull ? '' : 'redline'">
                         <td>{{val.code}} {{val.name}}({{val.industry}})</td>
-                        <td>{{val.date}}</td>
+                        <td>{{val.timeToMarket}}</td>
+                        <!--<td>{{val.date}}</td>-->
                         <td>{{val.wroe}}({{val.kfroe}})</td>
-                        <td>{{val.pe}}</td>
-                        <td>{{val.mktcap}}</td>
+                        <!--<td>{{val.pe}}</td>-->
+                        <td>{{val.mktcap}}({{val.pe}})</td>
+                        <td :class="val.year_incre > 100 ? 'purpleline' : ''">{{val.year_incre}}%</td>
+                        <td :class="val.two_year_incre > 300 ? 'purpleline' : ''">{{val.two_year_incre}}%</td>
+                        <td :class="val.three_year_incre > 500 ? 'purpleline' : ''">{{val.three_year_incre}}%</td>
+                        <td :class="val.four_year_incre > 700 ? 'purpleline' : ''">{{val.four_year_incre}}%</td>
+                        <td :class="val.five_year_incre > 1000 ? 'purpleline' : ''">{{val.five_year_incre}}%</td>
+
+                        <td>
+                            <a target="_blank" :href="'./detail-chart.html#/?code=' + val.code">详情</a>
+                        </td>
                       </tr>
                     </tbody>
                   </table>

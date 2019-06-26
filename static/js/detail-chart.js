@@ -35,6 +35,11 @@ var vm = new Vue({
                     var npad_data = [];
                     var net_yoy_data = [];
                     var por_yoy_data = [];
+
+                    var year_wroe_data = []
+                    var year_kfwroe_data = []
+                    var year_xAxis_data = []
+
                     var report_length = that.report_list.length;
                     for (i = report_length -1; i >= 0; i--) {
                         var v = that.report_list[i];
@@ -44,9 +49,15 @@ var vm = new Vue({
                         npad_data.push(v.npad);
                         net_yoy_data.push(v.net_yoy * 100 - 100);
                         por_yoy_data.push(v.por_yoy * 100 - 100);
+                        if (v.date.indexOf("12-31") > 0) {
+                            year_xAxis_data.push(v.date)
+                            year_wroe_data.push(v.wroe)
+                            year_kfwroe_data.push(v.kfroe)
+                        }
                     }
                     that.render_report_chart(xAxis_data, por_data, net_profit_data, npad_data);
                     that.render_yoy_chart(xAxis_data, net_yoy_data, por_yoy_data);
+                    that.render_roe_chart(year_xAxis_data, year_wroe_data, year_kfwroe_data)
                 },
                 error: function(data) {
                     alert("获取数据失败");
@@ -95,6 +106,67 @@ var vm = new Vue({
                     alert("获取数据失败");
                 }
             });
+        },
+
+        render_roe_chart: function(xAxis_data, year_wroe_data, year_kfwroe_data) {
+            var myChart = echarts.init(document.getElementById('roe_chart'));
+            if (!xAxis_data) {
+                alert("获取报表数据失败.")
+                return;
+            }
+
+            // 线图
+            var option = {
+                title: {
+                    text: '历年ROE'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['ROE', '扣非ROE']
+                },
+                xAxis: {
+                    type: 'category',
+                    interval: 10,
+                    data: xAxis_data
+                },
+                dataZoom:[
+                    {
+                        xAxisIndex: [0]
+                    },
+                ],
+                yAxis: [
+                    {
+                        name: '%',
+                        type: 'value'
+                    },
+                    {
+                        name: '%',
+                        type: 'value'
+                    }
+                ],
+                yAxisIndex: 1,
+                series: [
+                    {
+                        name:'ROE',
+                        type:'line',
+                        stack: 'ROE',
+                        data: year_wroe_data,
+                        yAxisIndex: 0,
+                    },
+                    {
+                        name:'扣非ROE',
+                        type:'line',
+                        stack: '扣非ROE',
+                        data: year_kfwroe_data,
+                        yAxisIndex: 1,
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
         },
 
         render_price_chart: function(xAxis_data, price_data, static_pe8, static_pe12, static_pe16, static_pe20, static_pe30, dynamic_pe8, dynamic_pe12, dynamic_pe16, dynamic_pe20, dynamic_pe30) {

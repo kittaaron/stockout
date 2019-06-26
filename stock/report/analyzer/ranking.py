@@ -4,6 +4,7 @@ import tushare as ts
 import logging
 import config.logginconfig
 from stock.report.report_utils import *
+from sqlalchemy.orm import aliased
 from utils.db_utils import *
 from model.report.Zycwzb import Zycwzb
 from model.report.Zcfzb import Zcfzb
@@ -289,7 +290,7 @@ def get_pb_ranking_datas(page, pageSize, sort_by):
 
 def get_reports_detail(code, start_date, end_date):
     try:
-        start_date = start_date if start_date else '2009-12-31'
+        start_date = start_date if start_date else '2006-12-31'
         end_date = end_date if end_date else get_latest_record_date()
         zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code == code,
                                                            Zycwzb.date >= start_date,
@@ -301,35 +302,216 @@ def get_reports_detail(code, start_date, end_date):
         session.close()
 
 
+def get_hist_prices_map(matched_codes):
+    try:
+        ## 查出股票一年内、两年内涨幅、三年内、五年内涨幅
+        today = datetime.date.today()
+        today_str = today.strftime('%Y-%m-%d %H:%M:%S')
+        year_before = (today - datetime.timedelta(days=365)).strftime('%Y-%m-%d %H:%M:%S')
+        two_years_before = (today - datetime.timedelta(days=365 * 2)).strftime('%Y-%m-%d %H:%M:%S')
+        three_years_before = (today - datetime.timedelta(days=365 * 3)).strftime('%Y-%m-%d %H:%M:%S')
+        four_years_before = (today - datetime.timedelta(days=365 * 4)).strftime('%Y-%m-%d %H:%M:%S')
+        five_years_before = (today - datetime.timedelta(days=365 * 5)).strftime('%Y-%m-%d %H:%M:%S')
+
+        sub_q_max = aliased(session.query(HistData.code, func.max(HistData.date).label('max_date')).filter(
+            and_(HistData.date >= year_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        max_hist = session.query(sub_q_max, HistData.close).join(HistData, and_(HistData.code == sub_q_max.c.code,
+                                                                                    HistData.date == sub_q_max.c.max_date)).all()
+        max_hist_map = {}
+        for max_hist_i in max_hist:
+            max_hist_map[max_hist_i.code] = max_hist_i
+
+        #以下sql语句的翻译：select h.code,h.name,h.date,h.close from (select code,min(date) min_date from hist_data where code in ('000895','000651','600519', '000333', '000002') and date >= '2016-07-04' group by code) t join hist_data h on t.code = h.code and h.date = t.min_date
+        # 获取前1年的价格
+        sub_q = aliased(session.query(HistData.code, func.min(HistData.date).label('min_date')).filter(and_(HistData.date >= year_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        year_before_hist = session.query(sub_q, HistData.close).join(HistData, and_(HistData.code == sub_q.c.code, HistData.date == sub_q.c.min_date)).all()
+        year_before_map = {}
+        for year_before_i in year_before_hist:
+            year_before_map[year_before_i.code] = year_before_i
+        ret_map = {}
+        for code_i in matched_codes:
+            if code_i not in ret_map:
+                ret_map[code_i] = []
+                ret_map[code_i].append(max_hist_map[code_i] if code_i in max_hist_map else {})
+            ret_map[code_i].append(year_before_map[code_i] if code_i in year_before_map else {})
+
+        # 获取前2年的价格
+        sub_q = aliased(session.query(HistData.code, func.min(HistData.date).label('min_date')).filter(and_(HistData.date >= two_years_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        two_year_before_hist = session.query(sub_q, HistData.close).join(HistData, and_(HistData.code == sub_q.c.code, HistData.date == sub_q.c.min_date)).all()
+        two_year_before_map = {}
+        for two_year_before_i in two_year_before_hist:
+            two_year_before_map[two_year_before_i.code] = two_year_before_i
+
+        for code_i in matched_codes:
+            if code_i not in ret_map:
+                ret_map[code_i] = []
+                ret_map[code_i].append(max_hist_map[code_i] if code_i in max_hist_map else {})
+            ret_map[code_i].append(two_year_before_map[code_i] if code_i in two_year_before_map else {})
+
+        # 获取前3年的价格
+        sub_q = aliased(session.query(HistData.code, func.min(HistData.date).label('min_date')).filter(and_(HistData.date >= three_years_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        three_year_before_hist = session.query(sub_q, HistData.close).join(HistData, and_(HistData.code == sub_q.c.code, HistData.date == sub_q.c.min_date)).all()
+        three_year_before_map = {}
+        for three_year_before_i in three_year_before_hist:
+            three_year_before_map[three_year_before_i.code] = three_year_before_i
+
+        for code_i in matched_codes:
+            if code_i not in ret_map:
+                ret_map[code_i] = []
+                ret_map[code_i].append(max_hist_map[code_i] if code_i in max_hist_map else {})
+            ret_map[code_i].append(three_year_before_map[code_i] if code_i in three_year_before_map else {})
+
+        # 获取前4年的价格
+        sub_q = aliased(session.query(HistData.code, func.min(HistData.date).label('min_date')).filter(and_(HistData.date >= four_years_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        four_year_before_hist = session.query(sub_q, HistData.close).join(HistData, and_(HistData.code == sub_q.c.code, HistData.date == sub_q.c.min_date)).all()
+        four_year_before_map = {}
+        for four_year_before_i in four_year_before_hist:
+            four_year_before_map[four_year_before_i.code] = four_year_before_i
+
+        for code_i in matched_codes:
+            if code_i not in ret_map:
+                ret_map[code_i] = []
+                ret_map[code_i].append(max_hist_map[code_i] if code_i in max_hist_map else {})
+            ret_map[code_i].append(four_year_before_map[code_i] if code_i in four_year_before_map else {})
+
+        # 获取前5年的价格
+        sub_q = aliased(session.query(HistData.code, func.min(HistData.date).label('min_date')).filter(and_(HistData.date >= five_years_before, HistData.code.in_(matched_codes))).group_by(HistData.code).subquery())
+        five_year_before_hist = session.query(sub_q, HistData.close).join(HistData, and_(HistData.code == sub_q.c.code, HistData.date == sub_q.c.min_date)).all()
+        five_year_before_map = {}
+        for five_year_before_i in five_year_before_hist:
+            five_year_before_map[five_year_before_i.code] = five_year_before_i
+
+        for code_i in matched_codes:
+            if code_i not in ret_map:
+                ret_map[code_i] = []
+                ret_map[code_i].append(max_hist_map[code_i] if code_i in max_hist_map else {})
+            ret_map[code_i].append(five_year_before_map[code_i] if code_i in five_year_before_map else {})
+
+
+        """
+        # 最近的价格日期, 000002是万科的代码，这里只是方便筛选数据使用
+        now_date_str = session.query(func.max(HistData.date)).filter(HistData.code == '000002').first()[0]
+        year_before_str = session.query(func.min(HistData.date)).filter(HistData.code == '000002', HistData.date >= year_before).first()[
+            0]
+        two_years_before_str = session.query(func.min(HistData.date)).filter(HistData.code == '000002',
+                                                                             HistData.date >= two_years_before).first()[
+            0]
+        three_years_before_str = session.query(func.min(HistData.date)).filter(HistData.code == '000002',
+                                                                               HistData.date >= three_years_before).first()[
+            0]
+        four_years_before_str = session.query(func.min(HistData.date)).filter(HistData.code == '000002',
+                                                                              HistData.date >= four_years_before).first()[
+            0]
+        five_years_before_str = session.query(func.min(HistData.date)).filter(HistData.code == '000002',
+                                                                              HistData.date >= five_years_before).first()[
+            0]
+        search_hist_dates = [now_date_str, year_before_str, two_years_before_str, three_years_before_str,
+                             four_years_before_str, five_years_before_str]
+
+        logging.info("search_hist_dates: %s", search_hist_dates)
+        hist_datas = session.query(HistData).filter(and_(HistData.code.in_(matched_codes),
+                                                         HistData.date.in_(search_hist_dates))).order_by(
+            desc(HistData.date)).all()
+        hist_datas_map = {}
+        for hist_data_i in hist_datas:
+            code_i = hist_data_i.code
+            if code_i not in hist_datas_map:
+                hist_datas_map[code_i] = []
+            hist_datas_map[code_i].append(hist_data_i)"""
+        return ret_map
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
+
+
+def get_incre(hist_price_arr, years):
+    try:
+        if len(hist_price_arr) < 1:
+            return None
+        if years == 1:
+            if len(hist_price_arr) < 2:
+                return None
+            return round((hist_price_arr[0].close - hist_price_arr[1].close) * 100 / hist_price_arr[1].close, 2)
+        if years == 2:
+            if len(hist_price_arr) < 3:
+                return None
+            return round((hist_price_arr[0].close - hist_price_arr[2].close) * 100 / hist_price_arr[2].close, 2)
+        if years == 3:
+            if len(hist_price_arr) < 4:
+                return None
+            return round((hist_price_arr[0].close - hist_price_arr[3].close) * 100 / hist_price_arr[3].close, 2)
+        if years == 4:
+            if len(hist_price_arr) < 5:
+                return None
+            return round((hist_price_arr[0].close - hist_price_arr[4].close) * 100 / hist_price_arr[4].close, 2)
+        if years == 5:
+            if len(hist_price_arr) < 6:
+                return None
+            return round((hist_price_arr[0].close - hist_price_arr[5].close) * 100 / hist_price_arr[5].close, 2)
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
+
+
 def get_continuous_high_roe_codes(continuous_years, roe):
-    # 最近一年
-    latest_year_report = get_pre_yearreport_date(get_latest_record_date())
-    search_years = [latest_year_report]
-    one_year_before = latest_year_report
-    for i in range(1, continuous_years):
-        one_year_before = get_pre_yearreport_date(one_year_before)
-        search_years.append(one_year_before)
-    logging.info('查询年份: %s', search_years)
-    matched_records = session.query(Zycwzb.code, func.count(Zycwzb.code)).\
-        filter(and_(Zycwzb.kfroe >= roe, Zycwzb.date.in_(search_years))).\
-        group_by(Zycwzb.code).having(func.count(Zycwzb.code) >= continuous_years).all()
-    logging.info('cnt: %s, searched_codes : %s', len(matched_records), matched_records)
-    matched_codes = []
-    for record_i in matched_records:
-        matched_codes.append(record_i[0])
-    zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code.in_(matched_codes), Zycwzb.date == latest_year_report)).\
-        order_by(desc(Zycwzb.kfroe)).all()
-    stocks = session.query(StockInfo).filter(StockInfo.code.in_(matched_codes)).all()
-    stocks_map = get_stocks_map(stocks)
-    for zycwzb_i in zycwzbs:
-        if zycwzb_i.code not in stocks_map:
-            continue
-        stock_info = stocks_map[zycwzb_i.code]
-        zycwzb_i.industry = stock_info.industry
-        zycwzb_i.industry_classified = stock_info.industry_classified
-        zycwzb_i.pe = stock_info.pe
-        zycwzb_i.mktcap = round(stock_info.mktcap / 10000, 2)
-    return zycwzbs
+    try:
+        # 最近一年
+        latest_year_report = get_pre_yearreport_date(get_latest_record_date())
+        #latest_year_report = get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(latest_year_report))))
+        logging.info("latest_year_report: %s", latest_year_report)
+        search_years = [latest_year_report]
+        one_year_before = latest_year_report
+        for i in range(1, continuous_years):
+            one_year_before = get_pre_yearreport_date(one_year_before)
+            search_years.append(one_year_before)
+        logging.info('查询年份: %s', search_years)
+        matched_records = session.query(Zycwzb.code, func.count(Zycwzb.code)).\
+            filter(and_(Zycwzb.kfroe >= roe, Zycwzb.date.in_(search_years))).\
+            group_by(Zycwzb.code).having(func.count(Zycwzb.code) >= continuous_years).all()
+        logging.info('cnt: %s, searched_codes : %s', len(matched_records), matched_records)
+        matched_codes = []
+        for record_i in matched_records:
+            matched_codes.append(record_i[0])
+        zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code.in_(matched_codes), Zycwzb.date == latest_year_report)).\
+            order_by(desc(Zycwzb.kfroe)).all()
+        stocks = session.query(StockInfo).filter(StockInfo.code.in_(matched_codes)).all()
+        stocks_map = get_stocks_map(stocks)
+        # 获取1年前。。至5年前的价格
+        hist_map = get_hist_prices_map(matched_codes)
+        ret = []
+        for zycwzb_i in zycwzbs:
+            code = zycwzb_i.code
+            name = zycwzb_i.name
+            if code not in stocks_map:
+                continue
+            stock_info = stocks_map[code]
+            zycwzb_i.industry = stock_info.industry
+            zycwzb_i.industry_classified = stock_info.industry_classified
+            zycwzb_i.pe = stock_info.pe
+            zycwzb_i.mktcap = round(stock_info.mktcap / 10000, 2)
+            zycwzb_i.timeToMarket = stock_info.timeToMarket
+            # 上市时间晚于查询的时间最后一个年份
+            zycwzb_i.timeIsFull = False if stock_info.timeToMarket > search_years[-1] else True
+            timeToMarketYear = int(stock_info.timeToMarket[0:4])
+            logging.info("code: %s, len_price_hist: %s", zycwzb_i.code, len(hist_map[zycwzb_i.code]))
+            zycwzb_i.year_incre = get_incre(hist_map[zycwzb_i.code], 1)
+            zycwzb_i.two_year_incre = get_incre(hist_map[zycwzb_i.code], 2)
+            zycwzb_i.three_year_incre = get_incre(hist_map[zycwzb_i.code], 3)
+            zycwzb_i.four_year_incre = get_incre(hist_map[zycwzb_i.code], 4)
+            zycwzb_i.five_year_incre = get_incre(hist_map[zycwzb_i.code], 5)
+            if (int(latest_year_report[0:4]) - timeToMarketYear) <= continuous_years:
+                logging.info("%s %s 上市时间 %s，忽略", code, name, timeToMarketYear)
+                zycwzb_i.newStock = True
+            else:
+                ret.append(zycwzb_i)
+
+        return ret
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
 
 
 if __name__ == '__main__':

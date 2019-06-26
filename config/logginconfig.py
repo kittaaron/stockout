@@ -10,6 +10,9 @@ logging.basicConfig(level=logging.DEBUG,
                 filename = log_filename,
                     filemode='a')
 
+#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+#logging.getLogger('sqlalchemy.orm').setLevel(logging.INFO)
+
 # 定义一个Handler打印INFO及以上级别的日志到sys.stderr
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
