@@ -120,11 +120,8 @@ def get_mean_ratio1(code, name, old):
 
 def calc_pe_eps(code, name, stock):
     logging.info("handle %s %s", code, name)
-    #date1 = get_latest_record_date()
-    #date2 = get_pre_yearreport_date(date1)
-    #date3 = get_pre_yearreport_date(date2)
-    #date4 = get_pre_yearreport_date(date3)
 
+    # 财务报表数据
     zcfzb = session.query(Zcfzb).filter(and_(Zcfzb.code == code, Zcfzb.date.like("%12-31"))).order_by(desc(Zcfzb.date)).limit(1).first()
     # 负债率
     liab_ratio = zcfzb.liab_ratio if zcfzb is not None else None
@@ -135,9 +132,6 @@ def calc_pe_eps(code, name, stock):
         logging.error("%s %s 没有找到财报信息", code, name)
         return
     date1 = zycwzb1.date
-    #zycwzb2 = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == date2)).first()
-    ##zycwzb3 = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == date3)).first()
-    #zycwzb4 = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date == date4)).first()
     old = session.query(RealTimePEEPS).filter(RealTimePEEPS.code == code).first()
 
     if stock.totals == 0:
@@ -157,9 +151,6 @@ def calc_pe_eps(code, name, stock):
         old.latest_report_date = zycwzb1.date
 
     old.name = name
-    #if zycwzb2 is not None: old.eps2 = round(float(zycwzb2.npad / totals), 2)
-    #if zycwzb3 is not None: old.eps3 = round(float(zycwzb3.npad / totals), 2)
-    #if zycwzb4 is not None: old.eps4 = round(float(zycwzb4.npad / totals), 2)
 
     hist = session.query(HistData).filter(HistData.code == code).order_by(desc(HistData.date)).limit(1).first()
     if hist is None:
@@ -170,14 +161,8 @@ def calc_pe_eps(code, name, stock):
     koufei_pe = round(float(hist.close) / (old.koufei_eps),
                       0) if old.koufei_eps != 0 and old.koufei_eps is not None else -999
     pe1 = round(float(hist.close) / (old.eps1), 2) if old.eps1 != 0 and old.eps1 is not None else -999
-    #pe2 = round(float(hist.close) / old.eps2, 2) if old.eps2 != 0 and old.eps2 is not None else -999
-    #pe3 = round(float(hist.close) / old.eps3, 2) if old.eps3 != 0 and old.eps3 is not None else -999
-    #pe4 = round(float(hist.close) / old.eps4, 2) if old.eps4 != 0 and old.eps4 is not None else -999
     old.koufei_pe = koufei_pe
     old.pe1 = pe1
-    #old.pe2 = pe2
-    #old.pe3 = pe3
-    #old.pe4 = pe4
     old.date = hist.date
     old.price = hist.close
     old.liab_ratio = liab_ratio

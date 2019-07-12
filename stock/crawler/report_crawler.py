@@ -66,7 +66,6 @@ def download_one(url, code):
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
     #stocks = getSession().query(StockInfo).filter(StockInfo.code =='002943').all()
-    #iscon = True
     i = 0
     date = '2019-03-31'
     for row in stocks:
@@ -81,11 +80,6 @@ if __name__ == '__main__':
             if already_download is not None:
                 logging.info('%s %s 年报已下载,跳过', code, name)
                 continue
-            #if code == '603351':
-            #    iscon = false
-            #if iscon == True:
-            #    logging.info('%s continue', code)
-            #    continue
             download_all(code)
             logging.info("第 %s 条", i)
             time.sleep(3)

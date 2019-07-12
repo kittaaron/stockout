@@ -89,7 +89,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" onclick="javascript:return false;" href="./basic-table.html">
+            <a class="nav-link" onclick="javascript:return false;" href="./pe-ranking.html">
               <span class="menu-title">peranking</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
@@ -142,10 +142,7 @@
                     <thead>
                       <tr>
                         <th>
-                          code
-                        </th>
-                        <th>
-                          name
+                          公司
                         </th>
                         <!--<th>
                           行业(备选)
@@ -199,8 +196,7 @@
                     </thead>
                     <tbody>
                       <tr v-cloak v-for="val in ranking_pe_list" v-bind:bgcolor="val.mktcap < 100 ? '#6495ED' : ''">
-                        <td>{{val.code}}</td>
-                        <td>{{val.name}}({{val.industry + "(" + val.industry_classified + ")"}})</td>
+                        <td>{{val.code}}-{{val.name}}({{val.industry}})</td>
                         <td>{{val.mktcap}}</td>
                         <!--<td>{{val.price}}</td>-->
                         <td>{{val.pb}}</td>

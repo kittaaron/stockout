@@ -45,13 +45,9 @@ class SseMarketData(scrapy.Spider):
     name = "sse_market_data"
 
     def start_requests(self):
-
-        # sse_url = 'http://www.sse.com.cn/js/common/stocks/new/%s.js'
         sse_market_data_url = "http://query.sse.com.cn/marketdata/tradedata/queryTradingByProdTypeData.do"
-
         today = datetime.date.today()
         #today = datetime.datetime.strptime('2010-09-01', '%Y-%m-%d').date()
-
         already_max_date = session.query(MarketData.market, func.max(MarketData.date)).filter(MarketData.market == "sh").group_by(
             MarketData.market).first()
         start_date = (datetime.datetime.strptime(already_max_date[1], '%Y-%m-%d') + datetime.timedelta(days=1)).date() if already_max_date is not None else datetime.datetime.strptime('1999-02-01', '%Y-%m-%d').date()
@@ -84,31 +80,23 @@ class SseMarketData(scrapy.Spider):
                                  callback=self.parse)
 
     def parse(self, response):
-        url = response.url
         content = response.body.decode('utf8')
         extract_contents = re.findall("jsonpCallback.*\((.*)\)", content)
         if len(extract_contents) <= 0:
             self.log("extract error. content: %s" % content)
             return
-
         json_content = demjson.decode(extract_contents[0])
-
         if 'result' not in json_content:
             self.log("no result return. content: %s" % json_content)
             return
         result = json_content['result']
-        stockAData = result[0]
-        stockBData = result[1]
-        stockSHData = result[2]
         for dataI in result:
             searchDate = dataI['searchDate']
             productType = dataI['productType']  #
-
             if not searchDate or not productType or not dataI['exchangeRate'] or not dataI['marketValue'] or \
                     not dataI['profitRate'] or not dataI['trdAmt']:
                 self.log("wrong data. %s" % dataI)
                 continue
-
             old_market_data = session.query(MarketData).filter(and_(MarketData.date == searchDate,
                                                                     MarketData.productType == dataI['productType'],
                                                                     MarketData.market == market)).first()
@@ -116,6 +104,7 @@ class SseMarketData(scrapy.Spider):
                 old_market_data = MarketData(market=market, date=searchDate)
             build_old_market_data(old_market_data, dataI)
             self.log("保存 %s 成功" % old_market_data)
+            ## 结构化数据保存进数据库
             session.add(old_market_data)
 
     def err_callback(self, response):
