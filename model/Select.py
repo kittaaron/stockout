@@ -28,6 +28,12 @@ class Select(Base):
     # 股票名称
     cc = Column(Integer)
 
+    inc_years = Column(Integer)
+
+    inc_rate = Column(Integer)
+
+    inc_perpetual = Column(Integer)
+
     def __str__(self):
         msg = self.code + " " + self.name
         return msg

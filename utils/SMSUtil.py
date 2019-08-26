@@ -23,7 +23,7 @@ def sendMsg(msg):
 def sendMsgTX(params, template_id):
     sms_type = 0  # Enum{0: 普通短信, 1: 营销短信}
     phone_numbers = ['15622813257']
-    ssender = SmsSingleSender('**', 'token')
+    ssender = SmsSingleSender('1400150141', 'ec094fa8790625ba7ad182d8c634f184')
     #params = ['茅台', '14']
     try:
         result = ssender.send_with_param(86, phone_numbers[0],
@@ -34,8 +34,6 @@ def sendMsgTX(params, template_id):
     except Exception as e:
         print(e)
 
-    print(result)
-
 
 def sendAttentionMsgTX(params):
     template_id = 301736
@@ -44,6 +42,11 @@ def sendAttentionMsgTX(params):
 
 def sendRecommendMsgTX(params):
     template_id = 302764
+    sendMsgTX(params, template_id)
+
+
+def sendIntrinsicDiscountMsgTX(params):
+    template_id = 398484
     sendMsgTX(params, template_id)
 
 

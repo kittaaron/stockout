@@ -20,7 +20,7 @@ session = getSession()
 
 def get_latest_year_zycwzb(code):
     try:
-        logging.info("准备查询主要财务指标 %s", code)
+        #logging.info("准备查询主要财务指标 %s", code)
         # 获取最近年报
         latest_year_zycwzb = session.query(Zycwzb).filter(and_(Zycwzb.code == code, Zycwzb.date.like('%12-31'))).order_by(desc(Zycwzb.date)).limit(1).first()
         return latest_year_zycwzb

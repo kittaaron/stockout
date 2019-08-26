@@ -16,6 +16,7 @@ from server.handler.ProductPriceHandler import ProductCategory0ListHandler
 from server.handler.ProductPriceHandler import ProductCategory1ListHandler
 from server.handler.ProductPriceHandler import SaveProductPriceHandler
 from server.handler.ProductPriceHandler import BatchSaveProductPriceHandler
+from server.handler.FHSGHandler import FHSGHandler
 
 
 class MainHandler(RequestHandler):
@@ -48,6 +49,7 @@ def make_app():
         (r"/save_product_price", SaveProductPriceHandler),
         (r"/batch_save_product_price", BatchSaveProductPriceHandler),
         (r"/get_continuous_high_roe", ContinuousHighRoeHandler),
+        (r"/get_sorted_fhrate", FHSGHandler),
     ],
         #static_path=os.path.join(os.path.dirname(__file__), "../static/js", "../static/css", "../static/fonts",
                                  #"../static/images", "../static/scss", "../static/vendors", "../static/partials"),

@@ -100,7 +100,7 @@ def get_total_wroe_ranking_row():
 def get_wroe_ranking_datas(page, pageSize, paramcodes=None, market_time_in=None):
     try:
         """
-            获取根据pe排名的股票数据
+            获取根据roe排名的股票数据
         :return:
         """
         page = 0 if not page else page
@@ -205,7 +205,7 @@ def get_netflow_ranking_datas(page, pageSize):
         offset = page * pageSize
         latest_record_date = get_latest_record_date()
         # 获取wroe排名前100的数据
-        buffets = session.query(Buffett).order_by(desc(Buffett.flow_sub_total)).limit(pageSize).offset(offset).all()
+        buffets = session.query(Buffett).order_by(Buffett.flow_sub_total).limit(pageSize).offset(offset).all()
         codes = get_codes(buffets)
 
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(codes)).all()
@@ -459,7 +459,7 @@ def get_continuous_high_roe_codes(continuous_years, roe):
     try:
         # 最近一年
         latest_year_report = get_pre_yearreport_date(get_latest_record_date())
-        #latest_year_report = get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(latest_year_report))))
+        # latest_year_report = get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(get_pre_yearreport_date(latest_year_report))))
         logging.info("latest_year_report: %s", latest_year_report)
         search_years = [latest_year_report]
         one_year_before = latest_year_report

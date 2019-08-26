@@ -21,9 +21,9 @@
   <style type="text/css">
     .redline {color: #CD2626}
     .purpleline {color: #B23AEE}
-    .greenline {color: #A2CD5A}
   </style>
   <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-paginate.min.js"></script>
 </head>
 
 <body>
@@ -125,13 +125,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" onclick="javascript:return false;" href="./continuous_high_roe.html">
+            <a class="nav-link" href="./continuous_high_roe.html">
               <span class="menu-title">连续高ROE</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./fhsg.html">
+            <a class="nav-link" onclick="javascript:return false;" href="./fhsg.html">
               <span class="menu-title">分红送股</span>
               <i class="mdi mdi-table-large menu-icon"></i>
             </a>
@@ -143,16 +143,7 @@
         <div class="content-wrapper">
           <div class="page-header" style="margin-top:2rem">
             <h3 class="page-title">
-              连续
-            <select name="continuous_year" v-model="continuous_year">
-              <option :value="continuous_year.val" v-for="continuous_year in continuous_years">{{continuous_year.desc}}</option>
-            </select> 年,
-            roe大于等于:
-            <select name="roe_threshold" v-model="roe_threshold">
-              <option :value="roe_threshold.val" v-for="roe_threshold in roe_thresholds">{{roe_threshold.desc}}</option>
-            </select>
-            <lable>&nbsp;&nbsp;&nbsp;&nbsp;筛选股票总数: {{total_cnt}}</lable>
-            &nbsp;&nbsp;&nbsp;&nbsp;<button v-on:click="get_data_list()" class=" btn-outline-primary" style="line-height: 0.3; padding: 0.5rem 1rem">查询</button>
+              最近年度分红率排序
             </h3>
           </div>
           <div class="row">
@@ -166,52 +157,22 @@
                           股票
                         </th>
                         <th>
-                          上市时间
-                        </th>
-                        <!--<th>
-                          年份
-                        </th>-->
-                        <th>
-                          最近roe(扣非)
+                          分红年度
                         </th>
                         <th>
-                          当前市值(pe)
+                          分红率(%)
                         </th>
                         <th>
-                          近1年
+                          每股送转
                         </th>
-                        <th>
-                          近2年
-                        </th>
-                        <th>
-                          近3年
-                        </th>
-                        <th>
-                          近4年
-                        </th>
-                        <th>
-                          近5年
-                        </th>
-                        <th>详情</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in result_list" v-if="!val.newStock" :class="val.timeIsFull ? '' : 'redline'">
-                        <td>{{val.code}} {{val.name}}({{val.industry}})</td>
-                        <td>{{val.timeToMarket}}</td>
-                        <!--<td>{{val.date}}</td>-->
-                        <td>{{val.wroe}}({{val.kfroe}})</td>
-                        <!--<td>{{val.pe}}</td>-->
-                        <td>{{val.mktcap}}({{val.pe}})</td>
-                        <td :class="val.year_incre > 100 ? 'purpleline' : ''">{{val.year_incre}}%</td>
-                        <td :class="val.two_year_incre > 300 ? 'purpleline' : ''">{{val.two_year_incre}}%</td>
-                        <td :class="val.three_year_incre > 500 ? 'purpleline' : ''">{{val.three_year_incre}}%</td>
-                        <td :class="val.four_year_incre > 700 ? 'purpleline' : ''">{{val.four_year_incre}}%</td>
-                        <td :class="val.five_year_incre > 1000 ? 'purpleline' : ''">{{val.five_year_incre}}%</td>
-
-                        <td>
-                            <a target="_blank" :href="'./detail-chart.html#/?code=' + val.code">详情</a>
-                        </td>
+                      <tr v-cloak v-for="val in sorted_fhsgs">
+                        <td>{{val.code}}({{val.name}})</td>
+                        <td>{{val.end_date}}</td>
+                        <td>{{val.cash_rate}}</td>
+                        <td>{{val.stk_div}}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -220,7 +181,7 @@
               </div>
             </div>
           </div>
-          <!--<vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>-->
+          <vue-pagination :cur.sync="cur" :all.sync="all" v-on:btn-click="listen"></vue-pagination>
           <div class="row">
           </div>
         </div>
@@ -249,7 +210,7 @@
   <!-- inject:js -->
   <script src="../../js/off-canvas.js"></script>
   <script src="../../js/misc.js"></script>
-  <script src="../../js/continuous_high_roe.js"></script>
+  <script src="../../js/fhsg.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
   <!-- End custom js for this page-->

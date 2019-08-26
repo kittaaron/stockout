@@ -36,10 +36,10 @@ def getzbtype(zbmc):
         if zbmcI in zbmc:
             return i+1
     return 0
-    pass
+    passz
 
 
-class SseMarketData(scrapy.Spider):
+class SzseMarketData(scrapy.Spider):
     name = "szse_market_data"
 
     def start_requests(self):

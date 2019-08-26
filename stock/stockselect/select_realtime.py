@@ -77,20 +77,6 @@ if __name__ == '__main__':
                  'dividend': select_info.dividend
                  }
         sts_list.append(sts_i)
-        '''
-        logging.info("%s %s %s "
-                     "安全pe: %s 安全价格: %s - "
-                     "合理pe: %s 合理价格: %s - "
-                     "当前pe: %s 当前价格: %s - "
-                     "距安全线: %s, 距合理线: %s, 股息率(%s): %s",
-                     code, stockinfo.name, latest_hist.date,
-                     select_info.safe_pe, safe_price,
-                     select_info.fair_pe, fair_price,
-                     real_pe, latest_hist.close,
-                     round((real_pe - select_info.safe_pe) / select_info.safe_pe, 2),
-                     round((real_pe - select_info.fair_pe) / select_info.fair_pe, 2),
-                     select_info.dividend_year, select_info.dividend)
-        '''
 
     sorted_list = sorted(sts_list, key=lambda sts_i: sts_i['fair_ratio'])
     for list_i in sorted_list:
