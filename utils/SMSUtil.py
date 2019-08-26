@@ -23,7 +23,7 @@ def sendMsg(msg):
 def sendMsgTX(params, template_id):
     sms_type = 0  # Enum{0: 普通短信, 1: 营销短信}
     phone_numbers = ['15622813257']
-    ssender = SmsSingleSender('1400150141', 'ec094fa8790625ba7ad182d8c634f184')
+    ssender = SmsSingleSender('xx', 'xx')
     #params = ['茅台', '14']
     try:
         result = ssender.send_with_param(86, phone_numbers[0],
