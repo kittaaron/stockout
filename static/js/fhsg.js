@@ -4,7 +4,7 @@ var vm = new Vue({
     data: {
         sorted_fhsgs: [],
         cur: 1,
-        all: 1000,
+        all: 1,
         page_size: 1000,
     },
     // 页面加载完执行，用vue的create或者mounted函数
