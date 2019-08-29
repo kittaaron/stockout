@@ -25,9 +25,6 @@ def dump_fhsg(code, name, row):
     """
     try:
         fhsgs = session.query(Fhsg).filter(Fhsg.code ==  code).delete()
-        #if len(fhsgs) > 0:
-            #logging.info("%s %s 有老数据，先删除", code, name)
-            #session.delete_all(fhsgs)
         param_code = code + '.SH' if code.startswith('6') else code + '.SZ'
 
         df = pro.dividend(ts_code=param_code, fields='ts_code,div_proc,end_date,ann_date,stk_div,cash_div,cash_div_tax,record_date,ex_date,base_share,base_date')
@@ -42,6 +39,7 @@ def dump_fhsg(code, name, row):
             if 'record_date' not in serie or serie['record_date'] is None  or 'ex_date' not in serie or serie['ex_date'] is None:
                 continue
             fhsg = Fhsg(code, name)
+            # 分红年份
             fhsg.end_date = serie['end_date']
             fhsg.ann_date = serie['ann_date']
             fhsg.stk_div = serie['stk_div']
@@ -55,6 +53,7 @@ def dump_fhsg(code, name, row):
             #fhsg.div_listdate = serie['div_listdate']
             #fhsg.imp_ann_date = serie['imp_ann_date']
             #fhsg.base_date = serie['base_date']
+            # 基准股本
             fhsg.base_share = serie['base_share']
             datas.append(fhsg)
 

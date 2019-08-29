@@ -196,18 +196,18 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-cloak v-for="val in result_list" v-if="!val.newStock" :class="val.timeIsFull ? '' : 'redline'">
+                      <tr v-cloak v-for="val in result_list" v-if="!val.newStock" :class="val.cashflow_score == 100 ? 'redline' : (val.cashflow_score >= 80 ? 'purpleline' :'')">
                         <td>{{val.code}} {{val.name}}({{val.industry}})</td>
                         <td>{{val.timeToMarket}}</td>
                         <!--<td>{{val.date}}</td>-->
                         <td>{{val.wroe}}({{val.kfroe}})</td>
                         <!--<td>{{val.pe}}</td>-->
                         <td>{{val.mktcap}}({{val.pe}})</td>
-                        <td :class="val.year_incre > 100 ? 'purpleline' : ''">{{val.year_incre}}%</td>
-                        <td :class="val.two_year_incre > 300 ? 'purpleline' : ''">{{val.two_year_incre}}%</td>
-                        <td :class="val.three_year_incre > 500 ? 'purpleline' : ''">{{val.three_year_incre}}%</td>
-                        <td :class="val.four_year_incre > 700 ? 'purpleline' : ''">{{val.four_year_incre}}%</td>
-                        <td :class="val.five_year_incre > 1000 ? 'purpleline' : ''">{{val.five_year_incre}}%</td>
+                        <td>{{val.year_incre}}%</td>
+                        <td>{{val.two_year_incre}}%</td>
+                        <td>{{val.three_year_incre}}%</td>
+                        <td>{{val.four_year_incre}}%</td>
+                        <td>{{val.five_year_incre}}%</td>
 
                         <td>
                             <a target="_blank" :href="'./detail-chart.html#/?code=' + val.code">详情</a>

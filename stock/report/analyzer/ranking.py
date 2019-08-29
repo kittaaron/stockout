@@ -476,6 +476,28 @@ def get_continuous_high_roe_codes(continuous_years, roe):
             matched_codes.append(record_i[0])
         zycwzbs = session.query(Zycwzb).filter(and_(Zycwzb.code.in_(matched_codes), Zycwzb.date == latest_year_report)).\
             order_by(desc(Zycwzb.kfroe)).all()
+        zcfzbs = session.query(Zcfzb).filter(and_(Zcfzb.code.in_(matched_codes), Zcfzb.date == latest_year_report)).all()
+        cash_flow_score_map = {}
+        for zcfzb_i in zcfzbs:
+            # 查出资产负债表数据，计算流动性，规则如下（限于理财金额有可能在其他流动资产、也有可能在交易性金融资产类别
+            #   这里类现金资产使用：流动资产-存货-应收票据和应收账款-预付货款  近似计算：
+            #   # 1. 类现金资产/(短期借款+非流动性负债) > 1.5 为优秀
+            #   # 2. <1.5但是>1 为良
+            #   # 3. 否则为一般
+            logging.info("公司:%s", zcfzb_i.name)
+            like_money_asset = zcfzb_i.tca - zcfzb_i.inventories - zcfzb_i.note_receivable - zcfzb_i.cash_receivable - zcfzb_i.ats
+            youxi_loans = float(zcfzb_i.short_term_loans) + float(zcfzb_i.total_not_current_liabi)
+            if youxi_loans == 0:
+                logging.info('%s 完全没有有息负债.', zcfzb_i.name)
+                cash_flow_score_map[zcfzb_i.code] = 100
+                continue
+            multiple = float(like_money_asset) / youxi_loans
+            score = 0
+            if 1 < multiple < 1.5:
+                score = 60
+            if 1.5 < multiple:
+                score = 80
+            cash_flow_score_map[zcfzb_i.code] = score
         stocks = session.query(StockInfo).filter(StockInfo.code.in_(matched_codes)).all()
         stocks_map = get_stocks_map(stocks)
         # 获取1年前。。至5年前的价格
@@ -501,6 +523,8 @@ def get_continuous_high_roe_codes(continuous_years, roe):
             zycwzb_i.three_year_incre = get_incre(hist_map[zycwzb_i.code], 3)
             zycwzb_i.four_year_incre = get_incre(hist_map[zycwzb_i.code], 4)
             zycwzb_i.five_year_incre = get_incre(hist_map[zycwzb_i.code], 5)
+            if code in cash_flow_score_map:
+                zycwzb_i.cashflow_score = cash_flow_score_map[code]
             if (int(latest_year_report[0:4]) - timeToMarketYear) <= continuous_years:
                 logging.info("%s %s 上市时间 %s，忽略", code, name, timeToMarketYear)
                 zycwzb_i.newStock = True
