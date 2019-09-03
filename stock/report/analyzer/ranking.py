@@ -511,7 +511,7 @@ def get_continuous_high_roe_codes(continuous_years, roe):
             stock_info = stocks_map[code]
             zycwzb_i.industry = stock_info.industry
             zycwzb_i.industry_classified = stock_info.industry_classified
-            zycwzb_i.pe = stock_info.pe
+            zycwzb_i.pe = round(stock_info.mktcap / zycwzb_i.net_profit, 2)
             zycwzb_i.mktcap = round(stock_info.mktcap / 10000, 2)
             zycwzb_i.timeToMarket = stock_info.timeToMarket
             # 上市时间晚于查询的时间最后一个年份
