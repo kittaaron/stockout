@@ -10,6 +10,7 @@ import logging
 import math
 import time
 from sqlalchemy import *
+import traceback
 
 session = getSession()
 pro = ts.pro_api('c4ccc5b28a49ae5f7b82d84d0d28bbc366d6f50f16bcb3cf21ae3d43')
@@ -61,12 +62,19 @@ def dump_fhsg(code, name, row):
         session.commit()
         logging.info("%s %s 保存成功", code, name)
     except Exception as e:
-        logging.error("%s", e)
+        traceback.print_exc()
+    finally:
+        session.close()
 
 def get_ordered_fhrate(search_date, page, page_size):
-    offset = page * page_size
-    ret = session.query(Fhsg).filter(and_(Fhsg.end_date == search_date, Fhsg.cash_rate > 0)).order_by(desc(Fhsg.cash_rate)).limit(page_size).offset(offset).all()
-    return ret
+    try:
+        offset = page * page_size
+        ret = session.query(Fhsg).filter(and_(Fhsg.end_date == search_date, Fhsg.cash_rate > 0)).order_by(desc(Fhsg.cash_rate)).limit(page_size).offset(offset).all()
+        return ret
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        session.close()
 
 if __name__ == '__main__':
     stocks = session.query(StockInfo).all()
